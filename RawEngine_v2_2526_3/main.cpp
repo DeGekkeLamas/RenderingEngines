@@ -155,8 +155,9 @@ int main() {
     Camera cam;
 
     //VP
-    glm::mat4 view = glm::lookAt(cam.cameraPos, cam.cameraTarget, cam.cameraUp);
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(g_width) / static_cast<float>(g_height), 0.1f, 100.0f);
+    glm::mat4 view = glm::lookAt(cam.transform.position, cam.cameraTarget, cam.transform.up() );
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(g_width) /
+        static_cast<float>(g_height), 0.1f, 100.0f);
 
     GLint mvpMatrixUniform = glGetUniformLocation(modelShaderProgram, "mvpMatrix");
     GLint textureModelUniform = glGetUniformLocation(textureShaderProgram, "mvpMatrix");
@@ -168,9 +169,8 @@ int main() {
     float rotationStrength = 100.0f;
     while (!glfwWindowShouldClose(window)) {
 
-        cam.SetCameraValues();
         cam.ProcessInput(window);
-        view = glm::lookAt(cam.cameraPos, cam.cameraTarget, cam.cameraUp);
+        view = glm::lookAt(cam.transform.position, cam.cameraTarget, cam.transform.up() );
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -182,10 +182,12 @@ int main() {
         ImGui::End();
 
         processInput(window);
-        suzanne.rotate(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians(rotationStrength) * static_cast<float>(deltaTime));
+        suzanne.rotate(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians(rotationStrength) *
+            static_cast<float>(deltaTime));
 
         glUseProgram(textureShaderProgram);
-        glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection * view * quadModel.getModelMatrix()));
+        glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
+            view * quadModel.getModelMatrix()));
         glActiveTexture(GL_TEXTURE0);
         glUniform1i(textureUniform, 0);
         glBindTexture(GL_TEXTURE_2D, cmgtGatoTexture.getId());
@@ -194,7 +196,8 @@ int main() {
         glActiveTexture(GL_TEXTURE0);
 
         glUseProgram(modelShaderProgram);
-        glUniformMatrix4fv(mvpMatrixUniform, 1, GL_FALSE, glm::value_ptr(projection * view * suzanne.getModelMatrix()));
+        glUniformMatrix4fv(mvpMatrixUniform, 1, GL_FALSE, glm::value_ptr(projection * view *
+            suzanne.getModelMatrix()));
         suzanne.render();
         glBindVertexArray(0);
 

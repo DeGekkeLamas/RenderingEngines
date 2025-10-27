@@ -20,6 +20,10 @@ set(IMGUI_SOURCES
         Scripts/Camera.hpp
         Scripts/VectorMath.hpp
         Scripts/Camera.cpp
+        Scripts/VectorMath.cpp
+        Scripts/Transform.hpp
+        Scripts/GameObject.hpp
+        Scripts/Transform.cpp
 )
 
 add_executable(RawEngine main.cpp
