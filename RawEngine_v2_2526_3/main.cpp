@@ -155,7 +155,7 @@ int main() {
     Camera cam;
 
     //VP
-    glm::mat4 view = glm::lookAt(cam.transform.position, cam.cameraTarget, cam.transform.up() );
+    glm::mat4 view;
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(g_width) /
         static_cast<float>(g_height), 0.1f, 100.0f);
 
@@ -170,7 +170,7 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
 
         cam.ProcessInput(window);
-        view = glm::lookAt(cam.transform.position, cam.cameraTarget, cam.transform.up() );
+        view = glm::lookAt(cam.transform.position(), cam.cameraTarget, cam.transform.up() );
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

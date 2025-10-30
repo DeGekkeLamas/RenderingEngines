@@ -51,3 +51,7 @@ glm::vec3 VectorMath::RotateVector3(glm::vec3 originalVector, const glm::vec3 ro
     originalVector = RotateVectorXZ(originalVector, rotation.y); // Y
     return originalVector;
 }
+
+void VectorMath::PrintVec3(glm::vec3 const& vec) {
+    printf("Vec = (%f, %f, %f)\n", vec.x, vec.y, vec.z);
+}
