@@ -8,7 +8,6 @@
 class Camera {
 public:
     Transform transform;
-    glm::vec3 cameraTarget;
     Camera();
     void SetCameraValues();
     void ProcessInput(GLFWwindow *window);

@@ -4,13 +4,12 @@
 #include <glm/ext/quaternion_geometric.hpp>
 
 Camera::Camera() {
-    transform.position() = glm::vec3(0.0f, 0.0f, 10.0f);
-    cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+    transform.Translate(glm::vec3(0.0f, 0.0f, 10.0f));
     printf("Created a camera\n");
 }
 
 void Camera::RotateAroundCamera(glm::vec3 rotation) {
-    cameraTarget = VectorMath::RotateVector3(cameraTarget - transform.position(), rotation) + transform.position();
+    transform.Rotate(rotation);
 }
 
 void Camera::ProcessInput(GLFWwindow *window) {
@@ -43,33 +42,27 @@ void Camera::ProcessInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         const glm::vec3 increment = -moveSpeed * transform.right();
         transform.Translate(increment);
-        cameraTarget += increment;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         const glm::vec3 increment = moveSpeed * transform.right();
         transform.Translate(increment);
-        cameraTarget += increment;
     }
     // Y
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
         const glm::vec3 increment = moveSpeed * transform.up();
         transform.Translate(increment);
-        cameraTarget += increment;
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
         const glm::vec3 increment = -moveSpeed * transform.up();
         transform.Translate(increment);
-        cameraTarget += increment;
     }
     // Z
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         const glm::vec3 increment = -moveSpeed * transform.forward();
         transform.Translate(increment);
-        cameraTarget += increment;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         const glm::vec3 increment = moveSpeed * transform.forward();
         transform.Translate(increment);
-        cameraTarget += increment;
     }
 }

@@ -7,8 +7,6 @@ class Transform {
         Transform() : modelMatrix(1) {};
         ~Transform();
         glm::mat4 modelMatrix;
-        // glm::vec3 position = glm::vec3(0,0,0);
-        glm::vec3 rotation = glm::vec3(0,0,0);
         glm::vec3 scale = glm::vec3(1,1,1);
         Transform* parent;
         std::vector<Transform*> children;
@@ -18,9 +16,11 @@ class Transform {
         glm::vec3 forward() const;
 
         glm::vec3 position() const;
-        void Translate(glm::vec3 amount);
+        void Translate(const glm::vec3 amount);
+        void Rotate(const glm::vec3 amount);
     private:
         glm::vec3 rotationTarget;
+    void RotateOneDir(const float amount, const glm::vec3 axis);
 };
 
 

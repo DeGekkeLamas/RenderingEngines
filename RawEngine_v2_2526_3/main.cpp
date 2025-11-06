@@ -170,7 +170,8 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
 
         cam.ProcessInput(window);
-        view = glm::lookAt(cam.transform.position(), cam.cameraTarget, cam.transform.up() );
+        view = glm::lookAt(cam.transform.position(),
+            cam.transform.position() + cam.transform.forward(), cam.transform.up() );
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
