@@ -9,9 +9,7 @@ class Camera {
 public:
     Transform transform;
     Camera();
-    void SetCameraValues();
     void ProcessInput(GLFWwindow *window);
-    void RotateAroundCamera(glm::vec3 rotation);
 private:
     // ImVec2 mouseLastPos;
 };

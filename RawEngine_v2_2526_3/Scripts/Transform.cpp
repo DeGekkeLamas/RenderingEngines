@@ -1,5 +1,6 @@
 #include "Transform.hpp"
 
+#include <glm/ext/quaternion_geometric.hpp>
 #include <glm/ext/quaternion_trigonometric.hpp>
 
 #include "VectorMath.hpp"
@@ -23,7 +24,7 @@ glm::vec3 Transform::up() const {
 
 
 glm::vec3 Transform::forward() const {
-    VectorMath::PrintVec3(column(modelMatrix, 2));
+    // VectorMath::PrintVec3(column(modelMatrix, 2));
     return column(modelMatrix, 2);
 }
 
@@ -34,6 +35,7 @@ glm::vec3 Transform::position() const {
 }
 
 void Transform::Translate(const glm::vec3 amount) {
+    // VectorMath::PrintVec3(glm::normalize(amount));
     modelMatrix = translate(modelMatrix, amount);
 }
 

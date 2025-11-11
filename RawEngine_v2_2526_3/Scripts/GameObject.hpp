@@ -10,4 +10,7 @@ class GameObject {
     std::string name;
     Transform transform;
     //T GetComponent<T>();
+
+    virtual void Start();
+    virtual void Update();
 };

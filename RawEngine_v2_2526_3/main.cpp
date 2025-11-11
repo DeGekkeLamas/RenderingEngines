@@ -166,7 +166,7 @@ int main() {
     double currentTime = glfwGetTime();
     double finishFrameTime = 0.0;
     float deltaTime = 0.0f;
-    float rotationStrength = 100.0f;
+    const float rotationStrength = 100.0f;
     while (!glfwWindowShouldClose(window)) {
 
         cam.ProcessInput(window);
