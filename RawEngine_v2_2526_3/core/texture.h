@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glad/glad.h>
+#include "gladHelper.hpp"
 #include <string>
 
 namespace core {

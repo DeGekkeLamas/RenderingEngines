@@ -1,4 +1,6 @@
 #include "texture.h"
+#include "gladHelper.hpp"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 

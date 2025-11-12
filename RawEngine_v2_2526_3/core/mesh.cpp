@@ -1,5 +1,8 @@
 #include "mesh.h"
 
+#include "gladHelper.hpp"
+#include <GLFW/glfw3.h>
+
 namespace core {
     Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices) : vertices(vertices), indices(indices) {
         setupBuffers();

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <vector>
-#include <glad/glad.h>
+#include "gladHelper.hpp"
+
 #include "vertex.h"
 
 namespace core {

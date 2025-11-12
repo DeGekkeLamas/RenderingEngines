@@ -16,17 +16,6 @@ set(IMGUI_SOURCES
         imgui/imgui_widgets.cpp
         imgui/backends/imgui_impl_glfw.cpp
         imgui/backends/imgui_impl_opengl3.cpp
-        core/texture.cpp
-        core/texture.h
-        core/model.h
-        Scripts/Camera.hpp
-        Scripts/VectorMath.hpp
-        Scripts/Camera.cpp
-        Scripts/VectorMath.cpp
-        Scripts/Transform.hpp
-        Scripts/GameObject.hpp
-        Scripts/Transform.cpp
-        Scripts/GameObject.cpp
 )
 
 add_executable(RawEngine main.cpp
@@ -38,6 +27,17 @@ add_executable(RawEngine main.cpp
         core/vertex.h
         core/model.cpp
         core/model.h
+        gladHelper.hpp
+        core/texture.cpp
+        core/texture.h
+        Scripts/Camera.hpp
+        Scripts/Camera.cpp
+        Scripts/VectorMath.hpp
+        Scripts/VectorMath.cpp
+        Scripts/Transform.hpp
+        Scripts/Transform.cpp
+        Scripts/GameObject.hpp
+        Scripts/GameObject.cpp
 )
 
 add_custom_command(

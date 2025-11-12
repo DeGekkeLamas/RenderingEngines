@@ -1,5 +1,4 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include "gladHelper.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
@@ -10,6 +9,7 @@
 #include "core/texture.h"
 #include "Scripts/Camera.hpp"
 #include "iostream"
+#include "Scripts/GameObject.hpp"
 
 //#define MAC_CLION
 #define VSTUDIO
@@ -144,8 +144,11 @@ int main() {
     core::Mesh quad = core::Mesh::generateQuad();
     core::Model quadModel({quad});
     core::Texture cmgtGatoTexture("textures/CMGaTo_crop.png");
-    GameObject quadObj = GameObject("Quad", glm::vec3(0,0,-2.5),
-        NULL, &quadModel, &cmgtGatoTexture);
+    auto v = &quadModel;
+    auto t = &cmgtGatoTexture;
+    //GameObject q("str", glm::vec3(), nullptr, v, t);
+    GameObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr);
+    //, nullptr, &quadModel, &cmgtGatoTexture
     quadObj.model->transform.Scale(glm::vec3(5, 5, 1));
 
 
@@ -154,8 +157,6 @@ int main() {
     // GameObject(const std::string &name, glm::vec3 position, Transform* parent, core::Model* model, core::Texture* texture);
     std::string name="Suzanne";
     GameObject suzanneObj(name, tmp, &quadObj.transform, &suzanne, &cmgtGatoTexture);
-
-
     std::vector<GameObject> modelsInScene;
     modelsInScene.push_back(suzanneObj);
     modelsInScene.push_back(quadObj);
