@@ -144,10 +144,7 @@ int main() {
     core::Mesh quad = core::Mesh::generateQuad();
     core::Model quadModel({quad});
     core::Texture cmgtGatoTexture("textures/CMGaTo_crop.png");
-    auto v = &quadModel;
-    auto t = &cmgtGatoTexture;
-    //GameObject q("str", glm::vec3(), nullptr, v, t);
-    GameObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr);
+    GameObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, &quadModel, &cmgtGatoTexture);
     quadObj.model->transform.Scale(glm::vec3(5, 5, 1));
 
     core::Model suzanne = core::AssimpLoader::loadModel("models/nonormalmonkey.obj");
@@ -177,7 +174,8 @@ int main() {
     double currentTime = glfwGetTime();
     double finishFrameTime = 0.0;
     float deltaTime = 0.0f;
-    constexpr float rotationStrength = 100.0f;
+    constexpr float rotationStrength = 10;
+
     while (!glfwWindowShouldClose(window)) {
 
         cam.ProcessInput(window);
@@ -197,21 +195,22 @@ int main() {
         suzanne.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *
             static_cast<float>(deltaTime));
 
-        glBindVertexArray(0);
-        glActiveTexture(GL_TEXTURE0);
-
-        glUseProgram(modelShaderProgram);
         // Render
         for (int i = 0; i < modelsInScene.size(); i++) {
-        glUseProgram(textureShaderProgram);
-            glUniformMatrix4fv(mvpMatrixUniform, 1, GL_FALSE, glm::value_ptr(projection * view *
-            modelsInScene[i].transform.modelMatrix));
+            if (modelsInScene[i].texture != nullptr) glUseProgram(textureShaderProgram);
+            else glUseProgram(modelShaderProgram);
+
+            glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
+                view * modelsInScene[i].model->getModelMatrix()));
             glActiveTexture(GL_TEXTURE0);
             glUniform1i(textureUniform, 0);
-            glBindTexture(GL_TEXTURE_2D, modelsInScene[i].texture->getId());
+            if (modelsInScene[i].texture != nullptr) {
+                glBindTexture(GL_TEXTURE_2D, modelsInScene[i].texture->getId());
+            }
             modelsInScene[i].model->render();
+            glBindVertexArray(0);
+            glActiveTexture(GL_TEXTURE0);
         }
-        glBindVertexArray(0);
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
