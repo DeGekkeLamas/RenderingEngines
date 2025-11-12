@@ -148,22 +148,18 @@ int main() {
     auto t = &cmgtGatoTexture;
     //GameObject q("str", glm::vec3(), nullptr, v, t);
     GameObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr);
-    //, nullptr, &quadModel, &cmgtGatoTexture
     quadObj.model->transform.Scale(glm::vec3(5, 5, 1));
 
-
     core::Model suzanne = core::AssimpLoader::loadModel("models/nonormalmonkey.obj");
-    glm::vec3 tmp;
-    // GameObject(const std::string &name, glm::vec3 position, Transform* parent, core::Model* model, core::Texture* texture);
-    std::string name="Suzanne";
-    GameObject suzanneObj(name, tmp, &quadObj.transform, &suzanne, &cmgtGatoTexture);
+    GameObject suzanneObj("Suzanne", glm::vec3(), nullptr, &suzanne, nullptr);
     std::vector<GameObject> modelsInScene;
+
     modelsInScene.push_back(suzanneObj);
     modelsInScene.push_back(quadObj);
     // TODO: be very careful with storing actual GameObjects in a list (vector) when other classes (like Camera) inherit from it!
     //   (Research: "slicing inheritance C++")
 
-    glm::vec4 clearColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
+    glm::vec4 clearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClearColor(clearColor.r,
                  clearColor.g, clearColor.b, clearColor.a);
 
@@ -212,7 +208,7 @@ int main() {
             modelsInScene[i].transform.modelMatrix));
             glActiveTexture(GL_TEXTURE0);
             glUniform1i(textureUniform, 0);
-            glBindTexture(GL_TEXTURE_2D, cmgtGatoTexture.getId());
+            glBindTexture(GL_TEXTURE_2D, modelsInScene[i].texture->getId());
             modelsInScene[i].model->render();
         }
         glBindVertexArray(0);
