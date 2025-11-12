@@ -16,11 +16,14 @@ class Transform {
         glm::vec3 forward() const;
 
         glm::vec3 position() const;
-        void Translate(const glm::vec3 amount);
+
+        void SetPosition(glm::vec3 position);
+        void TranslateObjectSpace(const glm::vec3 amount);
+        void TranslateWorldSpace(const glm::vec3 amount);
         void Rotate(const glm::vec3 amount);
+        void Scale(const glm::vec3 amount);
     private:
-        glm::vec3 rotationTarget;
-    void RotateOneDir(const float amount, const glm::vec3 axis);
+        void RotateOneDir(const float amount, const glm::vec3 axis);
 };
 
 

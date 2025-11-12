@@ -1,8 +1,5 @@
 #include "Transform.hpp"
 
-#include <glm/ext/quaternion_geometric.hpp>
-#include <glm/ext/quaternion_trigonometric.hpp>
-
 #include "VectorMath.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/matrix_access.hpp>
@@ -12,32 +9,34 @@ Transform::~Transform() {
 }
 
 glm::vec3 Transform::right() const {
-    // return glm::normalize(glm::cross(VectorMath::up, forward() ) );
-    // VectorMath::PrintVec3(column(modelMatrix, 0));
     return column(modelMatrix, 0);
 }
 
 glm::vec3 Transform::up() const {
-    // return glm::cross(forward(), right());
     return column(modelMatrix, 1);
 }
 
 
 glm::vec3 Transform::forward() const {
-    // VectorMath::PrintVec3(column(modelMatrix, 2));
     return column(modelMatrix, 2);
 }
 
 glm::vec3 Transform::position() const {
     const glm::vec3 translation = column(modelMatrix, 3);
-    // VectorMath::PrintVec3(translation);
     return translation;
 }
 
-void Transform::Translate(const glm::vec3 amount) {
-    // VectorMath::PrintVec3(glm::normalize(amount));
+void Transform::TranslateObjectSpace(const glm::vec3 amount) {
     modelMatrix = translate(modelMatrix, amount);
 }
+
+void Transform::TranslateWorldSpace(const glm::vec3 amount) {
+    modelMatrix[3] += glm::vec4(amount, 0);
+}
+void Transform::SetPosition(const glm::vec3 position) {
+    modelMatrix[3] = glm::vec4(position, 0);
+}
+
 
 void Transform::Rotate(const glm::vec3 amount) {
     // Z
@@ -50,4 +49,8 @@ void Transform::Rotate(const glm::vec3 amount) {
 
 void Transform::RotateOneDir(const float amount, const glm::vec3 axis) {
     modelMatrix = glm::rotate(modelMatrix, amount, axis);
+}
+
+void Transform::Scale(const glm::vec3 amount) {
+    modelMatrix = glm::scale(modelMatrix, amount);
 }

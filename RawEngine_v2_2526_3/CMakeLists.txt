@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(imgui imgui/backends)
 
+
 # Add source files for ImGui
 set(IMGUI_SOURCES
         imgui/imgui.cpp
@@ -17,6 +18,7 @@ set(IMGUI_SOURCES
         imgui/backends/imgui_impl_opengl3.cpp
         core/texture.cpp
         core/texture.h
+        core/model.h
         Scripts/Camera.hpp
         Scripts/VectorMath.hpp
         Scripts/Camera.cpp
@@ -24,6 +26,7 @@ set(IMGUI_SOURCES
         Scripts/Transform.hpp
         Scripts/GameObject.hpp
         Scripts/Transform.cpp
+        Scripts/GameObject.cpp
 )
 
 add_executable(RawEngine main.cpp
@@ -61,6 +64,11 @@ add_custom_target(copy_shaders ALL
         ${CMAKE_CURRENT_BINARY_DIR}/shaders
         DEPENDS ${SHADER_FILES}
         COMMENT "Copying shaders..."
+)
+
+target_include_directories(RawEngine PRIVATE
+    ${CMAKE_SOURCE_DIR}/core
+    ${CMAKE_SOURCE_DIR}
 )
 
 add_dependencies(RawEngine copy_shaders)

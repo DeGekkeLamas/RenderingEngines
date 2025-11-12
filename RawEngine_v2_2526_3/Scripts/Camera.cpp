@@ -1,64 +1,71 @@
 #include <iostream>
 #include "VectorMath.hpp"
 #include "Camera.hpp"
-#include <glm/ext/quaternion_geometric.hpp>
 
-Camera::Camera() {
-    transform.Translate(glm::vec3(0.0f, 0.0f, 10.0f));
+Camera::Camera() : GameObject("Camera", glm::vec3(0.0f, 0.0f, 10.0f), NULL) {
     printf("Created a camera\n");
+}
+void Camera::Update() {
+    // ProcessInput(window);
 }
 
 void Camera::ProcessInput(GLFWwindow *window) {
-    const float moveSpeed = 0.01f;
-    const float rotateSpeed = 0.001f;
+    constexpr float moveSpeed = 0.01f;
+    constexpr float rotateSpeed = 0.001f;
+
+    constexpr glm::vec3 right = glm::vec3(1.0f, 0.0f, 0.0f);
+    constexpr glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    constexpr glm::vec3 forward = glm::vec3(0.0f, 0.0f, 1.0f);
+
+    glm::vec3 incrementR = glm::vec3(0,0,0);
+    glm::vec3 incrementT = glm::vec3(0,0,0);
+
     // Rotation
     // Down
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        const glm::vec3 increment = glm::vec3(rotateSpeed, 0.0f, 0.0f);
-        transform.Rotate(increment);
+        incrementR += rotateSpeed * right;
     }
     // Up
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        const glm::vec3 increment = glm::vec3(-rotateSpeed, 0.0f, 0.0f);
-        transform.Rotate(increment);
+        incrementR += -rotateSpeed * right;
     }
     // Left
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        const glm::vec3 increment = glm::vec3(0.0f, rotateSpeed, 0.0f);
-        transform.Rotate(increment);
+        incrementR += rotateSpeed * up;
     }
     // Right
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        const glm::vec3 increment = glm::vec3(0.0f, -rotateSpeed, 0.0f);
-        transform.Rotate(increment);
+        incrementR += -rotateSpeed * up;
+    }
+    // Apply
+    if (incrementR != glm::vec3(0, 0, 0)) {
+        transform.Rotate(incrementR);
     }
 
     // Movement
     // X
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        const glm::vec3 increment = moveSpeed * glm::vec3(1.0f, 0.0f, 0.0f);
-        transform.Translate(increment);
+        incrementT += moveSpeed * right;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        const glm::vec3 increment = -moveSpeed * glm::vec3(1.0f, 0.0f, 0.0f);
-        transform.Translate(increment);
+        incrementT += -moveSpeed * right;
     }
     // Y
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        const glm::vec3 increment = moveSpeed * glm::vec3(0.0f, 1.0f, 0.0f);
-        transform.Translate(increment);
+        incrementT += moveSpeed * up;
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        const glm::vec3 increment = -moveSpeed * glm::vec3(0.0f, 1.0f, 0.0f);
-        transform.Translate(increment);
+        incrementT += -moveSpeed * up;
     }
     // Z
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        const glm::vec3 increment = moveSpeed * glm::vec3(0.0f, 0.0f, 1.0f);
-        transform.Translate(increment);
+        incrementT += moveSpeed * forward;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        const glm::vec3 increment = -moveSpeed * glm::vec3(0.0f, 0.0f, 1.0f);
-        transform.Translate(increment);
+        incrementT += -moveSpeed * forward;
+    }
+    // Apply
+    if (incrementT != glm::vec3(0, 0, 0)) {
+        transform.TranslateObjectSpace(incrementT);
     }
 }

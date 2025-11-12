@@ -9,6 +9,7 @@
 #include "core/assimpLoader.h"
 #include "core/texture.h"
 #include "Scripts/Camera.hpp"
+#include "iostream"
 
 //#define MAC_CLION
 #define VSTUDIO
@@ -142,11 +143,24 @@ int main() {
 
     core::Mesh quad = core::Mesh::generateQuad();
     core::Model quadModel({quad});
-    quadModel.translate(glm::vec3(0,0,-2.5));
-    quadModel.scale(glm::vec3(5, 5, 1));
+    core::Texture cmgtGatoTexture("textures/CMGaTo_crop.png");
+    GameObject quadObj = GameObject("Quad", glm::vec3(0,0,-2.5),
+        NULL, &quadModel, &cmgtGatoTexture);
+    quadObj.model->transform.Scale(glm::vec3(5, 5, 1));
+
 
     core::Model suzanne = core::AssimpLoader::loadModel("models/nonormalmonkey.obj");
-    core::Texture cmgtGatoTexture("textures/CMGaTo_crop.png");
+    glm::vec3 tmp;
+    // GameObject(const std::string &name, glm::vec3 position, Transform* parent, core::Model* model, core::Texture* texture);
+    std::string name="Suzanne";
+    GameObject suzanneObj(name, tmp, &quadObj.transform, &suzanne, &cmgtGatoTexture);
+
+
+    std::vector<GameObject> modelsInScene;
+    modelsInScene.push_back(suzanneObj);
+    modelsInScene.push_back(quadObj);
+    // TODO: be very careful with storing actual GameObjects in a list (vector) when other classes (like Camera) inherit from it!
+    //   (Research: "slicing inheritance C++")
 
     glm::vec4 clearColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
     glClearColor(clearColor.r,
@@ -166,7 +180,7 @@ int main() {
     double currentTime = glfwGetTime();
     double finishFrameTime = 0.0;
     float deltaTime = 0.0f;
-    const float rotationStrength = 100.0f;
+    constexpr float rotationStrength = 100.0f;
     while (!glfwWindowShouldClose(window)) {
 
         cam.ProcessInput(window);
@@ -183,23 +197,23 @@ int main() {
         ImGui::End();
 
         processInput(window);
-        suzanne.rotate(glm::vec3(0.0f, 1.0f, 0.0f), glm::radians(rotationStrength) *
+        suzanne.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *
             static_cast<float>(deltaTime));
 
-        glUseProgram(textureShaderProgram);
-        glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
-            view * quadModel.getModelMatrix()));
-        glActiveTexture(GL_TEXTURE0);
-        glUniform1i(textureUniform, 0);
-        glBindTexture(GL_TEXTURE_2D, cmgtGatoTexture.getId());
-        quadModel.render();
         glBindVertexArray(0);
         glActiveTexture(GL_TEXTURE0);
 
         glUseProgram(modelShaderProgram);
-        glUniformMatrix4fv(mvpMatrixUniform, 1, GL_FALSE, glm::value_ptr(projection * view *
-            suzanne.getModelMatrix()));
-        suzanne.render();
+        // Render
+        for (int i = 0; i < modelsInScene.size(); i++) {
+        glUseProgram(textureShaderProgram);
+            glUniformMatrix4fv(mvpMatrixUniform, 1, GL_FALSE, glm::value_ptr(projection * view *
+            modelsInScene[i].transform.modelMatrix));
+            glActiveTexture(GL_TEXTURE0);
+            glUniform1i(textureUniform, 0);
+            glBindTexture(GL_TEXTURE_2D, cmgtGatoTexture.getId());
+            modelsInScene[i].model->render();
+        }
         glBindVertexArray(0);
 
         ImGui::Render();

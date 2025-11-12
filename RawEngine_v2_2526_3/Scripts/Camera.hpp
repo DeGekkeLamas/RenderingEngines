@@ -1,15 +1,15 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include "imgui.h"
 #include <glm/vec3.hpp>
-#include "Transform.hpp"
 
-class Camera {
+#include "GameObject.hpp"
+
+class Camera : public GameObject {
 public:
-    Transform transform;
     Camera();
     void ProcessInput(GLFWwindow *window);
+    void Update() override;
 private:
     // ImVec2 mouseLastPos;
 };
