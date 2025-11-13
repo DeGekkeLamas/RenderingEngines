@@ -7,6 +7,10 @@ namespace core {
     Mesh::Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices) : vertices(vertices), indices(indices) {
         setupBuffers();
     }
+    Mesh::Mesh(const Mesh& original) {
+        *this = original;
+        printf("Created another mesh\n");
+    }
 
     void Mesh::setupBuffers() {
         glGenVertexArrays(1, &VAO);

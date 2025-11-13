@@ -15,6 +15,7 @@ namespace core {
         GLuint EBO;
     public:
         Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices);
+        Mesh(const Mesh& original);
         void render();
         static Mesh generateQuad();
     private:
