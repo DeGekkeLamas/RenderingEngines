@@ -8,8 +8,4 @@ namespace core {
             meshes[i].render();
         }
     }
-
-    glm::mat4 Model::getModelMatrix() const {
-        return transform.modelMatrix;
-    }
 }

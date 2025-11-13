@@ -9,10 +9,7 @@ namespace core {
     private:
         std::vector<core::Mesh> meshes;
     public:
-        Transform transform;
         Model(std::vector<core::Mesh> meshes) : meshes(meshes) {}
         void render();
-
-        glm::mat4 getModelMatrix() const;
     };
 }

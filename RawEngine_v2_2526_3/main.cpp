@@ -145,14 +145,14 @@ int main() {
     core::Model quadModel({quad});
     core::Texture cmgtGatoTexture("textures/CMGaTo_crop.png");
     GameObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, &quadModel, &cmgtGatoTexture);
-    quadObj.model->transform.Scale(glm::vec3(5, 5, 1));
+    quadObj.transform.Scale(glm::vec3(5, 5, 1));
 
     core::Model suzanne = core::AssimpLoader::loadModel("models/nonormalmonkey.obj");
     GameObject suzanneObj("Suzanne", glm::vec3(), nullptr, &suzanne, nullptr);
-    std::vector<GameObject> modelsInScene;
+    std::vector<GameObject*> modelsInScene;
 
-    modelsInScene.push_back(suzanneObj);
-    modelsInScene.push_back(quadObj);
+    modelsInScene.push_back(&suzanneObj);
+    modelsInScene.push_back(&quadObj);
     // TODO: be very careful with storing actual GameObjects in a list (vector) when other classes (like Camera) inherit from it!
     //   (Research: "slicing inheritance C++")
 
@@ -192,22 +192,22 @@ int main() {
         ImGui::End();
 
         processInput(window);
-        suzanne.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *
+        suzanneObj.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *
             static_cast<float>(deltaTime));
 
         // Render
         for (int i = 0; i < modelsInScene.size(); i++) {
-            if (modelsInScene[i].texture != nullptr) glUseProgram(textureShaderProgram);
+            if (modelsInScene[i]->texture != nullptr) glUseProgram(textureShaderProgram);
             else glUseProgram(modelShaderProgram);
 
             glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
-                view * modelsInScene[i].model->getModelMatrix()));
+                view * modelsInScene[i]->transform.modelMatrix));
             glActiveTexture(GL_TEXTURE0);
             glUniform1i(textureUniform, 0);
-            if (modelsInScene[i].texture != nullptr) {
-                glBindTexture(GL_TEXTURE_2D, modelsInScene[i].texture->getId());
+            if (modelsInScene[i]->texture != nullptr) {
+                glBindTexture(GL_TEXTURE_2D, modelsInScene[i]->texture->getId());
             }
-            modelsInScene[i].model->render();
+            modelsInScene[i]->model->render();
             glBindVertexArray(0);
             glActiveTexture(GL_TEXTURE0);
         }
