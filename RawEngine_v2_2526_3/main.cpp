@@ -73,7 +73,43 @@ GLuint generateShader(const std::string &shaderPath, GLuint shaderType) {
 }
 
 Scene GenerateScene() {
+    // Quad
+    core::Mesh quad = core::Mesh::generateQuad();
+    core::Model quadModel({quad});
+    core::Texture cmgtGatoTexture("textures/CMGaTo_crop.png");
+    GameObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, &quadModel, &cmgtGatoTexture);
+    quadObj.transform.Scale(glm::vec3(5, 5, 1));
+    // Susanne
+    core::Model suzanne = core::AssimpLoader::loadModel("models/nonormalmonkey.obj");
+    GameObject suzanneObj("Suzanne", glm::vec3(), nullptr, &suzanne, nullptr);
+    // Dinner demon
+    core::Model dinnerDemon = core::AssimpLoader::loadModel("models/DinnerDemon.fbx");
+    GameObject dinnerDemonObj("Dinner demon", glm::vec3(1,-5,0), nullptr, &dinnerDemon, nullptr);
+    dinnerDemonObj.transform.Scale(glm::vec3(0.05f,0.05f,0.05f));
+    // Mystifying Pan
+    core::Model mystifyingPan = core::AssimpLoader::loadModel("models/MystifyingPan.fbx");
+    GameObject mystifyingPanObj("Mystifying Pan", glm::vec3(-10,0,0), nullptr, &mystifyingPan, nullptr);
+    mystifyingPanObj.transform.Scale(glm::vec3(0.1f,0.1f,0.1f));
+    // Backflip beerend
+    core::Model backflipBeerend = core::AssimpLoader::loadModel("models/backflipBeerend.fbx");
+    GameObject backflipBeerendObj("Backflip beerend", glm::vec3(10,0,0), nullptr, &backflipBeerend, nullptr);
+    backflipBeerendObj.transform.Scale(glm::vec3(0.1f,0.1f,0.1f));
+    // Rey
+    core::Model rey = core::AssimpLoader::loadModel("models/ReyRetopologized.fbx");
+    GameObject reyObj("Rey", glm::vec3(0,0,30), nullptr, &rey, nullptr);
+    reyObj.transform.Rotate(glm::vec3(0, 3.1415f, 0));
+    reyObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
 
+    // Scene
+    std::vector<GameObject> modelsInScene;
+    modelsInScene.push_back(suzanneObj);
+    modelsInScene.push_back(quadObj);
+    modelsInScene.push_back(dinnerDemonObj);
+    modelsInScene.push_back(mystifyingPanObj);
+    modelsInScene.push_back(backflipBeerendObj);
+    modelsInScene.push_back(reyObj);
+
+    return Scene(modelsInScene);
 }
 
 int main() {
@@ -146,46 +182,12 @@ int main() {
     glDeleteShader(fragmentShader);
     glDeleteShader(textureShader);
 
-    // Quad
-    core::Mesh quad = core::Mesh::generateQuad();
-    core::Model quadModel({quad});
-    core::Texture cmgtGatoTexture("textures/CMGaTo_crop.png");
-    GameObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, &quadModel, &cmgtGatoTexture);
-    quadObj.transform.Scale(glm::vec3(5, 5, 1));
-    // Susanne
-    core::Model suzanne = core::AssimpLoader::loadModel("models/nonormalmonkey.obj");
-    GameObject suzanneObj("Suzanne", glm::vec3(), nullptr, &suzanne, nullptr);
-    // Dinner demon
-    core::Model dinnerDemon = core::AssimpLoader::loadModel("models/DinnerDemon.fbx");
-    GameObject dinnerDemonObj("Dinner demon", glm::vec3(1,-5,0), nullptr, &dinnerDemon, nullptr);
-    dinnerDemonObj.transform.Scale(glm::vec3(0.05f,0.05f,0.05f));
-    // Mystifying Pan
-    core::Model mystifyingPan = core::AssimpLoader::loadModel("models/MystifyingPan.fbx");
-    GameObject mystifyingPanObj("Mystifying Pan", glm::vec3(-10,0,0), nullptr, &mystifyingPan, nullptr);
-    mystifyingPanObj.transform.Scale(glm::vec3(0.1f,0.1f,0.1f));
-    // Backflip beerend
-    core::Model backflipBeerend = core::AssimpLoader::loadModel("models/backflipBeerend.fbx");
-    GameObject backflipBeerendObj("Backflip beerend", glm::vec3(10,0,0), nullptr, &backflipBeerend, nullptr);
-    backflipBeerendObj.transform.Scale(glm::vec3(0.1f,0.1f,0.1f));
-    // Rey
-    core::Model rey = core::AssimpLoader::loadModel("models/ReyRetopologized.fbx");
-    GameObject reyObj("Rey", glm::vec3(0,0,30), nullptr, &rey, nullptr);
-    reyObj.transform.Rotate(glm::vec3(0, 3.1415f, 0));
-    reyObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
-
     // Scene
-    std::vector<GameObject*> modelsInScene;
-    Scene::LoadScene( GenerateScene(), modelsInScene );
-    modelsInScene.push_back(&suzanneObj);
-    modelsInScene.push_back(&quadObj);
-    modelsInScene.push_back(&dinnerDemonObj);
-    modelsInScene.push_back(&mystifyingPanObj);
-    modelsInScene.push_back(&backflipBeerendObj);
-    modelsInScene.push_back(&reyObj);
+    std::vector<GameObject> modelsInScene = Scene::LoadScene( GenerateScene() );
     // TODO: be very careful with storing actual GameObjects in a list (vector) when other classes (like Camera) inherit from it!
     //   (Research: "slicing inheritance C++")
 
-    glm::vec4 clearColor(0.2f, 0.2f, 0.2f, 1.0f);
+    constexpr glm::vec4 clearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClearColor(clearColor.r,
                  clearColor.g, clearColor.b, clearColor.a);
 
@@ -221,22 +223,23 @@ int main() {
         ImGui::End();
 
         processInput(window);
-        suzanneObj.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *
-            static_cast<float>(deltaTime));
+        // suzanneObj.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *
+            // static_cast<float>(deltaTime));
 
         // Render
+        printf("Started rendering\n");
         for (int i = 0; i < modelsInScene.size(); i++) {
-            if (modelsInScene[i]->texture != nullptr) glUseProgram(textureShaderProgram);
+            if (modelsInScene[i].texture != nullptr) glUseProgram(textureShaderProgram);
             else glUseProgram(modelShaderProgram);
 
             glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
-                view * modelsInScene[i]->transform.modelMatrix));
+                view * modelsInScene[i].transform.modelMatrix));
             glActiveTexture(GL_TEXTURE0);
             glUniform1i(textureUniform, 0);
-            if (modelsInScene[i]->texture != nullptr) {
-                glBindTexture(GL_TEXTURE_2D, modelsInScene[i]->texture->getId());
+            if (modelsInScene[i].texture != nullptr) {
+                glBindTexture(GL_TEXTURE_2D, modelsInScene[i].texture->getId());
             }
-            modelsInScene[i]->model->render();
+            modelsInScene[i].model->render();
             glBindVertexArray(0);
             glActiveTexture(GL_TEXTURE0);
         }

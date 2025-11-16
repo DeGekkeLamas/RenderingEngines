@@ -7,7 +7,7 @@
 
 class Scene {
     public:
-    Scene(const std::vector<GameObject*> &sceneObjects);
-    std::vector<GameObject*> sceneObjects;
-    static void LoadScene(const Scene &toLoad, std::vector<GameObject*>& target);
+    Scene(const std::vector<GameObject> sceneObjects);
+    std::vector<GameObject> sceneObjects;
+    static std::vector<GameObject> LoadScene(const Scene &toLoad);
 };
