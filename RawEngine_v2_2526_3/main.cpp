@@ -201,6 +201,15 @@ int main() {
     float deltaTime = 0.0f;
     constexpr float rotationStrength = 10;
 
+    for (int i = 0; i < modelsInScene.size(); i++) {
+        // Material shader
+        const unsigned int shaderProgram = glCreateProgram();
+        glAttachShader(shaderProgram, modelVertexShader);
+        glAttachShader(shaderProgram, modelsInScene[i]->material->shader);
+        glLinkProgram(shaderProgram);
+        modelsInScene[i]->shaderProgram = shaderProgram;
+    }
+
     while (!glfwWindowShouldClose(window)) {
 
         cam.ProcessInput(window);
@@ -222,19 +231,16 @@ int main() {
 
         // Render
         for (int i = 0; i < modelsInScene.size(); i++) {
-            // Material shader
-            const unsigned int shaderProgram = glCreateProgram();
-            glAttachShader(shaderProgram, modelVertexShader);
-            glAttachShader(shaderProgram, modelsInScene[i]->material->shader);
-            glLinkProgram(shaderProgram);
 
-            if (modelsInScene[i]->material->texture != nullptr) glUseProgram(shaderProgram);
+            if (modelsInScene[i]->material->texture != nullptr) glUseProgram(modelsInScene[i]->shaderProgram);
             else glUseProgram(modelShaderProgram);
 
             glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
                 view * modelsInScene[i]->transform.modelMatrix));
             glActiveTexture(GL_TEXTURE0);
             glUniform1i(textureUniform, 0);
+            GLint lightposUniform = glGetUniformLocation(modelsInScene[i]->shaderProgram, "lightPos");
+            glUniform3f(lightposUniform, 1,1,0);
             if (modelsInScene[i]->material->texture != nullptr) {
                 glBindTexture(GL_TEXTURE_2D, modelsInScene[i]->material->texture->getId());
             }
