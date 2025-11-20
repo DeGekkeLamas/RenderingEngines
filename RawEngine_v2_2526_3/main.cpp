@@ -10,6 +10,7 @@
 #include "Scripts/Camera.hpp"
 #include "iostream"
 #include "Scripts/GameObject.hpp"
+#include "Scripts/RenderableObject.hpp"
 #include "Scripts/Scene.hpp"
 
 //#define MAC_CLION
@@ -70,10 +71,6 @@ GLuint generateShader(const std::string &shaderPath, GLuint shaderType) {
         printf("Error! Shader issue [%s]: %s\n", shaderPath.c_str(), infoLog);
     }
     return shader;
-}
-
-Scene GenerateScene() {
-
 }
 
 int main() {
@@ -150,40 +147,37 @@ int main() {
     core::Mesh quad = core::Mesh::generateQuad();
     core::Model quadModel({quad});
     core::Texture cmgtGatoTexture("textures/CMGaTo_crop.png");
-    GameObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, &quadModel, &cmgtGatoTexture);
+    RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, &quadModel, &cmgtGatoTexture);
     quadObj.transform.Scale(glm::vec3(5, 5, 1));
     // Susanne
     core::Model suzanne = core::AssimpLoader::loadModel("models/nonormalmonkey.obj");
-    GameObject suzanneObj("Suzanne", glm::vec3(), nullptr, &suzanne, nullptr);
+    RenderableObject suzanneObj("Suzanne", glm::vec3(), nullptr, &suzanne, nullptr);
     // Dinner demon
     core::Model dinnerDemon = core::AssimpLoader::loadModel("models/DinnerDemon.fbx");
-    GameObject dinnerDemonObj("Dinner demon", glm::vec3(1,-5,0), nullptr, &dinnerDemon, nullptr);
+    RenderableObject dinnerDemonObj("Dinner demon", glm::vec3(1,-5,0), nullptr, &dinnerDemon, nullptr);
     dinnerDemonObj.transform.Scale(glm::vec3(0.05f,0.05f,0.05f));
     // Mystifying Pan
     core::Model mystifyingPan = core::AssimpLoader::loadModel("models/MystifyingPan.fbx");
-    GameObject mystifyingPanObj("Mystifying Pan", glm::vec3(-10,0,0), nullptr, &mystifyingPan, nullptr);
+    RenderableObject mystifyingPanObj("Mystifying Pan", glm::vec3(-10,0,0), nullptr, &mystifyingPan, nullptr);
     mystifyingPanObj.transform.Scale(glm::vec3(0.1f,0.1f,0.1f));
     // Backflip beerend
     core::Model backflipBeerend = core::AssimpLoader::loadModel("models/backflipBeerend.fbx");
-    GameObject backflipBeerendObj("Backflip beerend", glm::vec3(10,0,0), nullptr, &backflipBeerend, nullptr);
+    RenderableObject backflipBeerendObj("Backflip beerend", glm::vec3(10,0,0), nullptr, &backflipBeerend, nullptr);
     backflipBeerendObj.transform.Scale(glm::vec3(0.1f,0.1f,0.1f));
     // Rey
     core::Model rey = core::AssimpLoader::loadModel("models/ReyRetopologized.fbx");
-    GameObject reyObj("Rey", glm::vec3(0,0,30), nullptr, &rey, nullptr);
+    RenderableObject reyObj("Rey", glm::vec3(0,0,30), nullptr, &rey, nullptr);
     reyObj.transform.Rotate(glm::vec3(0, 3.1415f, 0));
     reyObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
 
     // Scene
-    std::vector<GameObject*> modelsInScene;
-    Scene::LoadScene( GenerateScene(), modelsInScene );
+    std::vector<RenderableObject*> modelsInScene;
     modelsInScene.push_back(&suzanneObj);
     modelsInScene.push_back(&quadObj);
     modelsInScene.push_back(&dinnerDemonObj);
     modelsInScene.push_back(&mystifyingPanObj);
     modelsInScene.push_back(&backflipBeerendObj);
     modelsInScene.push_back(&reyObj);
-    // TODO: be very careful with storing actual GameObjects in a list (vector) when other classes (like Camera) inherit from it!
-    //   (Research: "slicing inheritance C++")
 
     glm::vec4 clearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClearColor(clearColor.r,

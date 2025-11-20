@@ -18,6 +18,10 @@ set(IMGUI_SOURCES
         imgui/backends/imgui_impl_opengl3.cpp
         Scripts/Scene.hpp
         Scripts/Scene.cpp
+        Scripts/RenderableObject.hpp
+        Scripts/RenderableObject.cpp
+        Scripts/PointLight.cpp
+        Scripts/PointLight.hpp
 )
 
 add_executable(RawEngine main.cpp
