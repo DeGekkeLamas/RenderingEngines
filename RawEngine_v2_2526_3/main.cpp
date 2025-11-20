@@ -147,26 +147,28 @@ int main() {
     core::Mesh quad = core::Mesh::generateQuad();
     core::Model quadModel({quad});
     core::Texture cmgtGatoTexture("textures/CMGaTo_crop.png");
-    RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, &quadModel, &cmgtGatoTexture);
+    Material cmGatoMaterial(&cmgtGatoTexture, textureShader);
+    Material normalMat(nullptr, fragmentShader);
+    RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, &quadModel, &cmGatoMaterial);
     quadObj.transform.Scale(glm::vec3(5, 5, 1));
     // Susanne
     core::Model suzanne = core::AssimpLoader::loadModel("models/nonormalmonkey.obj");
-    RenderableObject suzanneObj("Suzanne", glm::vec3(), nullptr, &suzanne, nullptr);
+    RenderableObject suzanneObj("Suzanne", glm::vec3(), nullptr, &suzanne, &normalMat);
     // Dinner demon
     core::Model dinnerDemon = core::AssimpLoader::loadModel("models/DinnerDemon.fbx");
-    RenderableObject dinnerDemonObj("Dinner demon", glm::vec3(1,-5,0), nullptr, &dinnerDemon, nullptr);
+    RenderableObject dinnerDemonObj("Dinner demon", glm::vec3(1,-5,0), nullptr, &dinnerDemon, &normalMat);
     dinnerDemonObj.transform.Scale(glm::vec3(0.05f,0.05f,0.05f));
     // Mystifying Pan
     core::Model mystifyingPan = core::AssimpLoader::loadModel("models/MystifyingPan.fbx");
-    RenderableObject mystifyingPanObj("Mystifying Pan", glm::vec3(-10,0,0), nullptr, &mystifyingPan, nullptr);
+    RenderableObject mystifyingPanObj("Mystifying Pan", glm::vec3(-10,0,0), nullptr, &mystifyingPan, &normalMat);
     mystifyingPanObj.transform.Scale(glm::vec3(0.1f,0.1f,0.1f));
     // Backflip beerend
     core::Model backflipBeerend = core::AssimpLoader::loadModel("models/backflipBeerend.fbx");
-    RenderableObject backflipBeerendObj("Backflip beerend", glm::vec3(10,0,0), nullptr, &backflipBeerend, nullptr);
+    RenderableObject backflipBeerendObj("Backflip beerend", glm::vec3(10,0,0), nullptr, &backflipBeerend, &normalMat);
     backflipBeerendObj.transform.Scale(glm::vec3(0.1f,0.1f,0.1f));
     // Rey
     core::Model rey = core::AssimpLoader::loadModel("models/ReyRetopologized.fbx");
-    RenderableObject reyObj("Rey", glm::vec3(0,0,30), nullptr, &rey, nullptr);
+    RenderableObject reyObj("Rey", glm::vec3(0,0,30), nullptr, &rey, &normalMat);
     reyObj.transform.Rotate(glm::vec3(0, 3.1415f, 0));
     reyObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
 
@@ -220,15 +222,15 @@ int main() {
 
         // Render
         for (int i = 0; i < modelsInScene.size(); i++) {
-            if (modelsInScene[i]->texture != nullptr) glUseProgram(textureShaderProgram);
+            if (modelsInScene[i]->material->texture != nullptr) glUseProgram(textureShaderProgram);
             else glUseProgram(modelShaderProgram);
 
             glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
                 view * modelsInScene[i]->transform.modelMatrix));
             glActiveTexture(GL_TEXTURE0);
             glUniform1i(textureUniform, 0);
-            if (modelsInScene[i]->texture != nullptr) {
-                glBindTexture(GL_TEXTURE_2D, modelsInScene[i]->texture->getId());
+            if (modelsInScene[i]->material->texture != nullptr) {
+                glBindTexture(GL_TEXTURE_2D, modelsInScene[i]->material->texture->getId());
             }
             modelsInScene[i]->model->render();
             glBindVertexArray(0);
