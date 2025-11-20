@@ -222,7 +222,13 @@ int main() {
 
         // Render
         for (int i = 0; i < modelsInScene.size(); i++) {
-            if (modelsInScene[i]->material->texture != nullptr) glUseProgram(textureShaderProgram);
+            // Material shader
+            const unsigned int shaderProgram = glCreateProgram();
+            glAttachShader(shaderProgram, modelVertexShader);
+            glAttachShader(shaderProgram, modelsInScene[i]->material->shader);
+            glLinkProgram(shaderProgram);
+
+            if (modelsInScene[i]->material->texture != nullptr) glUseProgram(shaderProgram);
             else glUseProgram(modelShaderProgram);
 
             glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
