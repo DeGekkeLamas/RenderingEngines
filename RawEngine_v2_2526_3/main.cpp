@@ -231,16 +231,18 @@ int main() {
 
         // Render
         for (int i = 0; i < modelsInScene.size(); i++) {
-
-            if (modelsInScene[i]->material->texture != nullptr) glUseProgram(modelsInScene[i]->shaderProgram);
-            else glUseProgram(modelShaderProgram);
+            glUseProgram(modelsInScene[i]->shaderProgram);
 
             glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
                 view * modelsInScene[i]->transform.modelMatrix));
             glActiveTexture(GL_TEXTURE0);
             glUniform1i(textureUniform, 0);
-            GLint lightposUniform = glGetUniformLocation(modelsInScene[i]->shaderProgram, "lightPos");
+            GLint lightposUniform = glGetUniformLocation(modelsInScene[i]->shaderProgram, "lightPos"); // Light pos
             glUniform3f(lightposUniform, 1,1,0);
+            glm::vec3 worldPos = modelsInScene[i]->transform.position(); // Pos
+            GLint worldPosUniform = glGetUniformLocation(modelsInScene[i]->shaderProgram, "worldPos");
+            glUniform3f(worldPosUniform, worldPos.x,worldPos.y,worldPos.z);
+
             if (modelsInScene[i]->material->texture != nullptr) {
                 glBindTexture(GL_TEXTURE_2D, modelsInScene[i]->material->texture->getId());
             }

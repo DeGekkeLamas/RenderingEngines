@@ -4,12 +4,15 @@ in vec3 fPos;
 in vec3 fNor;
 in vec2 uv;
 uniform vec3 lightPos;
+uniform vec3 worldPos;
 
 void main()
 {
-   vec3 dir = normalize(fPos - lightPos);
-   float steepness = dot(dir,fNor);
+   vec3 usedPos = normalize(fPos) - worldPos;
+   vec3 dir = usedPos - lightPos;
+   float steepness = dot(fNor, dir);
    FragColor = vec4(steepness, steepness, steepness,1);
 //    FragColor = vec4(fNor.x, fNor.y, fNor.z, 1);
-//    FragColor = vec4(lightPos.x, lightPos.y, lightPos.z,1);
+//    FragColor = vec4(usedPos.x, usedPos.y, usedPos.z,1);
+//    FragColor = vec4(dir.x, dir.y, dir.z,1);
 }
