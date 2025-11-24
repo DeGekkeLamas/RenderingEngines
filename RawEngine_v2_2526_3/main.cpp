@@ -59,6 +59,7 @@ std::string readFileToString(const std::string &filePath) {
 GLuint generateShader(const std::string &shaderPath, GLuint shaderType) {
     printf("Loading shader: %s\n", shaderPath.c_str());
     const std::string shaderText = readFileToString(shaderPath);
+    // TODO: search for "#include", and replace it! (maybe)
     const GLuint shader = glCreateShader(shaderType);
     const char *s_str = shaderText.c_str();
     glShaderSource(shader, 1, &s_str, nullptr);
@@ -156,7 +157,7 @@ int main() {
     RenderableObject suzanneObj("Suzanne", glm::vec3(), nullptr, &suzanne, &normalMat);
     // Dinner demon
     core::Model dinnerDemon = core::AssimpLoader::loadModel("models/DinnerDemon.fbx");
-    RenderableObject dinnerDemonObj("Dinner demon", glm::vec3(1,-5,0), nullptr, &dinnerDemon, &normalMat);
+    RenderableObject dinnerDemonObj("Dinner demon", glm::vec3(1,-5,5), nullptr, &dinnerDemon, &normalMat);
     dinnerDemonObj.transform.Scale(glm::vec3(0.05f,0.05f,0.05f));
     // Mystifying Pan
     core::Model mystifyingPan = core::AssimpLoader::loadModel("models/MystifyingPan.fbx");
@@ -203,10 +204,12 @@ int main() {
 
     for (int i = 0; i < modelsInScene.size(); i++) {
         // Material shader
+        // Oof more bad architecture...
         const unsigned int shaderProgram = glCreateProgram();
         glAttachShader(shaderProgram, modelVertexShader);
         glAttachShader(shaderProgram, modelsInScene[i]->material->shader);
         glLinkProgram(shaderProgram);
+        // Are you using deleted shaders here??!!
         modelsInScene[i]->shaderProgram = shaderProgram;
     }
 
@@ -228,6 +231,8 @@ int main() {
         processInput(window);
         suzanneObj.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *
             static_cast<float>(deltaTime));
+
+        // TODO: clean architecture! Your classes are just data containers with lots of public fields. It's very hard to figure out what's happening and who's controlling what
 
         // Render
         for (int i = 0; i < modelsInScene.size(); i++) {
