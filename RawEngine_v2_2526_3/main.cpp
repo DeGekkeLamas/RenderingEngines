@@ -140,16 +140,16 @@ int main() {
         printf("Error! Making Shader Program: %s\n", infoLog);
     }
 
-    glDeleteShader(modelVertexShader);
-    glDeleteShader(fragmentShader);
-    glDeleteShader(textureShader);
+    // glDeleteShader(modelVertexShader);
+    // glDeleteShader(fragmentShader);
+    // glDeleteShader(textureShader);
 
     // Quad
     core::Mesh quad = core::Mesh::generateQuad();
     core::Model quadModel({quad});
     core::Texture cmgtGatoTexture("textures/CMGaTo_crop.png");
-    Material cmGatoMaterial(&cmgtGatoTexture, textureShader);
-    Material normalMat(nullptr, fragmentShader);
+    Material cmGatoMaterial(&cmgtGatoTexture, modelVertexShader, textureShader);
+    Material normalMat(nullptr, modelVertexShader, fragmentShader);
     RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, &quadModel, &cmGatoMaterial);
     quadObj.transform.Scale(glm::vec3(5, 5, 1));
     // Susanne
@@ -203,14 +203,7 @@ int main() {
     constexpr float rotationStrength = 10;
 
     for (int i = 0; i < modelsInScene.size(); i++) {
-        // Material shader
-        // Oof more bad architecture...
-        const unsigned int shaderProgram = glCreateProgram();
-        glAttachShader(shaderProgram, modelVertexShader);
-        glAttachShader(shaderProgram, modelsInScene[i]->material->shader);
-        glLinkProgram(shaderProgram);
-        // Are you using deleted shaders here??!!
-        modelsInScene[i]->shaderProgram = shaderProgram;
+        modelsInScene[i]->material->Bind();
     }
 
     while (!glfwWindowShouldClose(window)) {
@@ -236,23 +229,7 @@ int main() {
 
         // Render
         for (int i = 0; i < modelsInScene.size(); i++) {
-            glUseProgram(modelsInScene[i]->shaderProgram);
-
-            glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
-                view * modelsInScene[i]->transform.modelMatrix));
-            glActiveTexture(GL_TEXTURE0);
-            glUniform1i(textureUniform, 0);
-            GLint lightposUniform = glGetUniformLocation(modelsInScene[i]->shaderProgram, "lightPos"); // Light pos
-            glUniform3f(lightposUniform, 1,1,0);
-            GLint worldPosUniform = glGetUniformLocation(modelsInScene[i]->shaderProgram, "modelMatrix"); // Matrix
-            glUniformMatrix4fv(worldPosUniform, 1, GL_FALSE, glm::value_ptr(modelsInScene[i]->transform.modelMatrix));
-
-            if (modelsInScene[i]->material->texture != nullptr) {
-                glBindTexture(GL_TEXTURE_2D, modelsInScene[i]->material->texture->getId());
-            }
-            modelsInScene[i]->model->render();
-            glBindVertexArray(0);
-            glActiveTexture(GL_TEXTURE0);
+            modelsInScene[i]->Render(view, projection, textureModelUniform);
         }
 
         ImGui::Render();
