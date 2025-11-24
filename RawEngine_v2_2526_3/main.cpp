@@ -4,12 +4,15 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <__msvc_ranges_to.hpp>
+
 #include "core/mesh.h"
 #include "core/assimpLoader.h"
 #include "core/texture.h"
 #include "Scripts/Camera.hpp"
 #include "iostream"
 #include "Scripts/GameObject.hpp"
+#include "Scripts/PointLight.hpp"
 #include "Scripts/RenderableObject.hpp"
 #include "Scripts/Scene.hpp"
 
@@ -182,6 +185,8 @@ int main() {
     modelsInScene.push_back(&backflipBeerendObj);
     modelsInScene.push_back(&reyObj);
 
+    PointLight pointLight = PointLight("Light", glm::vec3(1,1,0), nullptr, glm::vec4(1,1,1,1), .05f);
+
     glm::vec4 clearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClearColor(clearColor.r,
                  clearColor.g, clearColor.b, clearColor.a);
@@ -224,12 +229,14 @@ int main() {
         processInput(window);
         suzanneObj.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *
             static_cast<float>(deltaTime));
+        // pointLight.transform.TranslateObjectSpace(pointLight.transform.right() * static_cast<float>(sin(currentTime) * deltaTime * 10));
+
 
         // TODO: clean architecture! Your classes are just data containers with lots of public fields. It's very hard to figure out what's happening and who's controlling what
 
         // Render
         for (int i = 0; i < modelsInScene.size(); i++) {
-            modelsInScene[i]->Render(view, projection, textureModelUniform);
+            modelsInScene[i]->Render(view, projection, textureModelUniform, pointLight, cam);
         }
 
         ImGui::Render();
