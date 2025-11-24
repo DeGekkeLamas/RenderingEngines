@@ -239,9 +239,8 @@ int main() {
             glUniform1i(textureUniform, 0);
             GLint lightposUniform = glGetUniformLocation(modelsInScene[i]->shaderProgram, "lightPos"); // Light pos
             glUniform3f(lightposUniform, 1,1,0);
-            glm::vec3 worldPos = modelsInScene[i]->transform.position(); // Pos
-            GLint worldPosUniform = glGetUniformLocation(modelsInScene[i]->shaderProgram, "worldPos");
-            glUniform3f(worldPosUniform, worldPos.x,worldPos.y,worldPos.z);
+            GLint worldPosUniform = glGetUniformLocation(modelsInScene[i]->shaderProgram, "modelMatrix"); // Matrix
+            glUniformMatrix4fv(worldPosUniform, 1, GL_FALSE, glm::value_ptr(modelsInScene[i]->transform.modelMatrix));
 
             if (modelsInScene[i]->material->texture != nullptr) {
                 glBindTexture(GL_TEXTURE_2D, modelsInScene[i]->material->texture->getId());
