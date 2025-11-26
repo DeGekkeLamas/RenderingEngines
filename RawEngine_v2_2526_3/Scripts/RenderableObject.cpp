@@ -24,7 +24,7 @@ void RenderableObject::Render(const glm::mat4 &view, const glm::mat4 &projection
     glUniform3f(lightposUniform, LightPosition.x,LightPosition.y,LightPosition.z);
     GLint CamposUniform = glGetUniformLocation(material->shaderProgram, "camPos"); // Light pos
     glm::vec3 CamPosition = camera.transform.position();
-    glUniform3f(lightposUniform, CamPosition.x,CamPosition.y,CamPosition.z);
+    glUniform3f(CamposUniform, CamPosition.x,CamPosition.y,CamPosition.z);
     GLint lightStrengthUniform = glGetUniformLocation(material->shaderProgram, "lightStrength"); // Light strength
     glUniform1f(lightStrengthUniform, light.intensity);
     GLint worldPosUniform = glGetUniformLocation(material->shaderProgram, "modelMatrix"); // Matrix

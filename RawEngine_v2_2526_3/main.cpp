@@ -229,7 +229,7 @@ int main() {
         processInput(window);
         suzanneObj.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *
             static_cast<float>(deltaTime));
-        // pointLight.transform.TranslateObjectSpace(pointLight.transform.right() * static_cast<float>(sin(currentTime) * deltaTime * 10));
+        pointLight.transform.TranslateObjectSpace(pointLight.transform.right() * static_cast<float>(sin(currentTime) * deltaTime * 10));
 
 
         // TODO: clean architecture! Your classes are just data containers with lots of public fields. It's very hard to figure out what's happening and who's controlling what

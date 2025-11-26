@@ -20,11 +20,6 @@ float Diffuse()
     vec3 lightPosRel = lightPos - fPos.xyz; // world space
     float diffuse = dot(normalize(fNor), normalize(lightPosRel)); // different spaces!
     diffuse = max(diffuse, 0);
-    // Attenuation
-    float distance = length(lightPosRel);
-    float attenuation = diffuse / (lightStrength + lightStrength * distance +  pow(lightStrength * distance, 2));
-    attenuation = min(attenuation, diffuse);
-    diffuse *= attenuation;
     return diffuse;
 }
 
@@ -41,11 +36,22 @@ float Specular()
     return specular;
 }
 
+float AddAttenuation(float diffuseAndSpecular)
+{
+    // Attenuation
+    float distance = length(lightPos - fPos);
+    float attenuation = diffuseAndSpecular / (lightStrength + lightStrength * distance +  pow(lightStrength * distance, 2));
+    attenuation = min(attenuation, diffuseAndSpecular);
+    diffuseAndSpecular *= attenuation;
+    return diffuseAndSpecular;
+}
+
 void main()
 {
     // Diffuse
-    float diffuse = 0;//Diffuse();
+    float diffuse = Diffuse();
     diffuse += Specular();
+    diffuse = AddAttenuation(diffuse);
     FragColor = vec4(diffuse, diffuse, diffuse,1);
     // hard coded ambient:
     FragColor += Ambient();
