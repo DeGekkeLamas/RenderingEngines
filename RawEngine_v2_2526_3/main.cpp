@@ -185,7 +185,8 @@ int main() {
     modelsInScene.push_back(&backflipBeerendObj);
     modelsInScene.push_back(&reyObj);
 
-    PointLight pointLight = PointLight("Light", glm::vec3(1,1,0), nullptr, glm::vec4(1,1,1,1), .05f);
+    PointLight pointLight = PointLight("Light", glm::vec3(1,1,0), nullptr, glm::vec4(1,1,1,1), 1);
+    float lightStrength = 1;
     // Light model
     core::Model sphere = core::AssimpLoader::loadModel("models/Sphere.fbx");
     // &pointLight.transform
@@ -230,8 +231,11 @@ int main() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
         ImGui::Begin("Raw Engine v2");
+        ImGui::Text("%d FPS", static_cast<int>(1 / deltaTime));
         ImGui::Text("Hello :)");
+        ImGui::SliderFloat("Lightstrength", &lightStrength, 0, 10.0f);
         ImGui::End();
+        pointLight.intensity = lightStrength;
 
         processInput(window);
         suzanneObj.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *

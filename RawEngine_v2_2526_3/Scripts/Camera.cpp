@@ -13,9 +13,9 @@ void Camera::ProcessInput(GLFWwindow *window) {
     constexpr float moveSpeed = 0.01f;
     constexpr float rotateSpeed = 0.001f;
 
-    constexpr glm::vec3 right = glm::vec3(1.0f, 0.0f, 0.0f);
-    constexpr glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-    constexpr glm::vec3 forward = glm::vec3(0.0f, 0.0f, 1.0f);
+    constexpr glm::vec3 right(1.0f, 0.0f, 0.0f);
+    constexpr glm::vec3 up(0.0f, 1.0f, 0.0f);
+    constexpr glm::vec3 forward(0.0f, 0.0f, 1.0f);
 
     glm::vec3 incrementR = glm::vec3(0,0,0);
     glm::vec3 incrementT = glm::vec3(0,0,0);
