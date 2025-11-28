@@ -200,6 +200,7 @@ int main() {
                  clearColor.g, clearColor.b, clearColor.a);
 
     Camera cam;
+    cam.transform.Rotate(glm::vec3(0, 3.1415f, 0));
 
     //VP
     glm::mat4 view;
@@ -248,6 +249,14 @@ int main() {
         for (int i = 0; i < modelsInScene.size(); i++) {
             modelsInScene[i]->Render(view, projection, textureModelUniform, pointLight, cam);
         }
+
+        // int width, height;
+        // glfwGetWindowSize(window, &width, &height);
+        // glBindFramebuffer(GL_FRAMEBUFFER, 1);
+        // glViewport(0, 0, width, height);
+        // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

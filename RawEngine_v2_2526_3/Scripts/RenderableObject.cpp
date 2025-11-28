@@ -19,16 +19,10 @@ void RenderableObject::Render(const glm::mat4 &view, const glm::mat4 &projection
     glActiveTexture(GL_TEXTURE0);
     // glUniform1i(textureUniform, 0);
     // Uniforms
-    GLint lightposUniform = glGetUniformLocation(material->shaderProgram, "lightPos"); // Light pos
-    glm::vec3 LightPosition = light.transform.position();
-    glUniform3f(lightposUniform, LightPosition.x,LightPosition.y,LightPosition.z);
-    GLint CamposUniform = glGetUniformLocation(material->shaderProgram, "camPos"); // Light pos
-    glm::vec3 CamPosition = camera.transform.position();
-    glUniform3f(CamposUniform, CamPosition.x,CamPosition.y,CamPosition.z);
-    GLint lightStrengthUniform = glGetUniformLocation(material->shaderProgram, "lightStrength"); // Light strength
-    glUniform1f(lightStrengthUniform, light.intensity);
-    GLint worldPosUniform = glGetUniformLocation(material->shaderProgram, "modelMatrix"); // Matrix
-    glUniformMatrix4fv(worldPosUniform, 1, GL_FALSE, glm::value_ptr(transform.modelMatrix));
+    SetUniform("lightPos", light.transform.position());
+    SetUniform("camPos", camera.transform.position());
+    SetUniform("lightStrength", light.intensity);
+    SetUniform("modelMatrix", transform.modelMatrix);
 
     if (material->texture != nullptr) {
         glBindTexture(GL_TEXTURE_2D, material->texture->getId());
@@ -37,4 +31,23 @@ void RenderableObject::Render(const glm::mat4 &view, const glm::mat4 &projection
     glBindVertexArray(0);
     glActiveTexture(GL_TEXTURE0);
 }
+
+void RenderableObject::SetUniform(const std::string &uniformName, const float toSet) const {
+    const GLint uniformPos = glGetUniformLocation(material->shaderProgram, uniformName.c_str());
+    glUniform1f(uniformPos, toSet);
+}
+
+void RenderableObject::SetUniform(const std::string &uniformName, const glm::vec3 toSet) const {
+    const GLint uniformPos = glGetUniformLocation(material->shaderProgram, uniformName.c_str());
+    glUniform3f(uniformPos, toSet.x,toSet.y,toSet.z);
+}
+
+void RenderableObject::SetUniform(const std::string &uniformName, glm::mat4 toSet) const {
+    const GLint uniformPos = glGetUniformLocation(material->shaderProgram, uniformName.c_str());
+    glUniformMatrix4fv(uniformPos, 1, GL_FALSE, glm::value_ptr(toSet));
+}
+
+
+
+
 

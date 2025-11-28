@@ -12,7 +12,7 @@ uniform float lightStrength;
 
 vec4 Ambient()
 {
-    return vec4(0, 0, 0.3, 0);
+    return vec4(0, 0, 0.1, 0);
 }
 
 float Diffuse()
