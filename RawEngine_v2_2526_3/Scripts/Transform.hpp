@@ -10,6 +10,8 @@ class Transform {
         glm::vec3 scale = glm::vec3(1,1,1);
         Transform* parent;
         std::vector<Transform*> children;
+        void AddChild(Transform* child);
+        // void RemoveChild(Transform* child);
         // Directions
         glm::vec3 right() const;
         glm::vec3 up() const;

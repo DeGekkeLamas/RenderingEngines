@@ -186,6 +186,13 @@ int main() {
     modelsInScene.push_back(&reyObj);
 
     PointLight pointLight = PointLight("Light", glm::vec3(1,1,0), nullptr, glm::vec4(1,1,1,1), .05f);
+    // Light model
+    core::Model sphere = core::AssimpLoader::loadModel("models/Sphere.fbx");
+    // &pointLight.transform
+    RenderableObject sphereObj("lightSphere", pointLight.transform.position(), &pointLight.transform, &sphere, &normalMat);
+    // sphereObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
+    modelsInScene.push_back(&sphereObj);
+    printf("Spheres parent = %s\n", pointLight.name.c_str());
 
     glm::vec4 clearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClearColor(clearColor.r,
@@ -230,7 +237,6 @@ int main() {
         suzanneObj.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *
             static_cast<float>(deltaTime));
         pointLight.transform.TranslateObjectSpace(pointLight.transform.right() * static_cast<float>(sin(currentTime) * deltaTime * 10));
-
 
         // TODO: clean architecture! Your classes are just data containers with lots of public fields. It's very hard to figure out what's happening and who's controlling what
 

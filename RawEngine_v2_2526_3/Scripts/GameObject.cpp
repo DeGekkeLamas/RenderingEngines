@@ -5,7 +5,9 @@ GameObject::GameObject(const std::string &name) {
 }
 GameObject::GameObject(const std::string &name, glm::vec3 position, Transform* parent) {
     this->name = name;
-    this->transform.parent = parent;
+    if (parent != nullptr) {
+        parent->AddChild(&this->transform);
+    }
     this->transform.SetPosition(position);
 }
 
