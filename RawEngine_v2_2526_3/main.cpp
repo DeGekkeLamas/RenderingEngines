@@ -251,13 +251,19 @@ int main() {
             modelsInScene[i]->Render(view, projection, textureModelUniform, pointLight, cam);
         }
 
-        // int width, height;
-        // glfwGetWindowSize(window, &width, &height);
-        // glBindFramebuffer(GL_FRAMEBUFFER, 1);
-        // glViewport(0, 0, width, height);
-        // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
+        unsigned int fbo;
+        glGenFramebuffers(1, &fbo);
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glViewport(0, 0, width, height);
+        glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glDeleteFramebuffers(1, &fbo);
+        // RenderableObject renderQuad = quadObj;
+        
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

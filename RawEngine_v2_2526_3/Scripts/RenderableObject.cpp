@@ -12,7 +12,7 @@ RenderableObject::RenderableObject(const std::string &name, glm::vec3 position, 
     this->material = material;
 }
 
-void RenderableObject::Render(const glm::mat4 &view, const glm::mat4 &projection, const GLint textureModelUniform, const PointLight &light, const Camera &camera) {
+void RenderableObject::Render(const glm::mat4 &view, const glm::mat4 &projection, const GLint textureModelUniform, const PointLight &light, const Camera &camera) const {
     glUseProgram(material->shaderProgram);
     glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
         view * transform.modelMatrix));

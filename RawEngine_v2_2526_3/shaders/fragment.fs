@@ -52,7 +52,9 @@ void main()
 {
     // Diffuse
     float diffuse = Diffuse();
+    // Specular
     diffuse += Specular();
+    // Attenuation
     diffuse = AddAttenuation(diffuse);
     FragColor = vec4(diffuse, diffuse, diffuse, 1) * lightColor;
     // ambient:
