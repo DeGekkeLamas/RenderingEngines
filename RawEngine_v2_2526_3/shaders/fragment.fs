@@ -3,6 +3,7 @@ out vec4 FragColor;
 in vec3 fPos; // world
 in vec3 fNor; // world
 in vec2 uv;
+uniform vec4 lightColor;
 uniform vec3 lightPos; // world space
 uniform vec3 camPos; // world space
 uniform float lightStrength;
@@ -53,7 +54,7 @@ void main()
     float diffuse = Diffuse();
     diffuse += Specular();
     diffuse = AddAttenuation(diffuse);
-    FragColor = vec4(diffuse, diffuse, diffuse,1);
-    // hard coded ambient:
+    FragColor = vec4(diffuse, diffuse, diffuse, 1) * lightColor;
+    // ambient:
     FragColor += Ambient();
 }

@@ -19,6 +19,7 @@ void RenderableObject::Render(const glm::mat4 &view, const glm::mat4 &projection
     glActiveTexture(GL_TEXTURE0);
     // glUniform1i(textureUniform, 0);
     // Uniforms
+    SetUniform("lightColor", light.color);
     SetUniform("lightPos", light.transform.position());
     SetUniform("camPos", camera.transform.position());
     SetUniform("lightStrength", light.intensity);
@@ -40,6 +41,10 @@ void RenderableObject::SetUniform(const std::string &uniformName, const float to
 void RenderableObject::SetUniform(const std::string &uniformName, const glm::vec3 toSet) const {
     const GLint uniformPos = glGetUniformLocation(material->shaderProgram, uniformName.c_str());
     glUniform3f(uniformPos, toSet.x,toSet.y,toSet.z);
+}
+void RenderableObject::SetUniform(const std::string &uniformName, const glm::vec4 toSet) const {
+    const GLint uniformPos = glGetUniformLocation(material->shaderProgram, uniformName.c_str());
+    glUniform4f(uniformPos, toSet.x,toSet.y,toSet.z, toSet.w);
 }
 
 void RenderableObject::SetUniform(const std::string &uniformName, glm::mat4 toSet) const {

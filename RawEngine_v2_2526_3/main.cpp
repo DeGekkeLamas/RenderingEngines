@@ -234,7 +234,8 @@ int main() {
         ImGui::Begin("Raw Engine v2");
         ImGui::Text("%d FPS", static_cast<int>(1 / deltaTime));
         ImGui::Text("Hello :)");
-        ImGui::SliderFloat("Lightstrength", &lightStrength, 0, 10.0f);
+        ImGui::SliderFloat("Light Strength", &lightStrength, 0, 10.0f);
+        ImGui::ColorEdit3("Light Color", glm::value_ptr(pointLight.color));
         ImGui::End();
         pointLight.intensity = lightStrength;
 
