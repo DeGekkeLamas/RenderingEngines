@@ -220,6 +220,11 @@ int main() {
         modelsInScene[i]->material->Bind();
     }
 
+    // PP
+    RenderableObject renderQuad = quadObj;
+    renderQuad.transform.SetPosition(cam.transform.position());
+    renderQuad.material->Bind();
+
     while (!glfwWindowShouldClose(window)) {
 
         cam.ProcessInput(window);
@@ -251,6 +256,7 @@ int main() {
             modelsInScene[i]->Render(view, projection, textureModelUniform, pointLight, cam);
         }
 
+        // PP
         int width, height;
         glfwGetWindowSize(window, &width, &height);
         unsigned int fbo;
@@ -260,8 +266,8 @@ int main() {
         glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glDeleteFramebuffers(1, &fbo);
-        // RenderableObject renderQuad = quadObj;
-        
+        renderQuad.Render(view, projection, textureModelUniform, pointLight, cam, fbo);
+
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
