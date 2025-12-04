@@ -231,7 +231,7 @@ int main() {
     // PP
     RenderableObject renderQuad = quadObj;
     renderQuad.material->vertexShader = vertexShader;
-    renderQuad.transform.SetPosition(cam.transform.position());
+    // renderQuad.material->texture = nullptr;
     renderQuad.material->Bind();
 
     int width, height;
@@ -242,9 +242,13 @@ int main() {
     unsigned int tcb;
     glGenTextures(1, &tcb);
 
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    glBindTexture(GL_TEXTURE_2D, tcb);
+    unsigned int depthBuffer;
+    glGenTextures(1, &depthBuffer);
 
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+    // Texture
+    glBindTexture(GL_TEXTURE_2D, tcb);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width,
     height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D,
@@ -252,6 +256,15 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D,
     GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tcb, 0);
+    // Depth
+    glBindTexture(GL_TEXTURE_2D, depthBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0,
+    GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+        GL_TEXTURE_2D, depthBuffer, 0);
+
 
     while (!glfwWindowShouldClose(window)) {
 
@@ -280,8 +293,6 @@ int main() {
         // TODO: clean architecture! Your classes are just data containers with lots of public fields. It's very hard to figure out what's happening and who's controlling what
 
         // PP
-        //
-
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         glViewport(0, 0, width, height);
         glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
