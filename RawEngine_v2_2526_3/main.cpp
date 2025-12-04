@@ -119,6 +119,7 @@ int main() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     const GLuint modelVertexShader = generateShader("shaders/modelVertex.vs", GL_VERTEX_SHADER);
+    const GLuint vertexShader = generateShader("shaders/vertex.vs", GL_VERTEX_SHADER);
     const GLuint fragmentShader = generateShader("shaders/fragment.fs", GL_FRAGMENT_SHADER);
     const GLuint textureShader = generateShader("shaders/texture.fs", GL_FRAGMENT_SHADER);
 
@@ -175,6 +176,12 @@ int main() {
     RenderableObject reyObj("Rey", glm::vec3(0,0,30), nullptr, &rey, &normalMat);
     reyObj.transform.Rotate(glm::vec3(0, 3.1415f, 0));
     reyObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
+    // Engine
+    core::Model engine = core::AssimpLoader::loadModel("models/engine.fbx");
+    core::Texture engineTexture("textures/initialShadingGroup_albedo.jpg");
+    Material engineMaterial(&engineTexture, modelVertexShader, textureShader);
+    RenderableObject engineObj("Quad", glm::vec3(0,-20,0), nullptr, &engine, &engineMaterial);
+    engineObj.transform.Scale(glm::vec3(.1f, .1f, .1f));
 
     // Scene
     std::vector<RenderableObject*> modelsInScene;
@@ -184,6 +191,7 @@ int main() {
     modelsInScene.push_back(&mystifyingPanObj);
     modelsInScene.push_back(&backflipBeerendObj);
     modelsInScene.push_back(&reyObj);
+    modelsInScene.push_back(&engineObj);
 
     PointLight pointLight = PointLight("Light", glm::vec3(1,1,0), nullptr, glm::vec4(1,1,1,1), 1);
     float lightStrength = 1;
@@ -222,8 +230,28 @@ int main() {
 
     // PP
     RenderableObject renderQuad = quadObj;
+    renderQuad.material->vertexShader = vertexShader;
     renderQuad.transform.SetPosition(cam.transform.position());
     renderQuad.material->Bind();
+
+    int width, height;
+    glfwGetWindowSize(window, &width, &height);
+    unsigned int fbo;
+    glGenFramebuffers(1, &fbo);
+
+    unsigned int tcb;
+    glGenTextures(1, &tcb);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glBindTexture(GL_TEXTURE_2D, tcb);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width,
+    height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D,
+    GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,
+    GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tcb, 0);
 
     while (!glfwWindowShouldClose(window)) {
 
@@ -251,25 +279,23 @@ int main() {
 
         // TODO: clean architecture! Your classes are just data containers with lots of public fields. It's very hard to figure out what's happening and who's controlling what
 
+        // PP
+        //
+
+        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glViewport(0, 0, width, height);
+        glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         // Render
         for (int i = 0; i < modelsInScene.size(); i++) {
             modelsInScene[i]->Render(view, projection, textureModelUniform, pointLight, cam);
         }
 
         // PP
-        int width, height;
-        glfwGetWindowSize(window, &width, &height);
-        unsigned int fbo;
-        glGenFramebuffers(1, &fbo);
-        glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        glViewport(0, 0, width, height);
-        glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glDeleteFramebuffers(1, &fbo);
-        renderQuad.Render(view, projection, textureModelUniform, pointLight, cam, fbo);
-
-
+        //glDeleteFramebuffers(1, &fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        renderQuad.Render(view, projection, textureModelUniform, pointLight, cam, tcb);
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
