@@ -9,9 +9,9 @@ void Camera::Update() {
     // ProcessInput(window);
 }
 
-void Camera::ProcessInput(GLFWwindow *window) {
-    constexpr float moveSpeed = 0.01f;
-    constexpr float rotateSpeed = 0.001f;
+void Camera::ProcessInput(GLFWwindow *window, float deltaTime) {
+    constexpr float moveSpeed = 10.0f;
+    constexpr float rotateSpeed = 1.0f;
 
     constexpr glm::vec3 right(1.0f, 0.0f, 0.0f);
     constexpr glm::vec3 up(0.0f, 1.0f, 0.0f);
@@ -39,7 +39,7 @@ void Camera::ProcessInput(GLFWwindow *window) {
     }
     // Apply
     if (incrementR != glm::vec3(0, 0, 0)) {
-        transform.Rotate(incrementR);
+        transform.Rotate(incrementR * deltaTime);
     }
 
     // Movement
@@ -66,6 +66,6 @@ void Camera::ProcessInput(GLFWwindow *window) {
     }
     // Apply
     if (incrementT != glm::vec3(0, 0, 0)) {
-        transform.TranslateObjectSpace(incrementT);
+        transform.TranslateObjectSpace(incrementT * deltaTime);
     }
 }

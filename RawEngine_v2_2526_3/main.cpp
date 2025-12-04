@@ -268,7 +268,7 @@ int main() {
 
     while (!glfwWindowShouldClose(window)) {
 
-        cam.ProcessInput(window);
+        cam.ProcessInput(window, deltaTime);
         view = glm::lookAt(cam.transform.position(),
             cam.transform.position() + cam.transform.forward(), cam.transform.up() );
 
