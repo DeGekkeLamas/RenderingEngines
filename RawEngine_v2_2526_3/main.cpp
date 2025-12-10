@@ -287,16 +287,15 @@ int main() {
         pointLight.intensity = lightStrength;
         // Hierarchy
         ImGui::Begin("Hierarchy");
-        glm::vec3* tempPos = new glm::vec3[modelsInScene.size()];
         for (int i = 0; i < modelsInScene.size(); i++) {
             RenderableObject* obj = modelsInScene[i];
             ImGui::Text("%s", obj->name.c_str());
             // pos
-            tempPos[i] = obj->transform.position();
+            glm::vec3 tempPos = obj->transform.position();
             ImGui::PushID(i);
-            ImGui::DragFloat3("Position", glm::value_ptr(tempPos[i]));
+            ImGui::DragFloat3("Position", glm::value_ptr(tempPos));
             ImGui::PopID();
-            obj->transform.SetPosition(tempPos[i]);
+            obj->transform.SetPosition(tempPos);
         }
         ImGui::End();
 
