@@ -276,6 +276,7 @@ int main() {
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
+        // Inspector
         ImGui::NewFrame();
         ImGui::Begin("Raw Engine v2");
         ImGui::Text("%d FPS", static_cast<int>(1 / deltaTime));
@@ -284,6 +285,20 @@ int main() {
         ImGui::ColorEdit3("Light Color", glm::value_ptr(pointLight.color));
         ImGui::End();
         pointLight.intensity = lightStrength;
+        // Hierarchy
+        ImGui::Begin("Hierarchy");
+        glm::vec3* tempPos = new glm::vec3[modelsInScene.size()];
+        for (int i = 0; i < modelsInScene.size(); i++) {
+            RenderableObject* obj = modelsInScene[i];
+            ImGui::Text("%s", obj->name.c_str());
+            // pos
+            tempPos[i] = obj->transform.position();
+            ImGui::PushID(i);
+            ImGui::DragFloat3("Position", glm::value_ptr(tempPos[i]));
+            ImGui::PopID();
+            obj->transform.SetPosition(tempPos[i]);
+        }
+        ImGui::End();
 
         processInput(window);
         suzanneObj.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *
