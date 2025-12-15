@@ -180,7 +180,7 @@ int main() {
     core::Model engine = core::AssimpLoader::loadModel("models/engine.fbx");
     core::Texture engineTexture("textures/initialShadingGroup_albedo.jpg");
     Material engineMaterial(&engineTexture, modelVertexShader, textureShader);
-    RenderableObject engineObj("Quad", glm::vec3(0,-20,0), nullptr, &engine, &engineMaterial);
+    RenderableObject engineObj("Engine", glm::vec3(0,-20,0), nullptr, &engine, &engineMaterial);
     engineObj.transform.Scale(glm::vec3(.1f, .1f, .1f));
 
     // Scene
@@ -201,7 +201,6 @@ int main() {
     RenderableObject sphereObj("lightSphere", pointLight.transform.position(), &pointLight.transform, &sphere, &normalMat);
     // sphereObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
     modelsInScene.push_back(&sphereObj);
-    printf("Spheres parent = %s\n", pointLight.name.c_str());
 
     glm::vec4 clearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClearColor(clearColor.r,
@@ -231,7 +230,7 @@ int main() {
     // PP
     RenderableObject renderQuad = quadObj;
     renderQuad.material->vertexShader = vertexShader;
-    // renderQuad.material->texture = nullptr;
+    renderQuad.material->texture = nullptr;
     renderQuad.material->Bind();
 
     int width, height;
@@ -257,6 +256,8 @@ int main() {
     GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tcb, 0);
     // Depth
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_STENCIL_TEST);
     glBindTexture(GL_TEXTURE_2D, depthBuffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0,
     GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
