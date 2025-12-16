@@ -12,6 +12,7 @@
 #include "Scripts/Camera.hpp"
 #include "iostream"
 #include "Scripts/GameObject.hpp"
+#include "Scripts/List.hpp"
 #include "Scripts/PointLight.hpp"
 #include "Scripts/RenderableObject.hpp"
 #include "Scripts/Scene.hpp"
@@ -78,6 +79,13 @@ GLuint generateShader(const std::string &shaderPath, GLuint shaderType) {
 }
 
 int main() {
+    List<int> testList = List<int>();
+
+    for (int i = 0; i < 10; i++) {
+        testList.Add(i);
+    }
+}
+    /**
     glfwInit();
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

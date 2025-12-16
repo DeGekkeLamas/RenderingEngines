@@ -24,6 +24,8 @@ set(IMGUI_SOURCES
         Scripts/PointLight.hpp
         Scripts/Material.hpp
         Scripts/Material.cpp
+        Scripts/List.hpp
+        Scripts/ListElement.hpp
 )
 
 add_executable(RawEngine main.cpp
