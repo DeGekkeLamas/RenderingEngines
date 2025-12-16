@@ -256,16 +256,14 @@ int main() {
     GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tcb, 0);
     // Depth
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_STENCIL_TEST);
-    glBindTexture(GL_TEXTURE_2D, depthBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0,
-    GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
-        GL_TEXTURE_2D, depthBuffer, 0);
-
+    // glEnable(GL_DEPTH_TEST);
+    // // glEnable(GL_STENCIL_TEST);
+    // glDepthFunc(GL_LESS);
+    // glBindTexture(GL_TEXTURE_2D, depthBuffer);
+    // glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0,
+    // GL_DEPTH_COMPONENT, GL_UNSIGNED_INT_24_8, nullptr);
+    // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+    // GL_TEXTURE_2D, depthBuffer, 0);
 
     while (!glfwWindowShouldClose(window)) {
 
@@ -305,13 +303,10 @@ int main() {
             static_cast<float>(deltaTime));
         pointLight.transform.TranslateObjectSpace(pointLight.transform.right() * static_cast<float>(sin(currentTime) * deltaTime * 10));
 
-        // TODO: clean architecture! Your classes are just data containers with lots of public fields. It's very hard to figure out what's happening and who's controlling what
-
         // PP
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        glViewport(0, 0, width, height);
+        // glViewport(0, 0, width, height);
         glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Render
         for (int i = 0; i < modelsInScene.size(); i++) {
@@ -319,7 +314,6 @@ int main() {
         }
 
         // PP
-        //glDeleteFramebuffers(1, &fbo);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         renderQuad.Render(view, projection, textureModelUniform, pointLight, cam, tcb);
 
