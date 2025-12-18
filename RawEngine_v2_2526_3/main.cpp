@@ -123,6 +123,7 @@ int main() {
     const GLuint vertexShader = generateShader("shaders/vertex.vs", GL_VERTEX_SHADER);
     const GLuint fragmentShader = generateShader("shaders/fragment.fs", GL_FRAGMENT_SHADER);
     const GLuint textureShader = generateShader("shaders/texture.fs", GL_FRAGMENT_SHADER);
+    const GLuint postProcessingShader = generateShader("shaders/texturePostprocessing.fs", GL_FRAGMENT_SHADER);
 
     int success;
     char infoLog[512];
@@ -231,7 +232,7 @@ int main() {
 
     // PP
     RenderableObject renderQuad = quadObj;
-    renderQuad.material = new Material(nullptr, vertexShader, textureShader);
+    renderQuad.material = new Material(nullptr, vertexShader, postProcessingShader);
     renderQuad.material->Bind();
 
     int width, height;
