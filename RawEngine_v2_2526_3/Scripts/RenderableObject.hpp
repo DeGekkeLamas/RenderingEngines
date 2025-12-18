@@ -14,6 +14,7 @@ public:
         const PointLight &light, const Camera &camera) const;
     void Render(const glm::mat4 &view, const glm::mat4 &projection, GLint textureModelUniform,
         const PointLight &light, const Camera &camera, const GLuint texture) const;
+    void Render(const GLuint texture) const;
     void SetUniform(const std::string &uniformName, float toSet) const;
     void SetUniform(const std::string &uniformName, glm::vec3 toSet) const;
     void SetUniform(const std::string &uniformName, glm::vec4 toSet) const;

@@ -231,8 +231,7 @@ int main() {
 
     // PP
     RenderableObject renderQuad = quadObj;
-    renderQuad.material->vertexShader = vertexShader;
-    renderQuad.material->texture = nullptr;
+    renderQuad.material = new Material(nullptr, vertexShader, textureShader);
     renderQuad.material->Bind();
 
     int width, height;
@@ -274,6 +273,8 @@ int main() {
     }
 
     while (!glfwWindowShouldClose(window)) {
+        glDepthMask(GL_TRUE);
+        glEnable(GL_DEPTH_TEST);
 
         cam.ProcessInput(window, deltaTime);
         view = glm::lookAt(cam.transform.position(),
@@ -311,8 +312,8 @@ int main() {
         pointLight.transform.TranslateObjectSpace(pointLight.transform.right() * static_cast<float>(sin(currentTime) * deltaTime * 10));
 
         // PP
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glViewport(0, 0, width, height);
         projection = glm::perspective(glm::radians(45.0f), static_cast<float>(g_width) /
         static_cast<float>(g_height), 0.1f, 100.0f);
@@ -328,10 +329,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
         glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
-        renderQuad.Render(view, projection, textureModelUniform, pointLight, cam, tcb);
-        glDepthMask(GL_TRUE);
-        glEnable(GL_DEPTH_TEST);
-
+        renderQuad.Render(tcb);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
