@@ -58,7 +58,3 @@ List<T>::~List() {
         RemoveAt(0);
     }
 }
-
-
-
-

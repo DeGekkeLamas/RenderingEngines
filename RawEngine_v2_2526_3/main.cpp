@@ -79,13 +79,6 @@ GLuint generateShader(const std::string &shaderPath, GLuint shaderType) {
 }
 
 int main() {
-    List<int> testList = List<int>();
-
-    for (int i = 0; i < 10; i++) {
-        testList.Add(i);
-    }
-}
-    /**
     glfwInit();
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -201,7 +194,8 @@ int main() {
     modelsInScene.push_back(&reyObj);
     modelsInScene.push_back(&engineObj);
 
-    PointLight pointLight = PointLight("Light", glm::vec3(1,1,0), nullptr, glm::vec4(1,1,1,1), 1);
+    PointLight pointLight = PointLight("Light", glm::vec3(1,1,0),
+        nullptr, glm::vec4(1,1,1,1), 1);
     float lightStrength = 1;
     // Light model
     core::Model sphere = core::AssimpLoader::loadModel("models/Sphere.fbx");
@@ -256,7 +250,7 @@ int main() {
 
     // Texture
     glBindTexture(GL_TEXTURE_2D, tcb);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width,
     height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D,
     GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -264,14 +258,20 @@ int main() {
     GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tcb, 0);
     // Depth
-    // glEnable(GL_DEPTH_TEST);
-    // // glEnable(GL_STENCIL_TEST);
-    // glDepthFunc(GL_LESS);
-    // glBindTexture(GL_TEXTURE_2D, depthBuffer);
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0,
-    // GL_DEPTH_COMPONENT, GL_UNSIGNED_INT_24_8, nullptr);
-    // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-    // GL_TEXTURE_2D, depthBuffer, 0);
+    glDepthFunc(GL_LESS);
+    glBindTexture(GL_TEXTURE_2D, depthBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0,
+    GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+    GL_TEXTURE_2D, depthBuffer, 0);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        std::cout << "Framebuffer is NOT complete!" << std::endl;
+    }
 
     while (!glfwWindowShouldClose(window)) {
 
@@ -279,7 +279,6 @@ int main() {
         view = glm::lookAt(cam.transform.position(),
             cam.transform.position() + cam.transform.forward(), cam.transform.up() );
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -312,8 +311,11 @@ int main() {
         pointLight.transform.TranslateObjectSpace(pointLight.transform.right() * static_cast<float>(sin(currentTime) * deltaTime * 10));
 
         // PP
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-        // glViewport(0, 0, width, height);
+        glViewport(0, 0, width, height);
+        projection = glm::perspective(glm::radians(45.0f), static_cast<float>(g_width) /
+        static_cast<float>(g_height), 0.1f, 100.0f);
         glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
 
         // Render
@@ -323,7 +325,12 @@ int main() {
 
         // PP
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
+        glDisable(GL_DEPTH_TEST);
+        glDepthMask(GL_FALSE);
         renderQuad.Render(view, projection, textureModelUniform, pointLight, cam, tcb);
+        glDepthMask(GL_TRUE);
+        glEnable(GL_DEPTH_TEST);
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
