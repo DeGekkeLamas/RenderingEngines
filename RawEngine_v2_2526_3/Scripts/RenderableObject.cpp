@@ -44,7 +44,6 @@ void RenderableObject::Render(const GLuint texture) const {
     glUseProgram(material->shaderProgram);
     glActiveTexture(GL_TEXTURE0);
 
-    SetUniform("outlineCol", glm::vec4(1.0f,1.0f,1.0f,1.0f));
 
     glBindTexture(GL_TEXTURE_2D, texture);
 

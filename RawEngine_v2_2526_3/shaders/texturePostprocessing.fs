@@ -24,8 +24,15 @@ vec4 GetOutline()
         col += texture(text, uv.st + offsets[i]) * kernel[i];
     }
     col.a = 1.0;
-    if (length(clamp(col,0,1).xyz) > 0.05f) {vec4(1,1,1,1);}
-    else {return vec4(0,0,0,1);}
+
+    if (length(clamp(col,0,1).xyz) > 0.05f)
+    {
+        return outlineCol;
+    }
+    else
+    {
+        return vec4(0,0,0,1);
+    }
 //     return col;
 }
 

@@ -205,6 +205,7 @@ int main() {
     // sphereObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
     modelsInScene.push_back(&sphereObj);
 
+    glm::vec4 outlineColor(1,1,1,1);
     glm::vec4 clearColor(0.2f, 0.2f, 0.2f, 1.0f);
     glClearColor(clearColor.r,
                  clearColor.g, clearColor.b, clearColor.a);
@@ -291,6 +292,7 @@ int main() {
         ImGui::Text("Hello :)");
         ImGui::DragFloat("Light Strength", &lightStrength);
         ImGui::ColorEdit3("Light Color", glm::value_ptr(pointLight.color));
+        ImGui::ColorEdit3("Outline color", glm::value_ptr(outlineColor));
         ImGui::End();
         pointLight.intensity = lightStrength;
         // Hierarchy
@@ -331,6 +333,7 @@ int main() {
         glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
         renderQuad.Render(tcb);
+        renderQuad.SetUniform("outlineCol", outlineColor);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
