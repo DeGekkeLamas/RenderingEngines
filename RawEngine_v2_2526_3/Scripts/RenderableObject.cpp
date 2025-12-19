@@ -44,16 +44,14 @@ void RenderableObject::Render(const GLuint texture) const {
     glUseProgram(material->shaderProgram);
     glActiveTexture(GL_TEXTURE0);
 
+    SetUniform("outlineCol", glm::vec4(1.0f,1.0f,1.0f,1.0f));
+
     glBindTexture(GL_TEXTURE_2D, texture);
 
     model->render();
     glBindVertexArray(0);
     glActiveTexture(GL_TEXTURE0);
 }
-
-
-
-
 void RenderableObject::SetUniform(const std::string &uniformName, const float toSet) const {
     const GLint uniformPos = glGetUniformLocation(material->shaderProgram, uniformName.c_str());
     glUniform1f(uniformPos, toSet);

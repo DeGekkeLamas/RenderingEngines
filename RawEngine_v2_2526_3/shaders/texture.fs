@@ -61,5 +61,5 @@ void main()
     // ambient:
     FragColor += Ambient();
     vec4 texCol = texture(text, uv);
-    FragColor += vec4(texCol.r, texCol.g, texCol.b, 0);
+    FragColor *= vec4(texCol.r, texCol.g, texCol.b, 1);
 }
