@@ -184,23 +184,29 @@ int main() {
     Material engineMaterial(&engineTexture, modelVertexShader, textureShader);
     RenderableObject engineObj("Engine", glm::vec3(0,-20,0), nullptr, &engine, &engineMaterial);
     engineObj.transform.Scale(glm::vec3(.1f, .1f, .1f));
+    // Horse
+    core::Model horse = core::AssimpLoader::loadModel("models/Horse.obj");
+    core::Texture horseTexture("textures/HorseTex.jpg");
+    Material horseMaterial(&horseTexture, modelVertexShader, textureShader);
+    RenderableObject horseObj("Horse", glm::vec3(0,0,0), nullptr, &horse, &horseMaterial);
+    horseObj.transform.Scale(glm::vec3(.01f, .01f, .01f));
 
     // Scene
     std::vector<RenderableObject*> modelsInScene;
-    modelsInScene.push_back(&suzanneObj);
-    modelsInScene.push_back(&quadObj);
-    modelsInScene.push_back(&dinnerDemonObj);
-    modelsInScene.push_back(&mystifyingPanObj);
-    modelsInScene.push_back(&backflipBeerendObj);
-    modelsInScene.push_back(&reyObj);
-    modelsInScene.push_back(&engineObj);
+    // modelsInScene.push_back(&suzanneObj);
+    // modelsInScene.push_back(&quadObj);
+    // modelsInScene.push_back(&dinnerDemonObj);
+    // modelsInScene.push_back(&mystifyingPanObj);
+    // modelsInScene.push_back(&backflipBeerendObj);
+    // modelsInScene.push_back(&reyObj);
+    // modelsInScene.push_back(&engineObj);
+    modelsInScene.push_back(&horseObj);
 
     PointLight pointLight = PointLight("Light", glm::vec3(1,1,0),
         nullptr, glm::vec4(1,1,1,1), 1);
     float lightStrength = 1;
     // Light model
     core::Model sphere = core::AssimpLoader::loadModel("models/Sphere.fbx");
-    // &pointLight.transform
     RenderableObject sphereObj("lightSphere", pointLight.transform.position(), &pointLight.transform, &sphere, &normalMat);
     // sphereObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
     modelsInScene.push_back(&sphereObj);
@@ -293,6 +299,10 @@ int main() {
         ImGui::DragFloat("Light Strength", &lightStrength);
         ImGui::ColorEdit3("Light Color", glm::value_ptr(pointLight.color));
         ImGui::ColorEdit3("Outline color", glm::value_ptr(outlineColor));
+        if (ImGui::Button("Horse")) {
+            RenderableObject* newHorse = new RenderableObject(horseObj);
+            modelsInScene.push_back(newHorse);
+        }
         ImGui::End();
         pointLight.intensity = lightStrength;
         // Hierarchy
@@ -318,8 +328,6 @@ int main() {
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glViewport(0, 0, width, height);
-        projection = glm::perspective(glm::radians(45.0f), static_cast<float>(g_width) /
-        static_cast<float>(g_height), 0.1f, 100.0f);
         glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
 
         // Render

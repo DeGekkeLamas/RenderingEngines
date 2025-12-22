@@ -44,7 +44,6 @@ void RenderableObject::Render(const GLuint texture) const {
     glUseProgram(material->shaderProgram);
     glActiveTexture(GL_TEXTURE0);
 
-
     glBindTexture(GL_TEXTURE_2D, texture);
 
     model->render();

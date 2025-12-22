@@ -15,7 +15,7 @@ vec4 GetOutline()
     );
     float kernel[9] = float[ ](
         1.0, 1.0, 1.0,
-        1.0, -8.0, 1.0,
+        1.0, -12.0, 1.0,
         1.0, 1.0, 1.0
     );
     vec4 col = vec4(0.0);
@@ -33,14 +33,12 @@ vec4 GetOutline()
     {
         return vec4(0,0,0,1);
     }
-//     return col;
 }
 
 void main()
 {
+//     uv += vec2(0.5f,0.5f);
     FragColor = GetOutline();
-    vec4 diffuse = texture(text, uv/* + vec2(0.5f,0.5f)*/);
-//  FragColor = vec4(-FragColor.x,-FragColor.y,-FragColor.z, 1);
+    vec4 diffuse = texture(text, uv);
     FragColor += diffuse;
-//  FragColor = vec4(1-diffuse.r, 1-diffuse.g, 1-diffuse.b, 1);
 }
