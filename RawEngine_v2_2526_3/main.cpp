@@ -193,13 +193,13 @@ int main() {
 
     // Scene
     std::vector<RenderableObject*> modelsInScene;
-    // modelsInScene.push_back(&suzanneObj);
-    // modelsInScene.push_back(&quadObj);
-    // modelsInScene.push_back(&dinnerDemonObj);
-    // modelsInScene.push_back(&mystifyingPanObj);
-    // modelsInScene.push_back(&backflipBeerendObj);
-    // modelsInScene.push_back(&reyObj);
-    // modelsInScene.push_back(&engineObj);
+    modelsInScene.push_back(&suzanneObj);
+    modelsInScene.push_back(&quadObj);
+    modelsInScene.push_back(&dinnerDemonObj);
+    modelsInScene.push_back(&mystifyingPanObj);
+    modelsInScene.push_back(&backflipBeerendObj);
+    modelsInScene.push_back(&reyObj);
+    modelsInScene.push_back(&engineObj);
     modelsInScene.push_back(&horseObj);
 
     PointLight pointLight = PointLight("Light", glm::vec3(1,1,0),

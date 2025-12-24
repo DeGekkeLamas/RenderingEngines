@@ -1,6 +1,7 @@
 #include "Material.hpp"
 #include "iostream"
 #include "texture.h"
+#include <map>
 
 Material::Material(core::Texture *texture, const GLuint vertexShader, GLuint fragmentShader) {
     this->texture = texture;
@@ -9,10 +10,21 @@ Material::Material(core::Texture *texture, const GLuint vertexShader, GLuint fra
 }
 
 void Material::Bind() {
-    const unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    unsigned int shaderProgram;
+    std::tuple key(vertexShader, fragmentShader);
+    if (existingShaderPrograms.contains(key))
+    {
+        shaderProgram = existingShaderPrograms[key];
+        printf("Shader already existed\n");
+    }
+    else
+    {
+        shaderProgram = glCreateProgram();
+        glAttachShader(shaderProgram, vertexShader);
+        glAttachShader(shaderProgram, fragmentShader);
+        glLinkProgram(shaderProgram);
+    }
     this->shaderProgram = shaderProgram;
 }
 
+std::map< std::tuple<GLuint,GLuint> , unsigned int> Material::existingShaderPrograms;
