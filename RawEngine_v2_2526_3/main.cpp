@@ -185,11 +185,8 @@ int main() {
     RenderableObject engineObj("Engine", glm::vec3(0,-20,0), nullptr, &engine, &engineMaterial);
     engineObj.transform.Scale(glm::vec3(.1f, .1f, .1f));
     // Horse
-    core::Model horse = core::AssimpLoader::loadModel("models/Horse.obj");
-    core::Texture horseTexture("textures/HorseTex.jpg");
-    Material horseMaterial(&horseTexture, modelVertexShader, textureShader);
-    RenderableObject horseObj("Horse", glm::vec3(0,0,0), nullptr, &horse, &horseMaterial);
-    horseObj.transform.Scale(glm::vec3(.01f, .01f, .01f));
+    RenderableObject horseObj = RenderableObject::Create("Horse", glm::vec3(0,0,0), glm::vec3(.01f, .01f, .01f), nullptr,
+        "textures/HorseTex.jpg", "models/Horse.obj", modelVertexShader, textureShader);
 
     // Scene
     std::vector<RenderableObject*> modelsInScene;

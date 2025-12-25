@@ -2,12 +2,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "assimpLoader.h"
 #include "Camera.hpp"
 #include "PointLight.hpp"
 
 
-RenderableObject::RenderableObject(const std::string &name, glm::vec3 position, Transform* parent,
-                                   core::Model* model, Material* material) : GameObject(name, position, parent) {
+RenderableObject::RenderableObject(const std::string &name, const glm::vec3 position, Transform* parent,
+    core::Model* model, const Material* material) : GameObject(name, position, parent)
+{
     this->model = model;
     this->material = material;
 }
@@ -68,6 +70,28 @@ void RenderableObject::SetUniform(const std::string &uniformName, glm::mat4 toSe
     const GLint uniformPos = glGetUniformLocation(material->shaderProgram, uniformName.c_str());
     glUniformMatrix4fv(uniformPos, 1, GL_FALSE, glm::value_ptr(toSet));
 }
+
+RenderableObject RenderableObject::Create(const std::string &name, const glm::vec3 position, const glm::vec3 scale, Transform *parent,
+    const std::string &modelPath, const Material* material)
+{
+    core::Model model = core::AssimpLoader::loadModel(modelPath);
+    RenderableObject obj(name, position, parent, &model, material);
+    obj.transform.Scale(scale);
+    return obj;
+}
+
+RenderableObject RenderableObject::Create(const std::string &name, const glm::vec3 position, const glm::vec3 scale, Transform *parent,
+    const std::string &modelPath, const std::string &texturePath, const GLuint modelVertexShader, const GLuint textureShader)
+{
+    core::Model model = core::AssimpLoader::loadModel(modelPath);
+    core::Texture texture(texturePath);
+    Material material(&texture, modelVertexShader, textureShader);
+    RenderableObject obj(name, position, parent, &model, &material);
+    obj.transform.Scale(scale);
+    return obj;
+}
+
+
 
 
 
