@@ -8,7 +8,7 @@
 
 
 RenderableObject::RenderableObject(const std::string &name, const glm::vec3 position, Transform* parent,
-    core::Model* model, const Material* material) : GameObject(name, position, parent)
+    core::Model* model, Material* material) : GameObject(name, position, parent)
 {
     this->model = model;
     this->material = material;
@@ -71,11 +71,16 @@ void RenderableObject::SetUniform(const std::string &uniformName, glm::mat4 toSe
     glUniformMatrix4fv(uniformPos, 1, GL_FALSE, glm::value_ptr(toSet));
 }
 
+RenderableObject RenderableObject::Clone() const {
+    return RenderableObject(*this);
+}
+
+
 RenderableObject RenderableObject::Create(const std::string &name, const glm::vec3 position, const glm::vec3 scale, Transform *parent,
-    const std::string &modelPath, const Material* material)
+    const std::string &modelPath, Material* material)
 {
-    core::Model model = core::AssimpLoader::loadModel(modelPath);
-    RenderableObject obj(name, position, parent, &model, material);
+    core::Model *model = new core::Model( core::AssimpLoader::loadModel(modelPath) );
+    RenderableObject obj(name, position, parent, model, material);
     obj.transform.Scale(scale);
     return obj;
 }
@@ -83,10 +88,10 @@ RenderableObject RenderableObject::Create(const std::string &name, const glm::ve
 RenderableObject RenderableObject::Create(const std::string &name, const glm::vec3 position, const glm::vec3 scale, Transform *parent,
     const std::string &modelPath, const std::string &texturePath, const GLuint modelVertexShader, const GLuint textureShader)
 {
-    core::Model model = core::AssimpLoader::loadModel(modelPath);
-    core::Texture texture(texturePath);
-    Material material(&texture, modelVertexShader, textureShader);
-    RenderableObject obj(name, position, parent, &model, &material);
+    core::Model *model = new core::Model( core::AssimpLoader::loadModel(modelPath) );
+    core::Texture *texture = new core::Texture(texturePath);
+    Material material(texture, modelVertexShader, textureShader);
+    RenderableObject obj(name, position, parent, model, &material);
     obj.transform.Scale(scale);
     return obj;
 }

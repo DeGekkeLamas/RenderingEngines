@@ -159,34 +159,27 @@ int main() {
     RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, &quadModel, &cmGatoMaterial);
     quadObj.transform.Scale(glm::vec3(5, 5, 1));
     // Susanne
-    core::Model suzanne = core::AssimpLoader::loadModel("models/nonormalmonkey.obj");
-    RenderableObject suzanneObj("Suzanne", glm::vec3(), nullptr, &suzanne, &normalMat);
+    RenderableObject suzanneObj = RenderableObject::Create("Suzanne", glm::vec3(), glm::vec3(1,1,1), nullptr,
+    "models/nonormalmonkey.obj", &normalMat);
     // Dinner demon
-    core::Model dinnerDemon = core::AssimpLoader::loadModel("models/DinnerDemon.fbx");
-    RenderableObject dinnerDemonObj("Dinner demon", glm::vec3(1,-5,5), nullptr, &dinnerDemon, &normalMat);
-    dinnerDemonObj.transform.Scale(glm::vec3(0.05f,0.05f,0.05f));
+    RenderableObject dinnerDemonObj = RenderableObject::Create("Dinner demon", glm::vec3(1,-5,5), glm::vec3(0.05f,0.05f,0.05f), nullptr,
+    "models/DinnerDemon.fbx", &normalMat);
     // Mystifying Pan
-    core::Model mystifyingPan = core::AssimpLoader::loadModel("models/MystifyingPan.fbx");
-    RenderableObject mystifyingPanObj("Mystifying Pan", glm::vec3(-10,0,0), nullptr, &mystifyingPan, &normalMat);
-    mystifyingPanObj.transform.Scale(glm::vec3(0.1f,0.1f,0.1f));
+    RenderableObject mystifyingPanObj = RenderableObject::Create("Mystifying Pan", glm::vec3(-10,0,0), glm::vec3(0.1f,0.1f,0.1f), nullptr,
+    "models/MystifyingPan.fbx", &normalMat);
     // Backflip beerend
-    core::Model backflipBeerend = core::AssimpLoader::loadModel("models/backflipBeerend.fbx");
-    RenderableObject backflipBeerendObj("Backflip beerend", glm::vec3(10,0,0), nullptr, &backflipBeerend, &normalMat);
-    backflipBeerendObj.transform.Scale(glm::vec3(0.1f,0.1f,0.1f));
+    RenderableObject backflipBeerendObj = RenderableObject::Create("Backflip beerend", glm::vec3(10,0,0), glm::vec3(0.1f,0.1f,0.1f), nullptr,
+    "models/backflipBeerend.fbx", &normalMat);
     // Rey
-    core::Model rey = core::AssimpLoader::loadModel("models/ReyRetopologized.fbx");
-    RenderableObject reyObj("Rey", glm::vec3(0,0,30), nullptr, &rey, &normalMat);
+    RenderableObject reyObj = RenderableObject::Create("Rey", glm::vec3(0,0,30), glm::vec3(0.5f,0.5f,0.5f), nullptr,
+    "models/ReyRetopologized.fbx", &normalMat);
     reyObj.transform.Rotate(glm::vec3(0, 3.1415f, 0));
-    reyObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
     // Engine
-    core::Model engine = core::AssimpLoader::loadModel("models/engine.fbx");
-    core::Texture engineTexture("textures/initialShadingGroup_albedo.jpg");
-    Material engineMaterial(&engineTexture, modelVertexShader, textureShader);
-    RenderableObject engineObj("Engine", glm::vec3(0,-20,0), nullptr, &engine, &engineMaterial);
-    engineObj.transform.Scale(glm::vec3(.1f, .1f, .1f));
+    RenderableObject engineObj = RenderableObject::Create("Engine", glm::vec3(0,-20,0), glm::vec3(.1f, .1f, .1f), nullptr,
+    "models/engine.fbx", "textures/initialShadingGroup_albedo.jpg", modelVertexShader, textureShader);
     // Horse
     RenderableObject horseObj = RenderableObject::Create("Horse", glm::vec3(0,0,0), glm::vec3(.01f, .01f, .01f), nullptr,
-        "textures/HorseTex.jpg", "models/Horse.obj", modelVertexShader, textureShader);
+        "models/Horse.obj", "textures/HorseTex.jpg", modelVertexShader, textureShader);
 
     // Scene
     std::vector<RenderableObject*> modelsInScene;
@@ -297,7 +290,7 @@ int main() {
         ImGui::ColorEdit3("Light Color", glm::value_ptr(pointLight.color));
         ImGui::ColorEdit3("Outline color", glm::value_ptr(outlineColor));
         if (ImGui::Button("Horse")) {
-            RenderableObject* newHorse = new RenderableObject(horseObj);
+            RenderableObject* newHorse = new RenderableObject( horseObj.Clone() );
             modelsInScene.push_back(newHorse);
         }
         ImGui::End();
