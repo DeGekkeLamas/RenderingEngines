@@ -90,8 +90,8 @@ RenderableObject RenderableObject::Create(const std::string &name, const glm::ve
 {
     core::Model *model = new core::Model( core::AssimpLoader::loadModel(modelPath) );
     core::Texture *texture = new core::Texture(texturePath);
-    Material material(texture, modelVertexShader, textureShader);
-    RenderableObject obj(name, position, parent, model, &material);
+    Material *material = new Material(texture, modelVertexShader, textureShader);
+    RenderableObject obj(name, position, parent, model, material);
     obj.transform.Scale(scale);
     return obj;
 }
