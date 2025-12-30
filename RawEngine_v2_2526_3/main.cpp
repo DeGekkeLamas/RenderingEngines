@@ -15,7 +15,6 @@
 #include "Scripts/List.hpp"
 #include "Scripts/PointLight.hpp"
 #include "Scripts/RenderableObject.hpp"
-#include "Scripts/Scene.hpp"
 
 //#define MAC_CLION
 #define VSTUDIO
@@ -146,16 +145,12 @@ int main() {
         printf("Error! Making Shader Program: %s\n", infoLog);
     }
 
-    // glDeleteShader(modelVertexShader);
-    // glDeleteShader(fragmentShader);
-    // glDeleteShader(textureShader);
-
+    Material normalMat(nullptr, modelVertexShader, fragmentShader);
     // Quad
     core::Mesh quad = core::Mesh::generateQuad();
     core::Model quadModel({quad});
     core::Texture cmgtGatoTexture("textures/CMGaTo_crop.png");
     Material cmGatoMaterial(&cmgtGatoTexture, modelVertexShader, textureShader);
-    Material normalMat(nullptr, modelVertexShader, fragmentShader);
     RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, &quadModel, &cmGatoMaterial);
     quadObj.transform.Scale(glm::vec3(5, 5, 1));
     // Susanne
@@ -175,22 +170,27 @@ int main() {
     "models/ReyRetopologized.fbx", &normalMat);
     reyObj.transform.Rotate(glm::vec3(0, 3.1415f, 0));
     // Engine
-    RenderableObject engineObj = RenderableObject::Create("Engine", glm::vec3(0,-20,0), glm::vec3(.1f, .1f, .1f), nullptr,
+    RenderableObject engineObj = RenderableObject::Create("Engine", glm::vec3(0,0,-10), glm::vec3(.1f, .1f, .1f), nullptr,
     "models/engine.fbx", "textures/initialShadingGroup_albedo.jpg", modelVertexShader, textureShader);
     // Horse
     RenderableObject horseObj = RenderableObject::Create("Horse", glm::vec3(0,0,0), glm::vec3(.01f, .01f, .01f), nullptr,
         "models/Horse.obj", "textures/HorseTex.jpg", modelVertexShader, textureShader);
 
     // Scene
-    std::vector<RenderableObject*> modelsInScene;
-    modelsInScene.push_back(&suzanneObj);
-    modelsInScene.push_back(&quadObj);
-    modelsInScene.push_back(&dinnerDemonObj);
-    modelsInScene.push_back(&mystifyingPanObj);
-    modelsInScene.push_back(&backflipBeerendObj);
-    modelsInScene.push_back(&reyObj);
-    modelsInScene.push_back(&engineObj);
-    modelsInScene.push_back(&horseObj);
+    std::vector<RenderableObject*>* currentScene;
+    std::vector<RenderableObject*> SceneA;
+    std::vector<RenderableObject*> SceneB;
+    SceneA.push_back(&suzanneObj);
+    SceneA.push_back(&quadObj);
+    SceneA.push_back(&dinnerDemonObj);
+    SceneA.push_back(&mystifyingPanObj);
+    SceneA.push_back(&backflipBeerendObj);
+    SceneA.push_back(&reyObj);
+    SceneA.push_back(&horseObj);
+    SceneB.push_back(&engineObj);
+    // SceneB.push_back(&horseObj); //
+
+    currentScene = &SceneA;
 
     PointLight pointLight = PointLight("Light", glm::vec3(1,1,0),
         nullptr, glm::vec4(1,1,1,1), 1);
@@ -199,7 +199,8 @@ int main() {
     core::Model sphere = core::AssimpLoader::loadModel("models/Sphere.fbx");
     RenderableObject sphereObj("lightSphere", pointLight.transform.position(), &pointLight.transform, &sphere, &normalMat);
     // sphereObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
-    modelsInScene.push_back(&sphereObj);
+    SceneA.push_back(&sphereObj);
+    SceneB.push_back(&sphereObj);
 
     glm::vec4 outlineColor(1,1,1,1);
     glm::vec4 clearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -223,8 +224,11 @@ int main() {
     float deltaTime = 0.0f;
     constexpr float rotationStrength = 10;
 
-    for (int i = 0; i < modelsInScene.size(); i++) {
-        modelsInScene[i]->material->Bind();
+    for (int i = 0; i < SceneA.size(); i++) {
+        SceneA[i]->material->Bind();
+    }
+    for (int i = 0; i < SceneB.size(); i++) {
+        SceneB[i]->material->Bind();
     }
 
     // PP
@@ -289,16 +293,24 @@ int main() {
         ImGui::DragFloat("Light Strength", &lightStrength);
         ImGui::ColorEdit3("Light Color", glm::value_ptr(pointLight.color));
         ImGui::ColorEdit3("Outline color", glm::value_ptr(outlineColor));
+        if (ImGui::Button("Switch scene")) {
+            if (currentScene == &SceneA) {
+                currentScene = &SceneB;
+            }
+            else {
+                currentScene = &SceneA;
+            }
+        }
         if (ImGui::Button("Horse")) {
             RenderableObject* newHorse = new RenderableObject( horseObj.Clone() );
-            modelsInScene.push_back(newHorse);
+            currentScene->push_back(newHorse);
         }
         ImGui::End();
         pointLight.intensity = lightStrength;
         // Hierarchy
         ImGui::Begin("Hierarchy");
-        for (int i = 0; i < modelsInScene.size(); i++) {
-            RenderableObject* obj = modelsInScene[i];
+        for (int i = 0; i < currentScene->size(); i++) {
+            RenderableObject* obj = (*currentScene)[i];
             ImGui::Text("%s", obj->name.c_str());
             // pos
             glm::vec3 tempPos = obj->transform.position();
@@ -321,8 +333,8 @@ int main() {
         glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
 
         // Render
-        for (int i = 0; i < modelsInScene.size(); i++) {
-            modelsInScene[i]->Render(view, projection, textureModelUniform, pointLight, cam);
+        for (int i = 0; i < currentScene->size(); i++) {
+            (*currentScene)[i]->Render(view, projection, textureModelUniform, pointLight, cam);
         }
 
         // PP
