@@ -122,7 +122,9 @@ int main() {
     const GLuint vertexShader = generateShader("shaders/vertex.vs", GL_VERTEX_SHADER);
     const GLuint fragmentShader = generateShader("shaders/fragment.fs", GL_FRAGMENT_SHADER);
     const GLuint textureShader = generateShader("shaders/texture.fs", GL_FRAGMENT_SHADER);
-    const GLuint postProcessingShader = generateShader("shaders/MSPaintColorPostprocessing.fs", GL_FRAGMENT_SHADER);
+    const GLuint colorPostProcessingShader = generateShader("shaders/MSPaintColorPostprocessing.fs", GL_FRAGMENT_SHADER);
+    const GLuint outlinePostProcessingShader = generateShader("shaders/colorFilterPostprocessing.fs", GL_FRAGMENT_SHADER);
+    const GLuint defaultPostprocessingShader = generateShader("shaders/defaultPostprocessing.fs", GL_FRAGMENT_SHADER);
 
     int success;
     char infoLog[512];
@@ -233,8 +235,13 @@ int main() {
 
     // PP
     RenderableObject renderQuad = quadObj;
-    renderQuad.material = new Material(nullptr, vertexShader, postProcessingShader);
-    renderQuad.material->Bind();
+    Material noPostProcessingMat = Material(nullptr, vertexShader, defaultPostprocessingShader);
+    Material outlinePostProcessingMat = Material(nullptr, vertexShader, outlinePostProcessingShader);
+    Material colorPostProcessingMat = Material(nullptr, vertexShader, colorPostProcessingShader);
+    noPostProcessingMat.Bind();
+    outlinePostProcessingMat.Bind();
+    colorPostProcessingMat.Bind();
+    renderQuad.material = &colorPostProcessingMat;
 
     int width, height;
     glfwGetWindowSize(window, &width, &height);
@@ -292,7 +299,6 @@ int main() {
         ImGui::Text("Hello :)");
         ImGui::DragFloat("Light Strength", &lightStrength);
         ImGui::ColorEdit3("Light Color", glm::value_ptr(pointLight.color));
-        ImGui::ColorEdit3("Outline color", glm::value_ptr(outlineColor));
         if (ImGui::Button("Switch scene")) {
             if (currentScene == &SceneA) {
                 currentScene = &SceneB;
@@ -305,6 +311,17 @@ int main() {
             RenderableObject* newHorse = new RenderableObject( horseObj.Clone() );
             currentScene->push_back(newHorse);
         }
+        ImGui::Text("Post-processing");
+        if (ImGui::Button("None")) {
+            renderQuad.material = &noPostProcessingMat;
+        }
+        if (ImGui::Button("Outline")) {
+            renderQuad.material = &outlinePostProcessingMat;
+        }
+        if (ImGui::Button("Color filter")) {
+            renderQuad.material = &colorPostProcessingMat;
+        }
+        ImGui::ColorEdit3("Outline color", glm::value_ptr(outlineColor));
         ImGui::End();
         pointLight.intensity = lightStrength;
         // Hierarchy
