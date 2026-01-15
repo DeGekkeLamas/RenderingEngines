@@ -11,7 +11,7 @@ void Camera::Update() {
 
 void Camera::ProcessInput(GLFWwindow* window, float deltaTime) {
     constexpr float moveSpeed = 10.0f;
-    constexpr float rotateSpeed = 1.0f;
+    constexpr float rotateSpeed = 2.0f;
 
     constexpr glm::vec3 right(1.0f, 0.0f, 0.0f);
     constexpr glm::vec3 up(0.0f, 1.0f, 0.0f);
@@ -27,8 +27,8 @@ void Camera::ProcessInput(GLFWwindow* window, float deltaTime) {
     incrementR = glm::vec3(mousePos - mouseLastPos,0);
     mouseLastPos = mousePos;
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-        transform.Rotate(incrementR * deltaTime);
-        std::cout << "Cursor Position at (" << xpos << " : " << ypos << "\n";
+        transform.Rotate(glm::vec3(-incrementR.y,incrementR.x, 0) * deltaTime * rotateSpeed);
+        // std::cout << "Cursor Position at (" << xpos << " : " << ypos << "\n";
     }
 
     // Movement
