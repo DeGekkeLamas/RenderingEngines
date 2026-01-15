@@ -7,7 +7,7 @@ uniform vec4 outlineCol;
 
 vec4 GetOutline()
 {
-    float offset = 0.001f;
+    float offset = 0.003f;
     vec2 offsets[9] = vec2[ ](
         vec2(-offset, offset), vec2(0.0f, offset), vec2(offset, offset),
         vec2(-offset, 0.0f), vec2(0.0f, 0.0f), vec2( offset, 0.0f),
@@ -15,7 +15,7 @@ vec4 GetOutline()
     );
     float kernel[9] = float[ ](
         1.0, 1.0, 1.0,
-        1.0, -12.0, 1.0,
+        1.0, -10.0, 1.0,
         1.0, 1.0, 1.0
     );
     vec4 col = vec4(0.0);
@@ -25,20 +25,19 @@ vec4 GetOutline()
     }
     col.a = 1.0;
 
-    if (length(clamp(col,0,1).xyz) > 0.05f)
-    {
-        return outlineCol;
-    }
-    else
-    {
-        return vec4(0,0,0,1);
-    }
+    return clamp(col,0,1);
 }
 
 void main()
 {
 //     uv += vec2(0.5f,0.5f);
-    FragColor = GetOutline();
-    vec4 diffuse = texture(text, uv);
-    FragColor += diffuse;
+    vec4 outline = GetOutline();
+    if (length(outline.xyz) > 0.05f )
+    {
+        FragColor = outlineCol;
+    }
+    else
+    {
+        FragColor += texture(text, uv);
+    }
 }
