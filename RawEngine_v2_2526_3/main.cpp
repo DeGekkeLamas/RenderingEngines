@@ -123,7 +123,7 @@ int main() {
     const GLuint fragmentShader = generateShader("shaders/fragment.fs", GL_FRAGMENT_SHADER);
     const GLuint textureShader = generateShader("shaders/texture.fs", GL_FRAGMENT_SHADER);
     const GLuint colorPostProcessingShader = generateShader("shaders/MSPaintColorPostprocessing.fs", GL_FRAGMENT_SHADER);
-    const GLuint outlinePostProcessingShader = generateShader("shaders/colorFilterPostprocessing.fs", GL_FRAGMENT_SHADER);
+    const GLuint outlinePostProcessingShader = generateShader("shaders/outlinePostprocessing.fs", GL_FRAGMENT_SHADER);
     const GLuint defaultPostprocessingShader = generateShader("shaders/defaultPostprocessing.fs", GL_FRAGMENT_SHADER);
 
     int success;
@@ -177,6 +177,10 @@ int main() {
     // Horse
     RenderableObject horseObj = RenderableObject::Create("Horse", glm::vec3(0,0,0), glm::vec3(.01f, .01f, .01f), nullptr,
         "models/Horse.obj", "textures/HorseTex.jpg", modelVertexShader, textureShader);
+    // Tenna
+    RenderableObject tenna = RenderableObject::Create("Tenna", glm::vec3(0,0,30), glm::vec3(.1f, .1f, .1f), nullptr,
+        "models/Tenna_Sketchfab.fbx", "textures/Tenna_Sketchfab_BakedTexture.png", modelVertexShader, textureShader);
+    tenna.transform.Rotate(glm::vec3(3.1415f/2, 0, 3.1415f));
 
     // Scene
     std::vector<RenderableObject*>* currentScene;
@@ -190,6 +194,7 @@ int main() {
     SceneA.push_back(&reyObj);
     SceneA.push_back(&horseObj);
     SceneB.push_back(&engineObj);
+    SceneB.push_back(&tenna);
     // SceneB.push_back(&horseObj); //
 
     currentScene = &SceneA;

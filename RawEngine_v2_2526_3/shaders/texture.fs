@@ -42,9 +42,10 @@ float AddAttenuation(float diffuseAndSpecular)
 {
     // Attenuation
     float distance = length(lightPos - fPos);
-    float attenuation = diffuseAndSpecular / (.25f + .125f * distance +  pow(.125f * distance, 2));
+    clamp(diffuseAndSpecular, 0 ,1);
+    float attenuation = diffuseAndSpecular / (.25f + .125f * distance +  pow(.05f * distance, 2));
     attenuation *= lightStrength;
-    attenuation = min(attenuation, diffuseAndSpecular);
+    attenuation = min(attenuation, 1);
     diffuseAndSpecular *= attenuation;
     return diffuseAndSpecular;
 }

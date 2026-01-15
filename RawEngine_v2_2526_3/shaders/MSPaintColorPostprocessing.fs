@@ -35,6 +35,7 @@ vec4 RoundToColor(vec4 color, vec4 compare[20])
         vec4 exp = vec4(.5f,.5f,.5f,1);
 //         vec4 usedCompare = pow(compare[i], exp);
         vec4 usedCompare = compare[i];
+        // Compensate for the registered colors mostly being high value colors
         vec4 usedCol = pow(color, exp);
 //         vec4 usedCol = color;
         float currentDst = length(usedCol - usedCompare);
