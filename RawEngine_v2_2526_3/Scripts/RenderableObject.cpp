@@ -14,6 +14,12 @@ RenderableObject::RenderableObject(const std::string &name, const glm::vec3 posi
     this->material = material;
 }
 
+RenderableObject::~RenderableObject() {
+    // delete model;
+    // delete material;
+}
+
+
 void RenderableObject::Render(const glm::mat4 &view, const glm::mat4 &projection,
     const GLint textureModelUniform, const PointLight &light, const Camera &camera) const
 {

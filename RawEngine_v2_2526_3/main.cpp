@@ -380,6 +380,14 @@ int main() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+    // for (int i = 0; i < SceneA.size(); i++) {
+    //     auto obj = SceneA[i];
+    //     if (obj != nullptr) delete obj;
+    // }
+    // for (int i = 0; i < SceneB.size(); i++) {
+    //     auto obj = SceneB[i];
+    //     if (obj != nullptr) delete obj;
+    // }
 
     glfwTerminate();
     return 0;
