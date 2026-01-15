@@ -9,7 +9,7 @@ void Camera::Update() {
     // ProcessInput(window);
 }
 
-void Camera::ProcessInput(GLFWwindow *window, float deltaTime) {
+void Camera::ProcessInput(GLFWwindow* window, float deltaTime) {
     constexpr float moveSpeed = 10.0f;
     constexpr float rotateSpeed = 1.0f;
 
@@ -21,25 +21,14 @@ void Camera::ProcessInput(GLFWwindow *window, float deltaTime) {
     glm::vec3 incrementT = glm::vec3(0,0,0);
 
     // Rotation
-    // Down
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-        incrementR += rotateSpeed * right;
-    }
-    // Up
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-        incrementR += -rotateSpeed * right;
-    }
-    // Left
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        incrementR += rotateSpeed * up;
-    }
-    // Right
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        incrementR += -rotateSpeed * up;
-    }
-    // Apply
-    if (incrementR != glm::vec3(0, 0, 0)) {
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    glm::vec2 mousePos(xpos, ypos);
+    incrementR = glm::vec3(mousePos - mouseLastPos,0);
+    mouseLastPos = mousePos;
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
         transform.Rotate(incrementR * deltaTime);
+        std::cout << "Cursor Position at (" << xpos << " : " << ypos << "\n";
     }
 
     // Movement

@@ -299,7 +299,7 @@ int main() {
         ImGui_ImplGlfw_NewFrame();
         // Inspector
         ImGui::NewFrame();
-        ImGui::Begin("Raw Engine v2");
+        ImGui::Begin("Cooked Engine v2");
         ImGui::Text("%d FPS", static_cast<int>(1 / deltaTime));
         ImGui::Text("Hello :)");
         ImGui::DragFloat("Light Strength", &lightStrength);
@@ -315,6 +315,14 @@ int main() {
         if (ImGui::Button("Horse")) {
             RenderableObject* newHorse = new RenderableObject( horseObj.Clone() );
             currentScene->push_back(newHorse);
+        }
+        if (ImGui::Button("KILL EVERYTHING")) {
+            // for (int i = 0; i < SceneA.size(); i++) {
+            //     if (auto obj = SceneA[i]; obj != nullptr) delete obj;
+            // }
+            // for (int i = 0; i < SceneB.size(); i++) {
+            //     if (auto obj = SceneB[i]; obj != nullptr) delete obj;
+            // }
         }
         ImGui::Text("Post-processing");
         if (ImGui::Button("None")) {
@@ -381,12 +389,10 @@ int main() {
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
     // for (int i = 0; i < SceneA.size(); i++) {
-    //     auto obj = SceneA[i];
-    //     if (obj != nullptr) delete obj;
+    //     if (auto obj = SceneA[i]; obj != nullptr) delete obj;
     // }
     // for (int i = 0; i < SceneB.size(); i++) {
-    //     auto obj = SceneB[i];
-    //     if (obj != nullptr) delete obj;
+    //     if (auto obj = SceneB[i]; obj != nullptr) delete obj;
     // }
 
     glfwTerminate();

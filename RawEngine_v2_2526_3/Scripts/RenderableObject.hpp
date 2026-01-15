@@ -8,7 +8,7 @@
 class RenderableObject : public GameObject {
 public:
     RenderableObject(const std::string &name, glm::vec3 position, Transform* parent, core::Model* model, Material* material);
-    ~RenderableObject();
+    ~RenderableObject() override;
     core::Model* model;
     Material* material;
     void Render(const glm::mat4 &view, const glm::mat4 &projection, GLint textureModelUniform,

@@ -7,6 +7,8 @@
 
 class GameObject {
     public:
+    virtual ~GameObject() = default;
+
     GameObject(const std::string &name);
     GameObject(const std::string &name, glm::vec3 position, Transform* parent);
     std::string name;

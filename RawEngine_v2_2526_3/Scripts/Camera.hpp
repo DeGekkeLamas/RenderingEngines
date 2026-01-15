@@ -8,5 +8,5 @@ public:
     void ProcessInput(GLFWwindow *window, float deltaTime);
     void Update() override;
 private:
-    // ImVec2 mouseLastPos;
+    glm::vec2 mouseLastPos;
 };
