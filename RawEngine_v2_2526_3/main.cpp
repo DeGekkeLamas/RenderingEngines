@@ -191,6 +191,7 @@ int main() {
     std::vector<RenderableObject*>* currentScene;
     std::vector<RenderableObject*> SceneA;
     std::vector<RenderableObject*> SceneB;
+    std::vector<GameObject*> persistentObjects;
     SceneA.push_back(&suzanneObj);
     SceneA.push_back(&quadObj);
     SceneA.push_back(&dinnerDemonObj);
@@ -214,6 +215,7 @@ int main() {
     // sphereObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
     SceneA.push_back(&sphereObj);
     SceneB.push_back(&sphereObj);
+    persistentObjects.push_back(&pointLight);
 
     glm::vec4 outlineColor(1,1,1,1);
     glm::vec4 clearColor(0.2f, 0.2f, 0.2f, 1.0f);
@@ -313,14 +315,6 @@ int main() {
             RenderableObject* newHorse = new RenderableObject( horseObj.Clone() );
             currentScene->push_back(newHorse);
         }
-        if (ImGui::Button("KILL EVERYTHING")) {
-            // for (int i = 0; i < SceneA.size(); i++) {
-            //     if (auto obj = SceneA[i]; obj != nullptr) delete obj;
-            // }
-            // for (int i = 0; i < SceneB.size(); i++) {
-            //     if (auto obj = SceneB[i]; obj != nullptr) delete obj;
-            // }
-        }
         ImGui::Text("Post-processing");
         if (ImGui::Button("None")) {
             renderQuad.material = noPostProcessingMat;
@@ -336,21 +330,35 @@ int main() {
         pointLight.intensity = lightStrength;
         // Hierarchy
         ImGui::Begin("Hierarchy");
+        ImGui::PushID("PersistentObjects");
+        for (int j = 0; j < persistentObjects.size(); j++) {
+            ImGui::PushID(j);
+            GameObject* obj = persistentObjects[j];
+            ImGui::Text("%s", obj->name.c_str());
+            // pos
+            glm::vec3 tempPos = obj->transform.position();
+            ImGui::DragFloat3("Position", glm::value_ptr(tempPos));
+            obj->transform.SetPosition(tempPos);
+            ImGui::PopID();
+        }
+        ImGui::PopID();
+        ImGui::PushID("SceneObjects");
         for (int i = 0; i < currentScene->size(); i++) {
+            ImGui::PushID(i);
             RenderableObject* obj = (*currentScene)[i];
             ImGui::Text("%s", obj->name.c_str());
             // pos
             glm::vec3 tempPos = obj->transform.position();
-            ImGui::PushID(i);
             ImGui::DragFloat3("Position", glm::value_ptr(tempPos));
-            ImGui::PopID();
             obj->transform.SetPosition(tempPos);
+            ImGui::PopID();
         }
+        ImGui::PopID();
+
         ImGui::End();
 
         processInput(window);
-        suzanneObj.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength *
-            static_cast<float>(deltaTime));
+        suzanneObj.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength * (deltaTime));
         pointLight.transform.TranslateObjectSpace(pointLight.transform.right() * static_cast<float>(sin(currentTime) * deltaTime * 10));
 
         // PP
