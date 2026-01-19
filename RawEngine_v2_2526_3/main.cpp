@@ -333,24 +333,14 @@ int main() {
         ImGui::PushID("PersistentObjects");
         for (int j = 0; j < persistentObjects.size(); j++) {
             ImGui::PushID(j);
-            GameObject* obj = persistentObjects[j];
-            ImGui::Text("%s", obj->name.c_str());
-            // pos
-            glm::vec3 tempPos = obj->transform.position();
-            ImGui::DragFloat3("Position", glm::value_ptr(tempPos));
-            obj->transform.SetPosition(tempPos);
+            persistentObjects[j]->RenderToIMGUI();
             ImGui::PopID();
         }
         ImGui::PopID();
         ImGui::PushID("SceneObjects");
         for (int i = 0; i < currentScene->size(); i++) {
             ImGui::PushID(i);
-            RenderableObject* obj = (*currentScene)[i];
-            ImGui::Text("%s", obj->name.c_str());
-            // pos
-            glm::vec3 tempPos = obj->transform.position();
-            ImGui::DragFloat3("Position", glm::value_ptr(tempPos));
-            obj->transform.SetPosition(tempPos);
+            (*currentScene)[i]->RenderToIMGUI();
             ImGui::PopID();
         }
         ImGui::PopID();
