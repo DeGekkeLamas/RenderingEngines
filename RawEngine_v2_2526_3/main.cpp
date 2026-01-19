@@ -147,36 +147,36 @@ int main() {
         printf("Error! Making Shader Program: %s\n", infoLog);
     }
 
-    Material normalMat(nullptr, modelVertexShader, fragmentShader);
+    Material* normalMat = new Material(nullptr, modelVertexShader, fragmentShader);
     // Quad
     core::Mesh quad = core::Mesh::generateQuad();
-    core::Model quadModel({quad});
-    core::Texture cmgtGatoTexture("textures/CMGaTo_crop.png");
-    Material cmGatoMaterial(&cmgtGatoTexture, modelVertexShader, textureShader);
-    RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, &quadModel, &cmGatoMaterial);
+    core::Model* quadModel = new core::Model({quad});
+    core::Texture* cmgtGatoTexture = new core::Texture("textures/CMGaTo_crop.png");
+    Material* cmGatoMaterial = new Material(cmgtGatoTexture, modelVertexShader, textureShader);
+    RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, quadModel, cmGatoMaterial);
     quadObj.transform.Scale(glm::vec3(5, 5, 1));
     // Susanne
     RenderableObject suzanneObj = RenderableObject::Create("Suzanne", glm::vec3(), glm::vec3(1,1,1), nullptr,
-    "models/nonormalmonkey.obj", &normalMat);
+    "models/nonormalmonkey.obj", normalMat);
     // Dinner demon
     RenderableObject dinnerDemonObj = RenderableObject::Create("Dinner demon", glm::vec3(1,-5,5), glm::vec3(0.05f,0.05f,0.05f), nullptr,
-    "models/DinnerDemon.fbx", &normalMat);
+    "models/DinnerDemon.fbx", normalMat);
     // Mystifying Pan
     RenderableObject mystifyingPanObj = RenderableObject::Create("Mystifying Pan", glm::vec3(-10,0,0), glm::vec3(0.1f,0.1f,0.1f), nullptr,
-    "models/MystifyingPan.fbx", &normalMat);
+    "models/MystifyingPan.fbx", normalMat);
     // Backflip beerend
     RenderableObject backflipBeerendObj = RenderableObject::Create("Backflip beerend", glm::vec3(10,0,0), glm::vec3(0.1f,0.1f,0.1f), nullptr,
-    "models/backflipBeerend.fbx", &normalMat);
+    "models/backflipBeerend.fbx", normalMat);
     // Rey
     RenderableObject reyObj = RenderableObject::Create("Rey", glm::vec3(0,0,30), glm::vec3(0.5f,0.5f,0.5f), nullptr,
-    "models/ReyRetopologized.fbx", &normalMat);
+    "models/ReyRetopologized.fbx", normalMat);
     reyObj.transform.Rotate(glm::vec3(0, 3.1415f, 0));
     // Planet
     RenderableObject planet = RenderableObject::Create("Planet", glm::vec3(30,0,0), glm::vec3(0.5f,0.5f,0.5f), nullptr,
-    "models/Planet.fbx", &normalMat);
+    "models/Planet.fbx", normalMat);
     // Terrain
     RenderableObject terrain = RenderableObject::Create("Terrain", glm::vec3(0,-10,0), glm::vec3(0.5f,0.25f,0.5f), nullptr,
-    "models/Terrain.fbx", &normalMat);
+    "models/Terrain.fbx", normalMat);
     // Engine
     RenderableObject engineObj = RenderableObject::Create("Engine", glm::vec3(0,0,-10), glm::vec3(.1f, .1f, .1f), nullptr,
     "models/engine.fbx", "textures/initialShadingGroup_albedo.jpg", modelVertexShader, textureShader);
@@ -203,7 +203,6 @@ int main() {
     SceneB.push_back(&tenna);
     SceneB.push_back(&planet);
     SceneB.push_back(&terrain);
-    // SceneB.push_back(&horseObj); //
 
     currentScene = &SceneA;
 
@@ -211,8 +210,8 @@ int main() {
         nullptr, glm::vec4(1,1,1,1), 1);
     float lightStrength = 1;
     // Light model
-    core::Model sphere = core::AssimpLoader::loadModel("models/Sphere.fbx");
-    RenderableObject sphereObj("lightSphere", pointLight.transform.position(), &pointLight.transform, &sphere, &normalMat);
+    core::Model* sphere = new core::Model (core::AssimpLoader::loadModel("models/Sphere.fbx"));
+    RenderableObject sphereObj("lightSphere", pointLight.transform.position(), &pointLight.transform, sphere, normalMat);
     // sphereObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
     SceneA.push_back(&sphereObj);
     SceneB.push_back(&sphereObj);
@@ -239,22 +238,12 @@ int main() {
     float deltaTime = 0.0f;
     constexpr float rotationStrength = 10;
 
-    // for (int i = 0; i < SceneA.size(); i++) {
-    //     SceneA[i]->material->Bind();
-    // }
-    // for (int i = 0; i < SceneB.size(); i++) {
-    //     SceneB[i]->material->Bind();
-    // }
-
     // PP
     RenderableObject renderQuad = quadObj;
-    Material noPostProcessingMat = Material(nullptr, vertexShader, defaultPostprocessingShader);
-    Material outlinePostProcessingMat = Material(nullptr, vertexShader, outlinePostProcessingShader);
-    Material colorPostProcessingMat = Material(nullptr, vertexShader, colorPostProcessingShader);
-    // noPostProcessingMat.Bind();
-    // outlinePostProcessingMat.Bind();
-    // colorPostProcessingMat.Bind();
-    renderQuad.material = &colorPostProcessingMat;
+    Material* noPostProcessingMat = new Material(nullptr, vertexShader, defaultPostprocessingShader);
+    Material* outlinePostProcessingMat = new Material(nullptr, vertexShader, outlinePostProcessingShader);
+    Material* colorPostProcessingMat = new Material(nullptr, vertexShader, colorPostProcessingShader);
+    renderQuad.material = colorPostProcessingMat;
 
     int width, height;
     glfwGetWindowSize(window, &width, &height);
@@ -334,13 +323,13 @@ int main() {
         }
         ImGui::Text("Post-processing");
         if (ImGui::Button("None")) {
-            renderQuad.material = &noPostProcessingMat;
+            renderQuad.material = noPostProcessingMat;
         }
         if (ImGui::Button("Outline")) {
-            renderQuad.material = &outlinePostProcessingMat;
+            renderQuad.material = outlinePostProcessingMat;
         }
         if (ImGui::Button("Color filter")) {
-            renderQuad.material = &colorPostProcessingMat;
+            renderQuad.material = colorPostProcessingMat;
         }
         ImGui::ColorEdit3("Outline color", glm::value_ptr(outlineColor));
         ImGui::End();
@@ -394,15 +383,13 @@ int main() {
     }
 
     glDeleteProgram(modelShaderProgram);
+    glDeleteProgram(textureShaderProgram);
+    delete noPostProcessingMat;
+    delete outlinePostProcessingMat;
+    delete colorPostProcessingMat;
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    // for (int i = 0; i < SceneA.size(); i++) {
-    //     if (auto obj = SceneA[i]; obj != nullptr) delete obj;
-    // }
-    // for (int i = 0; i < SceneB.size(); i++) {
-    //     if (auto obj = SceneB[i]; obj != nullptr) delete obj;
-    // }
 
     glfwTerminate();
     return 0;
