@@ -63,6 +63,14 @@ void Transform::Rotate(const glm::vec3 amount) {
     // Y
     RotateOneDir(amount.y, glm::vec3(0,1, 0));
 }
+void Transform::RotateLocal(const glm::vec3 amount) {
+    // Z
+    RotateOneDir(amount.z, forward());
+    // X
+    RotateOneDir(amount.x, right());
+    // Y
+    RotateOneDir(amount.y, up());
+}
 
 void Transform::RotateOneDir(const float amount, const glm::vec3 axis) {
     modelMatrix = glm::rotate(modelMatrix, amount, axis);

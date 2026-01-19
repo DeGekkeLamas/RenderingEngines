@@ -7,6 +7,8 @@ Material::Material(core::Texture *texture, const GLuint vertexShader, GLuint fra
     this->texture = texture;
     this->vertexShader = vertexShader;
     this->fragmentShader = fragmentShader;
+
+    Bind();
 }
 
 void Material::Bind() {

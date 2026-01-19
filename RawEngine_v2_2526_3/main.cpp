@@ -171,6 +171,12 @@ int main() {
     RenderableObject reyObj = RenderableObject::Create("Rey", glm::vec3(0,0,30), glm::vec3(0.5f,0.5f,0.5f), nullptr,
     "models/ReyRetopologized.fbx", &normalMat);
     reyObj.transform.Rotate(glm::vec3(0, 3.1415f, 0));
+    // Planet
+    RenderableObject planet = RenderableObject::Create("Planet", glm::vec3(30,0,0), glm::vec3(0.5f,0.5f,0.5f), nullptr,
+    "models/Planet.fbx", &normalMat);
+    // Terrain
+    RenderableObject terrain = RenderableObject::Create("Terrain", glm::vec3(0,-10,0), glm::vec3(0.5f,0.25f,0.5f), nullptr,
+    "models/Terrain.fbx", &normalMat);
     // Engine
     RenderableObject engineObj = RenderableObject::Create("Engine", glm::vec3(0,0,-10), glm::vec3(.1f, .1f, .1f), nullptr,
     "models/engine.fbx", "textures/initialShadingGroup_albedo.jpg", modelVertexShader, textureShader);
@@ -195,6 +201,8 @@ int main() {
     SceneA.push_back(&horseObj);
     SceneB.push_back(&engineObj);
     SceneB.push_back(&tenna);
+    SceneB.push_back(&planet);
+    SceneB.push_back(&terrain);
     // SceneB.push_back(&horseObj); //
 
     currentScene = &SceneA;
@@ -231,21 +239,21 @@ int main() {
     float deltaTime = 0.0f;
     constexpr float rotationStrength = 10;
 
-    for (int i = 0; i < SceneA.size(); i++) {
-        SceneA[i]->material->Bind();
-    }
-    for (int i = 0; i < SceneB.size(); i++) {
-        SceneB[i]->material->Bind();
-    }
+    // for (int i = 0; i < SceneA.size(); i++) {
+    //     SceneA[i]->material->Bind();
+    // }
+    // for (int i = 0; i < SceneB.size(); i++) {
+    //     SceneB[i]->material->Bind();
+    // }
 
     // PP
     RenderableObject renderQuad = quadObj;
     Material noPostProcessingMat = Material(nullptr, vertexShader, defaultPostprocessingShader);
     Material outlinePostProcessingMat = Material(nullptr, vertexShader, outlinePostProcessingShader);
     Material colorPostProcessingMat = Material(nullptr, vertexShader, colorPostProcessingShader);
-    noPostProcessingMat.Bind();
-    outlinePostProcessingMat.Bind();
-    colorPostProcessingMat.Bind();
+    // noPostProcessingMat.Bind();
+    // outlinePostProcessingMat.Bind();
+    // colorPostProcessingMat.Bind();
     renderQuad.material = &colorPostProcessingMat;
 
     int width, height;
@@ -359,6 +367,7 @@ int main() {
         // PP
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glfwGetWindowSize(window, &width, &height);
         glViewport(0, 0, width, height);
         glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
 
