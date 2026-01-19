@@ -26,18 +26,59 @@ vec4(0.631, 0.294, 0.612,1), // Purple
 vec4(0.784, 0.749, 0.871,1) // Lpurple
 };
 
+float max(float x, float y, float z)
+{
+    float xyMax = max(x, y);
+    return max(xyMax, z);
+}
+float min(float x, float y, float z)
+{
+    float xyMin = min(x, y);
+    return min(xyMin, z);
+}
+float getValue(vec4 color)
+{
+    return max(color.x, color.y, color.z);
+}
+float getSaturation(vec4 color)
+{
+    float cMax = getValue(color);
+    float cMin = min(color.x, color.y, color.z);
+    return (cMax - cMin) / cMax;
+}
+float getHue(vec4 color)
+{
+    float cMax = getValue(color);
+    float cMin = min(color.x, color.y, color.z);
+    float result = 0;
+    if (cMax == color.x) {
+        result = (color.y - color.z) / (cMax - cMin);
+    } else if (cMax == color.y){
+        result = (color.y - color.x) / (cMax - cMin);
+    } else if (cMax == color.z){
+        result = (color.x - color.y) / (cMax - cMin);
+    }
+    return result * 60;
+}
+vec3 getHSV(vec4 color){
+    return vec3(getHue(color), getSaturation(color), getValue(color));
+}
+
 vec4 RoundToColor(vec4 color, vec4 compare[20])
 {
     int closest = 0;
     float closestDst = 999999;
+
+    vec4 exp = vec4(.5f,.5f,.5f,1);
+    // Compensate for the registered colors mostly being high value colors
+    vec4 usedCol = pow(color, exp);
+//     vec4 usedCol = color;
+    float usedHue = getHue(usedCol);
     for (int i = 0; i < compare.length(); i++)
     {
-        vec4 exp = vec4(.5f,.5f,.5f,1);
 //         vec4 usedCompare = pow(compare[i], exp);
         vec4 usedCompare = compare[i];
-        // Compensate for the registered colors mostly being high value colors
-        vec4 usedCol = pow(color, exp);
-//         vec4 usedCol = color;
+        usedCompare = vec4(getHSV(usedCompare),1);
         float currentDst = length(usedCol - usedCompare);
         if (currentDst < closestDst)
         {
@@ -53,4 +94,6 @@ void main()
     vec4 texColor = texture(text, uv);
     texColor = RoundToColor(texColor, registeredColors);
     FragColor = texColor;
+//     float hue = getHue(texColor) / 360;
+//     FragColor = vec4(hue,hue,hue, 1);
 }
