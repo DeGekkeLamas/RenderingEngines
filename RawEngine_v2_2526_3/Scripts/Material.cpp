@@ -12,19 +12,19 @@ Material::Material(core::Texture *texture, const GLuint vertexShader, GLuint fra
 }
 
 void Material::Bind() {
-    unsigned int shaderProgram;
+    unsigned int* shaderProgram;
     std::tuple key(vertexShader, fragmentShader);
     if (existingShaderPrograms.contains(key))
     {
-        shaderProgram = existingShaderPrograms[key];
+        shaderProgram = &existingShaderPrograms[key];
         printf("Shader already existed\n");
     }
     else
     {
-        shaderProgram = glCreateProgram();
-        glAttachShader(shaderProgram, vertexShader);
-        glAttachShader(shaderProgram, fragmentShader);
-        glLinkProgram(shaderProgram);
+        shaderProgram = new unsigned int(glCreateProgram());
+        glAttachShader(*shaderProgram, vertexShader);
+        glAttachShader(*shaderProgram, fragmentShader);
+        glLinkProgram(*shaderProgram);
     }
     this->shaderProgram = shaderProgram;
 }

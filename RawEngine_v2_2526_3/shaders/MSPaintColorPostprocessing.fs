@@ -61,7 +61,7 @@ float getHue(vec4 color)
     return result * 60;
 }
 vec3 getHSV(vec4 color){
-    return vec3(getHue(color)/90, getSaturation(color), getValue(color));
+    return vec3(getHue(color)/360, getSaturation(color), getValue(color));
 }
 
 vec4 RoundToColor(vec4 color, vec4 compare[20])

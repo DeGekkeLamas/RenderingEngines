@@ -12,7 +12,7 @@ public:
     core::Texture* texture;
     GLuint fragmentShader;
     GLuint vertexShader;
-    unsigned int shaderProgram;
+    unsigned int* shaderProgram;
 private:
     static std::map< std::tuple<GLuint,GLuint> , unsigned int> existingShaderPrograms;
 };

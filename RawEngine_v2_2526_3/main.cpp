@@ -12,7 +12,6 @@
 #include "Scripts/Camera.hpp"
 #include "iostream"
 #include "Scripts/GameObject.hpp"
-#include "Scripts/List.hpp"
 #include "Scripts/PointLight.hpp"
 #include "Scripts/RenderableObject.hpp"
 
@@ -247,6 +246,7 @@ int main() {
 
     int width, height;
     glfwGetWindowSize(window, &width, &height);
+    float ratio = static_cast<float>(height) / static_cast<float>(width);
     unsigned int fbo;
     glGenFramebuffers(1, &fbo);
 
@@ -357,6 +357,12 @@ int main() {
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glfwGetWindowSize(window, &width, &height);
+        // if (height > width) {
+        //     width = static_cast<int>(height / ratio);
+        // }
+        // else {
+        //     height = static_cast<int>(width * ratio);
+        // }
         glViewport(0, 0, width, height);
         glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
 
