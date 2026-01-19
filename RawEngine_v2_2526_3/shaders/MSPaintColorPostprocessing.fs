@@ -61,7 +61,7 @@ float getHue(vec4 color)
     return result * 60;
 }
 vec3 getHSV(vec4 color){
-    return vec3(getHue(color), getSaturation(color), getValue(color));
+    return vec3(getHue(color)/360, getSaturation(color), getValue(color));
 }
 
 vec4 RoundToColor(vec4 color, vec4 compare[20])
@@ -71,14 +71,15 @@ vec4 RoundToColor(vec4 color, vec4 compare[20])
 
     vec4 exp = vec4(.5f,.5f,.5f,1);
     // Compensate for the registered colors mostly being high value colors
-    vec4 usedCol = pow(color, exp);
-//     vec4 usedCol = color;
-    float usedHue = getHue(usedCol);
+    vec4 usedCol = color;
+//     usedCol = vec4(getHSV(usedCol), 1);
+    usedCol = pow(usedCol, exp);
     for (int i = 0; i < compare.length(); i++)
     {
-//         vec4 usedCompare = pow(compare[i], exp);
         vec4 usedCompare = compare[i];
-        usedCompare = vec4(getHSV(usedCompare),1);
+//         usedCompare = vec4(getHSV(usedCompare), 1);
+//         usedCompare = pow(usedCompare, exp);
+
         float currentDst = length(usedCol - usedCompare);
         if (currentDst < closestDst)
         {
