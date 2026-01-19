@@ -26,7 +26,7 @@ void Camera::ProcessInput(GLFWwindow* window, float deltaTime) {
     incrementR = glm::vec3(mousePos - mouseLastPos,0);
     mouseLastPos = mousePos;
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-        transform.RotateLocal(glm::vec3(-incrementR.y,incrementR.x, 0) * deltaTime * rotateSpeed);
+        transform.Rotate(glm::vec3(-incrementR.y,incrementR.x, 0) * deltaTime * rotateSpeed);
         // std::cout << "Cursor Position at (" << xpos << " : " << ypos << "\n";
     }
 

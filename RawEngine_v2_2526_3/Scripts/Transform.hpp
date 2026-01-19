@@ -23,10 +23,11 @@ class Transform {
         void TranslateObjectSpace(const glm::vec3 amount);
         void TranslateWorldSpace(const glm::vec3 amount);
         void Rotate(const glm::vec3 amount);
-        void RotateLocal(const glm::vec3 amount);
+        void RotateWorld(const glm::vec3 amount);
         void Scale(const glm::vec3 amount);
     private:
         void RotateOneDir(const float amount, const glm::vec3 axis);
+        void RotateOneDirWorld(const float amount, const glm::vec3 axis);
 };
 
 

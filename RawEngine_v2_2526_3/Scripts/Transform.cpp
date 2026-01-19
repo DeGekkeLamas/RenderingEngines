@@ -63,18 +63,24 @@ void Transform::Rotate(const glm::vec3 amount) {
     // Y
     RotateOneDir(amount.y, glm::vec3(0,1, 0));
 }
-void Transform::RotateLocal(const glm::vec3 amount) {
+void Transform::RotateWorld(const glm::vec3 amount) {
     // Z
-    RotateOneDir(amount.z, forward());
+    RotateOneDirWorld(amount.z, forward());
     // X
-    RotateOneDir(amount.x, right());
+    RotateOneDirWorld(amount.x, right());
     // Y
-    RotateOneDir(amount.y, up());
+    RotateOneDirWorld(amount.y, up());
 }
 
 void Transform::RotateOneDir(const float amount, const glm::vec3 axis) {
     modelMatrix = glm::rotate(modelMatrix, amount, axis);
 }
+
+void Transform::RotateOneDirWorld(const float amount, const glm::vec3 axis) {
+    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), amount, axis);
+    modelMatrix = rotation * modelMatrix; // pre-multiply
+}
+
 
 void Transform::Scale(const glm::vec3 amount) {
     modelMatrix = glm::scale(modelMatrix, amount);
