@@ -3,6 +3,7 @@
 #include "Camera.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/ext/quaternion_geometric.hpp>
 
 Camera::Camera() : GameObject("Camera", glm::vec3(0.0f, 0.0f, 10.0f), nullptr) {
     printf("Created a camera\n");
@@ -10,24 +11,26 @@ Camera::Camera() : GameObject("Camera", glm::vec3(0.0f, 0.0f, 10.0f), nullptr) {
 
 void Camera::ProcessInput(GLFWwindow* window, float deltaTime) {
     constexpr float moveSpeed = 10.0f;
-    constexpr float rotateSpeed = 3.0f;
+    constexpr float rotateSpeed = 300.0f;
 
     constexpr glm::vec3 right(1.0f, 0.0f, 0.0f);
     constexpr glm::vec3 up(0.0f, 1.0f, 0.0f);
     constexpr glm::vec3 forward(0.0f, 0.0f, 1.0f);
 
-    glm::vec3 incrementR = glm::vec3(0,0,0);
+    glm::vec3 incrementR;
     glm::vec3 incrementT = glm::vec3(0,0,0);
 
     // Rotation
     double xpos, ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
     glm::vec2 mousePos(xpos, ypos);
-    incrementR = glm::vec3(mousePos - mouseLastPos,0);
+    incrementR = glm::vec3(mousePos - mouseLastPos,0) * deltaTime * rotateSpeed;
     mouseLastPos = mousePos;
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-        transform.Rotate(glm::vec3(-incrementR.y,incrementR.x, 0) * deltaTime * rotateSpeed);
-        // std::cout << "Cursor Position at (" << xpos << " : " << ypos << "\n";
+        pitch += incrementR.y;
+        heading += -incrementR.x;
+        transform.SetRotationEuler(glm::vec3(pitch,heading,0));
+        // std::cout << "pitch: " << pitch << ", heading:" << heading << "\n";
     }
 
     // Movement

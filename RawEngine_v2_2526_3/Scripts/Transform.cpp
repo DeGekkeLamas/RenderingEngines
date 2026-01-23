@@ -54,6 +54,24 @@ void Transform::SetPosition(const glm::vec3 position) {
     }
 }
 
+void Transform::SetRotationRadians(const glm::vec3 radians) {
+    const glm::vec4 currentTranslation = column(modelMatrix, 3); // ?
+
+    glm::mat4 rot(1); // identity
+    // apply the heading / Y:
+    rot = glm::rotate(rot,radians.y, glm::vec3(0,1,0));
+    // apply the pitch / X:
+    rot = glm::rotate(rot,radians.x, glm::vec3(1,0,0));
+    // apply the bank / Z:
+    rot = glm::rotate(rot,radians.z, glm::vec3(0,0,1));
+
+    rot[3] = currentTranslation;
+    modelMatrix = rot;
+}
+
+void Transform::SetRotationEuler(const glm::vec3 euler) {
+    SetRotationRadians(euler * 3.14159f / 180.0f);
+}
 
 void Transform::Rotate(const glm::vec3 amount) {
     // Z

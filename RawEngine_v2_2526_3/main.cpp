@@ -42,6 +42,7 @@ void processInput(GLFWwindow *window) {
 
 void framebufferSizeCallback(GLFWwindow *window,
                              int width, int height) {
+    printf("Window resized!\n");
     g_width = width;
     g_height = height;
     glViewport(0, 0, width, height);
@@ -158,21 +159,21 @@ int main() {
     RenderableObject suzanneObj = RenderableObject::Create("Suzanne", glm::vec3(), glm::vec3(1,1,1), nullptr,
     "models/nonormalmonkey.obj", normalMat);
     // Dinner demon
-    RenderableObject dinnerDemonObj = RenderableObject::Create("Dinner demon", glm::vec3(1,-5,5), glm::vec3(0.05f,0.05f,0.05f), nullptr,
-    "models/DinnerDemon.fbx", normalMat);
-    // Mystifying Pan
-    RenderableObject mystifyingPanObj = RenderableObject::Create("Mystifying Pan", glm::vec3(-10,0,0), glm::vec3(0.1f,0.1f,0.1f), nullptr,
-    "models/MystifyingPan.fbx", normalMat);
-    // Backflip beerend
-    RenderableObject backflipBeerendObj = RenderableObject::Create("Backflip beerend", glm::vec3(10,0,0), glm::vec3(0.1f,0.1f,0.1f), nullptr,
-    "models/backflipBeerend.fbx", normalMat);
+    // RenderableObject dinnerDemonObj = RenderableObject::Create("Dinner demon", glm::vec3(1,-5,5), glm::vec3(0.05f,0.05f,0.05f), nullptr,
+    // "models/DinnerDemon.fbx", normalMat);
+    // // Mystifying Pan
+    // RenderableObject mystifyingPanObj = RenderableObject::Create("Mystifying Pan", glm::vec3(-10,0,0), glm::vec3(0.1f,0.1f,0.1f), nullptr,
+    // "models/MystifyingPan.fbx", normalMat);
+    // // Backflip beerend
+    // RenderableObject backflipBeerendObj = RenderableObject::Create("Backflip beerend", glm::vec3(10,0,0), glm::vec3(0.1f,0.1f,0.1f), nullptr,
+    // "models/backflipBeerend.fbx", normalMat);
     // Rey
     RenderableObject reyObj = RenderableObject::Create("Rey", glm::vec3(0,0,30), glm::vec3(0.5f,0.5f,0.5f), nullptr,
     "models/ReyRetopologized.fbx", normalMat);
     reyObj.transform.Rotate(glm::vec3(0, 3.1415f, 0));
-    // Planet
-    RenderableObject planet = RenderableObject::Create("Planet", glm::vec3(30,0,0), glm::vec3(0.5f,0.5f,0.5f), nullptr,
-    "models/Planet.fbx", normalMat);
+    // // Planet
+    // RenderableObject planet = RenderableObject::Create("Planet", glm::vec3(30,0,0), glm::vec3(0.5f,0.5f,0.5f), nullptr,
+    // "models/Planet.fbx", normalMat);
     // Terrain
     RenderableObject terrain = RenderableObject::Create("Terrain", glm::vec3(0,-10,0), glm::vec3(0.5f,0.25f,0.5f), nullptr,
     "models/Terrain.fbx", normalMat);
@@ -194,14 +195,14 @@ int main() {
     std::vector<GameObject*> persistentObjects;
     SceneA.push_back(&suzanneObj);
     SceneA.push_back(&quadObj);
-    SceneA.push_back(&dinnerDemonObj);
-    SceneA.push_back(&mystifyingPanObj);
-    SceneA.push_back(&backflipBeerendObj);
+    // SceneA.push_back(&dinnerDemonObj);
+    // SceneA.push_back(&mystifyingPanObj);
+    // SceneA.push_back(&backflipBeerendObj);
     SceneA.push_back(&reyObj);
     SceneA.push_back(&horseObj);
     SceneB.push_back(&engineObj);
     SceneB.push_back(&tenna);
-    SceneB.push_back(&planet);
+    // SceneB.push_back(&planet);
     SceneB.push_back(&terrain);
 
     currentScene = &SceneA;
@@ -223,7 +224,8 @@ int main() {
                  clearColor.g, clearColor.b, clearColor.a);
 
     Camera cam;
-    cam.transform.Rotate(glm::vec3(0, 3.1415f, 0));
+    persistentObjects.push_back(&cam);
+    // cam.transform.Rotate(glm::vec3(0, 3.1415f, 0));
 
     //VP
     glm::mat4 view;

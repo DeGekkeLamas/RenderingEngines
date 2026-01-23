@@ -22,6 +22,8 @@ class Transform {
         void SetPosition(glm::vec3 position);
         void TranslateObjectSpace(const glm::vec3 amount);
         void TranslateWorldSpace(const glm::vec3 amount);
+        void SetRotationRadians(const glm::vec3 radians);
+        void SetRotationEuler(const glm::vec3 euler);
         void Rotate(const glm::vec3 amount);
         void RotateWorld(const glm::vec3 amount);
         void Scale(const glm::vec3 amount);
