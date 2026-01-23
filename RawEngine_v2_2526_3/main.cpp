@@ -35,6 +35,8 @@
 int g_width = 800;
 int g_height = 600;
 
+bool windowSizeChanged=false;
+
 void processInput(GLFWwindow *window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
@@ -42,10 +44,13 @@ void processInput(GLFWwindow *window) {
 
 void framebufferSizeCallback(GLFWwindow *window,
                              int width, int height) {
-    printf("Window resized!\n");
+    // printf("Window resized!\n");
     g_width = width;
     g_height = height;
     glViewport(0, 0, width, height);
+    windowSizeChanged = true;
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 std::string readFileToString(const std::string &filePath) {
@@ -229,8 +234,7 @@ int main() {
 
     //VP
     glm::mat4 view;
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), static_cast<float>(g_width) /
-        static_cast<float>(g_height), 0.1f, 100.0f);
+    glm::mat4 projection;
 
     GLint mvpMatrixUniform = glGetUniformLocation(modelShaderProgram, "mvpMatrix");
     GLint textureModelUniform = glGetUniformLocation(textureShaderProgram, "mvpMatrix");
@@ -248,9 +252,6 @@ int main() {
     Material* colorPostProcessingMat = new Material(nullptr, vertexShader, colorPostProcessingShader);
     renderQuad.material = colorPostProcessingMat;
 
-    int width, height;
-    glfwGetWindowSize(window, &width, &height);
-    float ratio = static_cast<float>(height) / static_cast<float>(width);
     unsigned int fbo;
     glGenFramebuffers(1, &fbo);
 
@@ -264,8 +265,8 @@ int main() {
 
     // Texture
     glBindTexture(GL_TEXTURE_2D, tcb);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width,
-    height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, g_width,
+    g_height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D,
     GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,
@@ -274,7 +275,7 @@ int main() {
     // Depth
     glDepthFunc(GL_LESS);
     glBindTexture(GL_TEXTURE_2D, depthBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, g_width, g_height, 0,
     GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -294,6 +295,32 @@ int main() {
         cam.ProcessInput(window, deltaTime);
         view = glm::lookAt(cam.transform.position(),
             cam.transform.position() + cam.transform.forward(), cam.transform.up() );
+        projection = glm::perspective(glm::radians(45.0f), static_cast<float>(g_width) /
+        static_cast<float>(g_height), 0.1f, 100.0f);
+
+        if (windowSizeChanged) {
+            // Color texture
+            glBindTexture(GL_TEXTURE_2D, tcb);
+            glTexImage2D(
+                GL_TEXTURE_2D, 0, GL_RGB8, g_width, g_height,
+                0, GL_RGB,
+                GL_UNSIGNED_BYTE,
+                nullptr);
+
+            // Depth-stencil texture
+            glBindTexture(GL_TEXTURE_2D, depthBuffer);
+            glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                GL_DEPTH24_STENCIL8,
+                g_width,
+                g_height,
+                0,
+                GL_DEPTH_STENCIL,
+                GL_UNSIGNED_INT_24_8,
+                nullptr);
+            windowSizeChanged = false;
+        }
 
 
         ImGui_ImplOpenGL3_NewFrame();
@@ -356,14 +383,6 @@ int main() {
         // PP
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glfwGetWindowSize(window, &width, &height);
-        // if (height > width) {
-        //     width = static_cast<int>(height / ratio);
-        // }
-        // else {
-        //     height = static_cast<int>(width * ratio);
-        // }
-        glViewport(0, 0, width, height);
         glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
 
         // Render
