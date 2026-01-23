@@ -6,9 +6,9 @@ class Transform {
     public:
         Transform() : modelMatrix(1) {};
         ~Transform();
-        glm::mat4 modelMatrix;
+        glm::mat4 getModelMatrix() const;
         glm::vec3 scale = glm::vec3(1,1,1);
-        Transform* parent;
+        Transform* parent = nullptr;
         std::vector<Transform*> children;
         void AddChild(Transform* child);
         // void RemoveChild(Transform* child);
@@ -28,6 +28,7 @@ class Transform {
         void RotateWorld(const glm::vec3 amount);
         void Scale(const glm::vec3 amount);
     private:
+        glm::mat4 modelMatrix;
         void RotateOneDir(const float amount, const glm::vec3 axis);
         void RotateOneDirWorld(const float amount, const glm::vec3 axis);
 };

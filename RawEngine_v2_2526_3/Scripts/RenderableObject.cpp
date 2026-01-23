@@ -32,14 +32,14 @@ void RenderableObject::Render(const glm::mat4 &view, const glm::mat4 &projection
 {
     glUseProgram(*material->shaderProgram);
     glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
-        view * transform.modelMatrix));
+        view * transform.getModelMatrix()));
     glActiveTexture(GL_TEXTURE0);
     // Uniforms
     SetUniform("lightColor", light.color);
     SetUniform("lightPos", light.transform.position());
     SetUniform("camPos", camera.transform.position());
     SetUniform("lightStrength", light.intensity);
-    SetUniform("modelMatrix", transform.modelMatrix);
+    SetUniform("modelMatrix", transform.getModelMatrix());
 
     glBindTexture(GL_TEXTURE_2D, texture);
 

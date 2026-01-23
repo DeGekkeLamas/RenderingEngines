@@ -8,6 +8,11 @@ Transform::~Transform() {
 
 }
 
+glm::mat4 Transform::getModelMatrix() const {
+    if (parent == nullptr || parent == this) return modelMatrix;
+    else return parent->getModelMatrix() * modelMatrix;
+}
+
 void Transform::AddChild(Transform *child) {
     children.push_back(child);
     child->parent = this;
@@ -34,24 +39,24 @@ glm::vec3 Transform::position() const {
 void Transform::TranslateObjectSpace(const glm::vec3 amount) {
     modelMatrix = translate(modelMatrix, amount);
     // Apply to children
-    for (int i = 0; i < children.size(); i++) {
-        children[i]->TranslateObjectSpace(amount);
-    }
+    // for (int i = 0; i < children.size(); i++) {
+    //     children[i]->TranslateObjectSpace(amount);
+    // }
 }
 
 void Transform::TranslateWorldSpace(const glm::vec3 amount) {
     modelMatrix[3] += glm::vec4(amount, 0);
     // Apply to children
-    for (int i = 0; i < children.size(); i++) {
-        children[i]->TranslateWorldSpace(amount);
-    }
+    // for (int i = 0; i < children.size(); i++) {
+    //     children[i]->TranslateWorldSpace(amount);
+    // }
 }
 void Transform::SetPosition(const glm::vec3 position) {
     modelMatrix[3] = glm::vec4(position, 1);
     // Apply to children
-    for (int i = 0; i < children.size(); i++) {
-        children[i]->SetPosition(position);
-    }
+    // for (int i = 0; i < children.size(); i++) {
+    //     children[i]->SetPosition(position);
+    // }
 }
 
 void Transform::SetRotationRadians(const glm::vec3 radians) {

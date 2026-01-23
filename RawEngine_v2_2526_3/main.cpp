@@ -42,8 +42,7 @@ void processInput(GLFWwindow *window) {
         glfwSetWindowShouldClose(window, true);
 }
 
-void framebufferSizeCallback(GLFWwindow *window,
-                             int width, int height) {
+void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
     // printf("Window resized!\n");
     g_width = width;
     g_height = height;
@@ -216,9 +215,8 @@ int main() {
         nullptr, glm::vec4(1,1,1,1), 1);
     float lightStrength = 1;
     // Light model
-    core::Model* sphere = new core::Model (core::AssimpLoader::loadModel("models/Sphere.fbx"));
-    RenderableObject sphereObj("lightSphere", pointLight.transform.position(), &pointLight.transform, sphere, normalMat);
-    // sphereObj.transform.Scale(glm::vec3(0.5f,0.5f,0.5f));
+    RenderableObject sphereObj = RenderableObject::Create("lightSphere", glm::vec3(), glm::vec3(1,1,1), &pointLight.transform,
+        "models/Sphere.fbx", normalMat);
     SceneA.push_back(&sphereObj);
     SceneB.push_back(&sphereObj);
     persistentObjects.push_back(&pointLight);
