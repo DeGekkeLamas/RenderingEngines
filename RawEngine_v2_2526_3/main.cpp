@@ -155,7 +155,8 @@ int main() {
     // Quad
     core::Mesh quad = core::Mesh::generateQuad();
     core::Model* quadModel = new core::Model({quad});
-    core::Texture* cmgtGatoTexture = new core::Texture("textures/CMGaTo_crop.png");
+    std::shared_ptr<core::Texture> cmgtGatoTexture =
+        std::shared_ptr<core::Texture>( new core::Texture("textures/CMGaTo_crop.png") );
     Material* cmGatoMaterial = new Material(cmgtGatoTexture, modelVertexShader, textureShader);
     RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, quadModel, cmGatoMaterial);
     quadObj.transform.Scale(glm::vec3(5, 5, 1));

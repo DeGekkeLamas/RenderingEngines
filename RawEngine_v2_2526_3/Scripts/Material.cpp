@@ -3,7 +3,7 @@
 #include "texture.h"
 #include <map>
 
-Material::Material(core::Texture *texture, const GLuint vertexShader, GLuint fragmentShader) {
+Material::Material(std::shared_ptr<core::Texture> texture, const GLuint vertexShader, GLuint fragmentShader) {
     this->texture = texture;
     this->vertexShader = vertexShader;
     this->fragmentShader = fragmentShader;
