@@ -253,6 +253,13 @@ int main() {
     (new Material(nullptr, vertexShader, outlinePostProcessingShader));
     std::shared_ptr<Material> colorPostProcessingMat = std::shared_ptr<Material>
     (new Material(nullptr, vertexShader, colorPostProcessingShader));
+
+    // std::cout << "this part works\n";
+    std::shared_ptr<core::Texture> colorTex = std::shared_ptr<core::Texture>( new core::Texture("textures/ColorTexture20.png") );
+    colorPostProcessingMat->SetUniform("colorTexture", colorTex->getId(), 1);
+    colorPostProcessingMat->SetUniform("colorQTY", 20);
+    // std::cout << "this part works too\n";
+
     renderQuad.material = colorPostProcessingMat;
 
     unsigned int fbo;
@@ -399,7 +406,7 @@ int main() {
         glDisable(GL_DEPTH_TEST);
         glDepthMask(GL_FALSE);
         renderQuad.Render(tcb);
-        renderQuad.SetUniform("outlineCol", outlineColor);
+        renderQuad.material->SetUniform("outlineCol", outlineColor);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
