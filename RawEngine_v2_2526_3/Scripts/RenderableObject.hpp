@@ -7,9 +7,9 @@
 
 class RenderableObject : public GameObject {
 public:
-    RenderableObject(const std::string &name, glm::vec3 position, Transform* parent, core::Model* model, std::shared_ptr<Material> material);
-    ~RenderableObject() override;
-    core::Model* model;
+    RenderableObject(const std::string &name, glm::vec3 position, Transform* parent,
+        std::shared_ptr<core::Model>, std::shared_ptr<Material> material);
+    std::shared_ptr<core::Model> model;
     std::shared_ptr<Material> material;
     void Render(const glm::mat4 &view, const glm::mat4 &projection, GLint textureModelUniform,
         const PointLight &light, const Camera &camera) const;

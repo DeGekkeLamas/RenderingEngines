@@ -8,15 +8,10 @@
 
 
 RenderableObject::RenderableObject(const std::string &name, const glm::vec3 position, Transform* parent,
-    core::Model* model, std::shared_ptr<Material> material) : GameObject(name, position, parent)
+    std::shared_ptr<core::Model> model, std::shared_ptr<Material> material) : GameObject(name, position, parent)
 {
     this->model = model;
     this->material = material;
-}
-
-RenderableObject::~RenderableObject() {
-    // delete model;
-    // delete material;
 }
 
 
@@ -85,7 +80,7 @@ RenderableObject RenderableObject::Clone() const {
 RenderableObject RenderableObject::Create(const std::string &name, const glm::vec3 position, const glm::vec3 scale, Transform *parent,
     const std::string &modelPath, std::shared_ptr<Material> material)
 {
-    core::Model *model = new core::Model( core::AssimpLoader::loadModel(modelPath) );
+    std::shared_ptr<core::Model> model = std::shared_ptr<core::Model>(new core::Model( core::AssimpLoader::loadModel(modelPath) ) );
     RenderableObject obj(name, position, parent, model, material);
     obj.transform.Scale(scale);
     return obj;
@@ -94,7 +89,7 @@ RenderableObject RenderableObject::Create(const std::string &name, const glm::ve
 RenderableObject RenderableObject::Create(const std::string &name, const glm::vec3 position, const glm::vec3 scale, Transform *parent,
     const std::string &modelPath, const std::string &texturePath, const GLuint modelVertexShader, const GLuint textureShader)
 {
-    core::Model *model = new core::Model( core::AssimpLoader::loadModel(modelPath) );
+    std::shared_ptr<core::Model> model = std::shared_ptr<core::Model>( new core::Model( core::AssimpLoader::loadModel(modelPath) ) );
     std::shared_ptr<core::Texture> texture = std::shared_ptr<core::Texture>( new core::Texture(texturePath));
     std::shared_ptr<Material> material = std::shared_ptr<Material>(new Material(texture, modelVertexShader, textureShader));
     RenderableObject obj(name, position, parent, model, material);

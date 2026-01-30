@@ -154,7 +154,7 @@ int main() {
     std::shared_ptr<Material> normalMat = std::shared_ptr<Material>(new Material(nullptr, modelVertexShader, fragmentShader));
     // Quad
     core::Mesh quad = core::Mesh::generateQuad();
-    core::Model* quadModel = new core::Model({quad});
+    std::shared_ptr<core::Model> quadModel = std::shared_ptr<core::Model>(new core::Model({quad}));
     std::shared_ptr<core::Texture> cmgtGatoTexture =
         std::shared_ptr<core::Texture>( new core::Texture("textures/CMGaTo_crop.png") );
     std::shared_ptr<Material> cmGatoMaterial = std::shared_ptr<Material>(new Material(cmgtGatoTexture,
