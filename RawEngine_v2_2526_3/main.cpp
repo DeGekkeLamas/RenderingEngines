@@ -254,12 +254,6 @@ int main() {
     std::shared_ptr<Material> colorPostProcessingMat = std::shared_ptr<Material>
     (new Material(nullptr, vertexShader, colorPostProcessingShader));
 
-    // std::cout << "this part works\n";
-    std::shared_ptr<core::Texture> colorTex = std::shared_ptr<core::Texture>( new core::Texture("textures/ColorTexture20.png") );
-    colorPostProcessingMat->SetUniform("colorTexture", colorTex->getId(), 1);
-    colorPostProcessingMat->SetUniform("colorQTY", 20);
-    // std::cout << "this part works too\n";
-
     renderQuad.material = colorPostProcessingMat;
 
     unsigned int fbo;
@@ -297,6 +291,12 @@ int main() {
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
         std::cout << "Framebuffer is NOT complete!" << std::endl;
     }
+
+    // std::cout << "this part works\n";
+    std::shared_ptr<core::Texture> colorTex = std::shared_ptr<core::Texture>( new core::Texture("textures/ColorTexture20.png") );
+    colorPostProcessingMat->SetUniform("colorTexture", colorTex->getId(), 1);
+    colorPostProcessingMat->SetUniform("colorQTY", 20);
+    // std::cout << "this part works too\n";
 
     while (!glfwWindowShouldClose(window)) {
         glDepthMask(GL_TRUE);

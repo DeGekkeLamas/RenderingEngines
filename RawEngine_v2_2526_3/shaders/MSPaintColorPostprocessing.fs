@@ -56,8 +56,8 @@ vec4 RoundToColor(vec4 color, sampler2D colorTex)
     usedCol = pow(usedCol, exp);
     for (int i = 0; i < colorQTY; i++)
     {
-           float u = (float(i)) / float(colorQTY);
-           vec4 usedCompare = texture(colorTex, vec2(u, 0.5));
+           float pos = (float(i) + 0.5f) / float(colorQTY);
+           vec4 usedCompare = texture(colorTex, vec2(pos, 0.5));
 //         usedCompare = vec4(getHSV(usedCompare), 1);
 //         usedCompare = pow(usedCompare, exp);
 
@@ -68,7 +68,8 @@ vec4 RoundToColor(vec4 color, sampler2D colorTex)
             closest = i;
         }
     }
-    return texture(colorTex, vec2(float(closest)/float(colorQTY), 0));
+    float x = (float(closest) + 0.5) / float(colorQTY);
+    return texture(colorTex, vec2(x, 0.5));
 }
 
 void main()
@@ -76,6 +77,4 @@ void main()
     vec4 texColor = texture(text, uv);
     texColor = RoundToColor(texColor, colorTexture);
     FragColor = texColor;
-//     float hue = getHue(texColor) / 360;
-//     FragColor = vec4(hue,hue,hue, 1);
 }

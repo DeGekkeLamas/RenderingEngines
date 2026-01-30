@@ -64,11 +64,10 @@ void Material::SetUniform(const std::string &uniformName, glm::mat4 toSet) const
     glUniformMatrix4fv(uniformPos, 1, GL_FALSE, glm::value_ptr(toSet));
 }
 
-void Material::SetUniform(const std::string &uniformName, const GLuint texture, const int index) const {
+void Material::SetUniform(const std::string& uniformName, const GLuint texture, const int index) const {
     glUseProgram(*shaderProgram);
     glActiveTexture(GL_TEXTURE0 + index);
-
-    glBindTexture(GL_TEXTURE_2D, texture);
     const GLint uniformPos = glGetUniformLocation(*shaderProgram, uniformName.c_str());
+    glBindTexture(GL_TEXTURE_2D, texture);
     glUniform1i(uniformPos, index);
 }
