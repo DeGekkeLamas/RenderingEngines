@@ -8,7 +8,7 @@
 
 
 RenderableObject::RenderableObject(const std::string &name, const glm::vec3 position, Transform* parent,
-    core::Model* model, Material* material) : GameObject(name, position, parent)
+    core::Model* model, std::shared_ptr<Material> material) : GameObject(name, position, parent)
 {
     this->model = model;
     this->material = material;
@@ -83,7 +83,7 @@ RenderableObject RenderableObject::Clone() const {
 
 
 RenderableObject RenderableObject::Create(const std::string &name, const glm::vec3 position, const glm::vec3 scale, Transform *parent,
-    const std::string &modelPath, Material* material)
+    const std::string &modelPath, std::shared_ptr<Material> material)
 {
     core::Model *model = new core::Model( core::AssimpLoader::loadModel(modelPath) );
     RenderableObject obj(name, position, parent, model, material);
@@ -96,7 +96,7 @@ RenderableObject RenderableObject::Create(const std::string &name, const glm::ve
 {
     core::Model *model = new core::Model( core::AssimpLoader::loadModel(modelPath) );
     std::shared_ptr<core::Texture> texture = std::shared_ptr<core::Texture>( new core::Texture(texturePath));
-    Material *material = new Material(texture, modelVertexShader, textureShader);
+    std::shared_ptr<Material> material = std::shared_ptr<Material>(new Material(texture, modelVertexShader, textureShader));
     RenderableObject obj(name, position, parent, model, material);
     obj.transform.Scale(scale);
     return obj;

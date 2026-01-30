@@ -151,13 +151,14 @@ int main() {
         printf("Error! Making Shader Program: %s\n", infoLog);
     }
 
-    Material* normalMat = new Material(nullptr, modelVertexShader, fragmentShader);
+    std::shared_ptr<Material> normalMat = std::shared_ptr<Material>(new Material(nullptr, modelVertexShader, fragmentShader));
     // Quad
     core::Mesh quad = core::Mesh::generateQuad();
     core::Model* quadModel = new core::Model({quad});
     std::shared_ptr<core::Texture> cmgtGatoTexture =
         std::shared_ptr<core::Texture>( new core::Texture("textures/CMGaTo_crop.png") );
-    Material* cmGatoMaterial = new Material(cmgtGatoTexture, modelVertexShader, textureShader);
+    std::shared_ptr<Material> cmGatoMaterial = std::shared_ptr<Material>(new Material(cmgtGatoTexture,
+        modelVertexShader, textureShader));
     RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, quadModel, cmGatoMaterial);
     quadObj.transform.Scale(glm::vec3(5, 5, 1));
     // Susanne
@@ -246,9 +247,12 @@ int main() {
 
     // PP
     RenderableObject renderQuad = quadObj;
-    Material* noPostProcessingMat = new Material(nullptr, vertexShader, defaultPostprocessingShader);
-    Material* outlinePostProcessingMat = new Material(nullptr, vertexShader, outlinePostProcessingShader);
-    Material* colorPostProcessingMat = new Material(nullptr, vertexShader, colorPostProcessingShader);
+    std::shared_ptr<Material> noPostProcessingMat = std::shared_ptr<Material>
+    (new Material(nullptr, vertexShader, defaultPostprocessingShader));
+    std::shared_ptr<Material> outlinePostProcessingMat = std::shared_ptr<Material>
+    (new Material(nullptr, vertexShader, outlinePostProcessingShader));
+    std::shared_ptr<Material> colorPostProcessingMat = std::shared_ptr<Material>
+    (new Material(nullptr, vertexShader, colorPostProcessingShader));
     renderQuad.material = colorPostProcessingMat;
 
     unsigned int fbo;
@@ -408,9 +412,6 @@ int main() {
 
     glDeleteProgram(modelShaderProgram);
     glDeleteProgram(textureShaderProgram);
-    delete noPostProcessingMat;
-    delete outlinePostProcessingMat;
-    delete colorPostProcessingMat;
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

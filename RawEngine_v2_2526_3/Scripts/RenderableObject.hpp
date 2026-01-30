@@ -7,10 +7,10 @@
 
 class RenderableObject : public GameObject {
 public:
-    RenderableObject(const std::string &name, glm::vec3 position, Transform* parent, core::Model* model, Material* material);
+    RenderableObject(const std::string &name, glm::vec3 position, Transform* parent, core::Model* model, std::shared_ptr<Material> material);
     ~RenderableObject() override;
     core::Model* model;
-    Material* material;
+    std::shared_ptr<Material> material;
     void Render(const glm::mat4 &view, const glm::mat4 &projection, GLint textureModelUniform,
         const PointLight &light, const Camera &camera) const;
     void Render(const glm::mat4 &view, const glm::mat4 &projection, GLint textureModelUniform,
@@ -23,7 +23,7 @@ public:
     // Create into scene
     RenderableObject Clone() const;
     static RenderableObject Create(const std::string &name, const glm::vec3 position, const glm::vec3 scale, Transform* parent,
-        const std::string &modelPath, Material* material);
+        const std::string &modelPath, std::shared_ptr<Material> material);
     static RenderableObject Create(const std::string &name, const glm::vec3 position, const glm::vec3 scale, Transform* parent,
         const std::string &modelPath, const std::string &texturePath, const GLuint modelVertexShader, const GLuint textureShader);
 };
