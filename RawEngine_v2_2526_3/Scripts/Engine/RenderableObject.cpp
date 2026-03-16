@@ -8,7 +8,7 @@
 
 
 RenderableObject::RenderableObject(const std::string &name, const glm::vec3 position, Transform* parent,
-    std::shared_ptr<core::Model> model, std::shared_ptr<Material> material) : GameObject(name, position, parent)
+                                   std::shared_ptr<core::Model> model, std::shared_ptr<Material> material) : GameObject(name, position, parent)
 {
     this->model = model;
     this->material = material;

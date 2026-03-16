@@ -1,5 +1,3 @@
-
-
 #include <valarray>
 #include <glm/vec3.hpp>
 #include "VectorMath.hpp"

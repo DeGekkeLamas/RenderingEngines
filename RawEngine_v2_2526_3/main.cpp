@@ -9,11 +9,11 @@
 #include "core/mesh.h"
 #include "core/assimpLoader.h"
 #include "core/texture.h"
-#include "Scripts/Camera.hpp"
+#include "Scripts/Engine/Camera.hpp"
 #include "iostream"
-#include "Scripts/GameObject.hpp"
-#include "Scripts/PointLight.hpp"
-#include "Scripts/RenderableObject.hpp"
+#include "Scripts/Engine/GameObject.hpp"
+#include "Scripts/Engine/PointLight.hpp"
+#include "Scripts/Engine/RenderableObject.hpp"
 
 //#define MAC_CLION
 #define VSTUDIO
@@ -187,7 +187,7 @@ int main() {
     RenderableObject engineObj = RenderableObject::Create("Engine", glm::vec3(0,0,-10), glm::vec3(.1f, .1f, .1f), nullptr,
     "models/engine.fbx", "textures/initialShadingGroup_albedo.jpg", modelVertexShader, textureShader);
     // Horse
-    RenderableObject horseObj = RenderableObject::Create("Horse", glm::vec3(0,0,0), glm::vec3(.01f, .01f, .01f), nullptr,
+    RenderableObject horseObj = RenderableObject::Create("Horse", glm::vec3(0,0,0), glm::vec3(.01f, .01f, .01f), &suzanneObj.transform,
         "models/Horse.obj", "textures/HorseTex.jpg", modelVertexShader, textureShader);
     // Tenna
     RenderableObject tenna = RenderableObject::Create("Tenna", glm::vec3(0,0,30), glm::vec3(.1f, .1f, .1f), nullptr,
@@ -399,6 +399,7 @@ int main() {
         for (int i = 0; i < currentScene->size(); i++) {
             (*currentScene)[i]->Render(view, projection, textureModelUniform, pointLight, cam);
         }
+        // glDispatchCompute(1,1,1);
 
         // PP
         glBindFramebuffer(GL_FRAMEBUFFER, 0);

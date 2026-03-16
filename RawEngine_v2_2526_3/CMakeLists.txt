@@ -16,14 +16,16 @@ set(IMGUI_SOURCES
         imgui/imgui_widgets.cpp
         imgui/backends/imgui_impl_glfw.cpp
         imgui/backends/imgui_impl_opengl3.cpp
-        Scripts/RenderableObject.hpp
-        Scripts/RenderableObject.cpp
-        Scripts/PointLight.cpp
-        Scripts/PointLight.hpp
-        Scripts/Material.hpp
-        Scripts/Material.cpp
-        Scripts/List.hpp
-        Scripts/ListElement.hpp
+        Scripts/Engine/RenderableObject.hpp
+        Scripts/Engine/RenderableObject.cpp
+        Scripts/Engine/PointLight.cpp
+        Scripts/Engine/PointLight.hpp
+        Scripts/Engine/Material.hpp
+        Scripts/Engine/Material.cpp
+        Scripts/Engine/List.hpp
+        Scripts/Engine/ListElement.hpp
+        Scripts/Boids/BoidObject.cpp
+        Scripts/Boids/BoidObject.hpp
 )
 
 add_executable(RawEngine main.cpp
@@ -38,14 +40,14 @@ add_executable(RawEngine main.cpp
         gladHelper.hpp
         core/texture.cpp
         core/texture.h
-        Scripts/Camera.hpp
-        Scripts/Camera.cpp
-        Scripts/VectorMath.hpp
-        Scripts/VectorMath.cpp
-        Scripts/Transform.hpp
-        Scripts/Transform.cpp
-        Scripts/GameObject.hpp
-        Scripts/GameObject.cpp
+        Scripts/Engine/Camera.hpp
+        Scripts/Engine/Camera.cpp
+        Scripts/Engine/VectorMath.hpp
+        Scripts/Engine/VectorMath.cpp
+        Scripts/Engine/Transform.hpp
+        Scripts/Engine/Transform.cpp
+        Scripts/Engine/GameObject.hpp
+        Scripts/Engine/GameObject.cpp
 )
 
 add_custom_command(
