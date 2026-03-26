@@ -7,10 +7,6 @@ public:
         std::vector<BoidObject*> boids;
         void Awake();
         void Update(float deltaTime);
-private:
-        glm::vec3 FlyToCenterOfMass(BoidObject* compare);
-        glm::vec3 KeepDistance(BoidObject* compare);
-        glm::vec3 MatchVelocity(BoidObject* compare);
 };
 
 
