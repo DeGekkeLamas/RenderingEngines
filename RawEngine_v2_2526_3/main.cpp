@@ -11,6 +11,7 @@
 #include "core/texture.h"
 #include "Scripts/Engine/Camera.hpp"
 #include "iostream"
+#include "Scripts/Boids/BoidObject.hpp"
 #include "Scripts/Engine/GameObject.hpp"
 #include "Scripts/Engine/PointLight.hpp"
 #include "Scripts/Engine/RenderableObject.hpp"
@@ -161,55 +162,27 @@ int main() {
         modelVertexShader, textureShader));
     RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, quadModel, cmGatoMaterial);
     quadObj.transform.Scale(glm::vec3(5, 5, 1));
-    // Susanne
-    RenderableObject suzanneObj = RenderableObject::Create("Suzanne", glm::vec3(), glm::vec3(1,1,1), nullptr,
-    "models/nonormalmonkey.obj", normalMat);
-    // Dinner demon
-    // RenderableObject dinnerDemonObj = RenderableObject::Create("Dinner demon", glm::vec3(1,-5,5), glm::vec3(0.05f,0.05f,0.05f), nullptr,
-    // "models/DinnerDemon.fbx", normalMat);
-    // // Mystifying Pan
-    // RenderableObject mystifyingPanObj = RenderableObject::Create("Mystifying Pan", glm::vec3(-10,0,0), glm::vec3(0.1f,0.1f,0.1f), nullptr,
-    // "models/MystifyingPan.fbx", normalMat);
-    // // Backflip beerend
-    // RenderableObject backflipBeerendObj = RenderableObject::Create("Backflip beerend", glm::vec3(10,0,0), glm::vec3(0.1f,0.1f,0.1f), nullptr,
-    // "models/backflipBeerend.fbx", normalMat);
-    // Rey
-    RenderableObject reyObj = RenderableObject::Create("Rey", glm::vec3(0,0,30), glm::vec3(0.5f,0.5f,0.5f), nullptr,
-    "models/ReyRetopologized.fbx", normalMat);
-    reyObj.transform.Rotate(glm::vec3(0, 3.1415f, 0));
-    // // Planet
-    // RenderableObject planet = RenderableObject::Create("Planet", glm::vec3(30,0,0), glm::vec3(0.5f,0.5f,0.5f), nullptr,
-    // "models/Planet.fbx", normalMat);
-    // Terrain
-    RenderableObject terrain = RenderableObject::Create("Terrain", glm::vec3(0,-10,0), glm::vec3(0.5f,0.25f,0.5f), nullptr,
-    "models/Terrain.fbx", normalMat);
-    // Engine
-    RenderableObject engineObj = RenderableObject::Create("Engine", glm::vec3(0,0,-10), glm::vec3(.1f, .1f, .1f), nullptr,
-    "models/engine.fbx", "textures/initialShadingGroup_albedo.jpg", modelVertexShader, textureShader);
-    // Horse
-    RenderableObject horseObj = RenderableObject::Create("Horse", glm::vec3(0,0,0), glm::vec3(.01f, .01f, .01f), &suzanneObj.transform,
-        "models/Horse.obj", "textures/HorseTex.jpg", modelVertexShader, textureShader);
-    // Tenna
-    RenderableObject tenna = RenderableObject::Create("Tenna", glm::vec3(0,0,30), glm::vec3(.1f, .1f, .1f), nullptr,
-        "models/Tenna_Sketchfab.fbx", "textures/Tenna_Sketchfab_BakedTexture.png", modelVertexShader, textureShader);
-    tenna.transform.Rotate(glm::vec3(3.1415f/2, 0, 3.1415f));
 
     // Scene
     std::vector<RenderableObject*>* currentScene;
     std::vector<RenderableObject*> SceneA;
     std::vector<RenderableObject*> SceneB;
     std::vector<GameObject*> persistentObjects;
-    SceneA.push_back(&suzanneObj);
-    SceneA.push_back(&quadObj);
-    // SceneA.push_back(&dinnerDemonObj);
-    // SceneA.push_back(&mystifyingPanObj);
-    // SceneA.push_back(&backflipBeerendObj);
-    SceneA.push_back(&reyObj);
-    SceneA.push_back(&horseObj);
-    SceneB.push_back(&engineObj);
-    SceneB.push_back(&tenna);
-    // SceneB.push_back(&planet);
-    SceneB.push_back(&terrain);
+
+    // Horse
+    std::shared_ptr<core::Model> horseModel = std::shared_ptr<core::Model>( new core::Model( core::AssimpLoader::loadModel("models/Horse.obj") ) );;
+    std::shared_ptr<Material> horseMaterial = std::shared_ptr<Material>( new Material(
+    std::shared_ptr<core::Texture>( new core::Texture("textures/HorseTex.jpg")),
+    modelVertexShader, textureShader));
+
+    // Create objects
+    for (int i = 0; i < 10; i++) {
+        BoidObject* horse = new BoidObject("horse", glm::vec3(i,i,i), nullptr,
+            horseModel, horseMaterial);
+        horse->transform.Scale(glm::vec3(.01f, .01f, .01f));
+        SceneA.push_back(horse);
+        horse->Awake();
+    }
 
     currentScene = &SceneA;
 
@@ -292,7 +265,6 @@ int main() {
         std::cout << "Framebuffer is NOT complete!" << std::endl;
     }
 
-    // std::cout << "this part works\n";
     std::shared_ptr<core::Texture> colorTex = std::shared_ptr<core::Texture>( new core::Texture("textures/ColorTexture20.png") );
     colorPostProcessingMat->SetUniform("colorTexture", colorTex->getId(), 1);
     colorPostProcessingMat->SetUniform("colorQTY", 20);
@@ -350,10 +322,10 @@ int main() {
                 currentScene = &SceneA;
             }
         }
-        if (ImGui::Button("Horse")) {
-            RenderableObject* newHorse = new RenderableObject( horseObj.Clone() );
-            currentScene->push_back(newHorse);
-        }
+        // if (ImGui::Button("Horse")) {
+            // RenderableObject* newHorse = new RenderableObject( horseObj.Clone() );
+            // currentScene->push_back(newHorse);
+        // }
         ImGui::Text("Post-processing");
         if (ImGui::Button("None")) {
             renderQuad.material = noPostProcessingMat;
@@ -387,8 +359,10 @@ int main() {
         ImGui::End();
 
         processInput(window);
-        suzanneObj.transform.Rotate(glm::vec3(0.0f, 1.0f, 0.0f) * rotationStrength * (deltaTime));
         pointLight.transform.TranslateObjectSpace(pointLight.transform.right() * static_cast<float>(sin(currentTime) * deltaTime * 10));
+        for (int i = 0; i < BoidObject::boids.size(); i++) {
+            BoidObject::boids[i]->Update(deltaTime);
+        }
 
         // PP
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);

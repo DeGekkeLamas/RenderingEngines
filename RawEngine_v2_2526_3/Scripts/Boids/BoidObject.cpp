@@ -1,5 +1,7 @@
 #include "BoidObject.hpp"
 
+std::vector<BoidObject*> BoidObject::boids;
+
 void BoidObject::Awake() {
     boids.push_back(this);
 }
@@ -15,7 +17,7 @@ void BoidObject::Update(float deltaTime) {
         // Center of mass
         perceivedCenter += currentBoid->transform.position();
         // Distance from other boids
-        if (glm::length(transform.position() - currentBoid->transform.position()) < .1f) {
+        if (glm::length(transform.position() - currentBoid->transform.position()) < .5f) {
             keepDistance -= currentBoid->transform.position() - transform.position();
         }
         // Match velocity
@@ -27,8 +29,8 @@ void BoidObject::Update(float deltaTime) {
 
     velocity += perceivedCenter;
     velocity += keepDistance;
-    velocity += averageVelocity;
-    transform.TranslateWorldSpace(velocity);
+    velocity += (averageVelocity - velocity) / 8.0f;
+    transform.TranslateWorldSpace(velocity * deltaTime * 0.1f);
 }
 
 
