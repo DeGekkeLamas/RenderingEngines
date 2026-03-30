@@ -80,6 +80,10 @@ RenderableObject RenderableObject::Create(const std::string &name, const glm::ve
     return obj;
 }
 
+void RenderableObject::RenderToIMGUI() {
+    GameObject::RenderToIMGUI();
+}
+
 
 
 

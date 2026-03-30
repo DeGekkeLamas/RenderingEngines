@@ -9,6 +9,7 @@ public:
         static std::vector<BoidObject*> boids;
         void Awake();
         void Update(float deltaTime);
+        void RenderToIMGUI() override;
 };
 
 

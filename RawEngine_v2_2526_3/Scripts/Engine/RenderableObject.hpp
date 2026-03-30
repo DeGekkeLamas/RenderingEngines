@@ -22,4 +22,5 @@ public:
         const std::string &modelPath, std::shared_ptr<Material> material);
     static RenderableObject Create(const std::string &name, const glm::vec3 position, const glm::vec3 scale, Transform* parent,
         const std::string &modelPath, const std::string &texturePath, const GLuint modelVertexShader, const GLuint textureShader);
+    virtual void RenderToIMGUI() override;
 };

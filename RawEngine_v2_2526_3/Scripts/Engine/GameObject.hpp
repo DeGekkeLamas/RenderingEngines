@@ -13,7 +13,7 @@ class GameObject {
     GameObject(const std::string &name, glm::vec3 position, Transform* parent);
     std::string name;
     Transform transform;
-    void RenderToIMGUI();
+    virtual void RenderToIMGUI();
 
     virtual void Start();
     virtual void Update();

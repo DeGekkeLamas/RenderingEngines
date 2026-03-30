@@ -4,6 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/matrix_access.hpp>
 
+#include "imgui_impl_opengl3_loader.h"
+
 Transform::~Transform() {
 
 }
@@ -38,25 +40,13 @@ glm::vec3 Transform::position() const {
 
 void Transform::TranslateObjectSpace(const glm::vec3 amount) {
     modelMatrix = translate(modelMatrix, amount);
-    // Apply to children
-    // for (int i = 0; i < children.size(); i++) {
-    //     children[i]->TranslateObjectSpace(amount);
-    // }
 }
 
 void Transform::TranslateWorldSpace(const glm::vec3 amount) {
     modelMatrix[3] += glm::vec4(amount, 0);
-    // Apply to children
-    // for (int i = 0; i < children.size(); i++) {
-    //     children[i]->TranslateWorldSpace(amount);
-    // }
 }
 void Transform::SetPosition(const glm::vec3 position) {
     modelMatrix[3] = glm::vec4(position, 1);
-    // Apply to children
-    // for (int i = 0; i < children.size(); i++) {
-    //     children[i]->SetPosition(position);
-    // }
 }
 
 void Transform::SetRotationRadians(const glm::vec3 radians) {
@@ -95,6 +85,17 @@ void Transform::RotateWorld(const glm::vec3 amount) {
     RotateOneDirWorld(amount.y, up());
 }
 
+void Transform::LookAt(glm::vec3 forward, glm::vec3 up) {
+    forward = glm::normalize(forward);
+    glm::vec3 right = glm::normalize(cross(forward, up));
+    up = cross(right, forward);
+    // Set directions
+    modelMatrix[0] = glm::vec4(right * scale.x, modelMatrix[0][3]);
+    modelMatrix[1] = glm::vec4(up * scale.y, modelMatrix[1][3]);
+    modelMatrix[2] = glm::vec4(forward * scale.z, modelMatrix[2][3]);
+}
+
+
 void Transform::RotateOneDir(const float amount, const glm::vec3 axis) {
     modelMatrix = glm::rotate(modelMatrix, amount, axis);
 }
@@ -107,4 +108,5 @@ void Transform::RotateOneDirWorld(const float amount, const glm::vec3 axis) {
 
 void Transform::Scale(const glm::vec3 amount) {
     modelMatrix = glm::scale(modelMatrix, amount);
+    scale = amount;
 }

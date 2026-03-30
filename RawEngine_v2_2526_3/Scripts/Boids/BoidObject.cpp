@@ -1,12 +1,15 @@
 #include "BoidObject.hpp"
 
+#include "imgui.h"
+#include "Scripts/Engine/VectorMath.hpp"
+
 std::vector<BoidObject*> BoidObject::boids;
 
 void BoidObject::Awake() {
     boids.push_back(this);
 }
 
-void BoidObject::Update(float deltaTime) {
+void BoidObject::Update(const float deltaTime) {
     glm::vec3 perceivedCenter = glm::vec3();
     glm::vec3 keepDistance = glm::vec3();
     glm::vec3 averageVelocity = glm::vec3();
@@ -29,8 +32,17 @@ void BoidObject::Update(float deltaTime) {
 
     velocity += perceivedCenter;
     velocity += keepDistance;
-    velocity += (averageVelocity - velocity) / 8.0f;
-    transform.TranslateWorldSpace(velocity * deltaTime * 0.1f);
+    velocity += (averageVelocity - velocity) / 24.0f;
+    transform.TranslateObjectSpace(velocity * deltaTime * 0.01f);
+    transform.LookAt(velocity, VectorMath::up);
 }
+
+void BoidObject::RenderToIMGUI() {
+    RenderableObject::RenderToIMGUI();
+    // pos
+    ImGui::DragFloat3("Velocity", glm::value_ptr(velocity));
+}
+
+
 
 

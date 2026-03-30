@@ -26,6 +26,7 @@ class Transform {
         void SetRotationEuler(const glm::vec3 euler);
         void Rotate(const glm::vec3 amount);
         void RotateWorld(const glm::vec3 amount);
+        void LookAt(glm::vec3 forward, glm::vec3 up);
         void Scale(const glm::vec3 amount);
     private:
         glm::mat4 modelMatrix;

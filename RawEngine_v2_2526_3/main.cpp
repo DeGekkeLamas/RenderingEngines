@@ -15,6 +15,7 @@
 #include "Scripts/Engine/GameObject.hpp"
 #include "Scripts/Engine/PointLight.hpp"
 #include "Scripts/Engine/RenderableObject.hpp"
+#include "Scripts/Engine/VectorMath.hpp"
 
 //#define MAC_CLION
 #define VSTUDIO
@@ -177,9 +178,10 @@ int main() {
 
     // Create objects
     for (int i = 0; i < 10; i++) {
-        BoidObject* horse = new BoidObject("horse", glm::vec3(i,i,i), nullptr,
+        BoidObject* horse = new BoidObject("horse", glm::vec3(i+1,i+1,i+1), nullptr,
             horseModel, horseMaterial);
         horse->transform.Scale(glm::vec3(.01f, .01f, .01f));
+        horse->velocity = glm::normalize(horse->transform.position()) * 100.0f;
         SceneA.push_back(horse);
         horse->Awake();
     }
@@ -363,6 +365,7 @@ int main() {
         for (int i = 0; i < BoidObject::boids.size(); i++) {
             BoidObject::boids[i]->Update(deltaTime);
         }
+        // cam.transform.LookAt(BoidObject::boids[0]->transform.position() - cam.transform.position(), VectorMath::up);
 
         // PP
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
