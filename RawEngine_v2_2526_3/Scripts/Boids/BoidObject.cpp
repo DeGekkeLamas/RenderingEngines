@@ -13,6 +13,7 @@ void BoidObject::Update(const float deltaTime) {
     glm::vec3 perceivedCenter = glm::vec3();
     glm::vec3 keepDistance = glm::vec3();
     glm::vec3 averageVelocity = glm::vec3();
+    glm::vec3 moveToCenter = glm::vec3();
     for (int i = 0; i < boids.size(); i++) {
         BoidObject* currentBoid = boids[i];
         if (currentBoid == this) continue;
@@ -20,7 +21,7 @@ void BoidObject::Update(const float deltaTime) {
         // Center of mass
         perceivedCenter += currentBoid->transform.position();
         // Distance from other boids
-        if (glm::length(transform.position() - currentBoid->transform.position()) < .5f) {
+        if (glm::length(transform.position() - currentBoid->transform.position()) < 5) {
             keepDistance -= currentBoid->transform.position() - transform.position();
         }
         // Match velocity
@@ -29,11 +30,13 @@ void BoidObject::Update(const float deltaTime) {
     perceivedCenter /= boids.size()-1;
     perceivedCenter -= this->transform.position();
     averageVelocity /= boids.size()-1;
+    moveToCenter = -transform.position() / 500.0f;
 
-    velocity += perceivedCenter;
-    velocity += keepDistance;
-    velocity += (averageVelocity - velocity) / 24.0f;
-    transform.TranslateObjectSpace(velocity * deltaTime * 0.01f);
+    // velocity += perceivedCenter / 128.0f;
+    // velocity += keepDistance / 4.0f;
+    velocity += (averageVelocity - velocity) / 100.0f;
+    // velocity += moveToCenter;
+    transform.TranslateWorldSpace(velocity * deltaTime);
     transform.LookAt(velocity, VectorMath::up);
 }
 

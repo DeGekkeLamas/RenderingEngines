@@ -177,11 +177,11 @@ int main() {
     modelVertexShader, textureShader));
 
     // Create objects
-    for (int i = 0; i < 10; i++) {
-        BoidObject* horse = new BoidObject("horse", glm::vec3(i+1,i+1,i+1), nullptr,
+    for (int i = 0; i < 100; i++) {
+        BoidObject* horse = new BoidObject("Boid" + std::to_string(i), glm::vec3(rand()%100,rand()%100,rand()%100), nullptr,
             horseModel, horseMaterial);
         horse->transform.Scale(glm::vec3(.01f, .01f, .01f));
-        horse->velocity = glm::normalize(horse->transform.position()) * 100.0f;
+        horse->velocity = glm::normalize(horse->transform.position()) * 1.0f;
         SceneA.push_back(horse);
         horse->Awake();
     }
@@ -365,7 +365,7 @@ int main() {
         for (int i = 0; i < BoidObject::boids.size(); i++) {
             BoidObject::boids[i]->Update(deltaTime);
         }
-        // cam.transform.LookAt(BoidObject::boids[0]->transform.position() - cam.transform.position(), VectorMath::up);
+        cam.transform.LookAt(BoidObject::boids[0]->transform.position() - cam.transform.position(), VectorMath::up);
 
         // PP
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
