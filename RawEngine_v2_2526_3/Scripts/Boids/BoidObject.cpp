@@ -30,12 +30,12 @@ void BoidObject::Update(const float deltaTime) {
     perceivedCenter /= boids.size()-1;
     perceivedCenter -= this->transform.position();
     averageVelocity /= boids.size()-1;
-    moveToCenter = -transform.position() / 500.0f;
+    moveToCenter = -transform.position();
 
-    // velocity += perceivedCenter / 128.0f;
-    // velocity += keepDistance / 4.0f;
-    velocity += (averageVelocity - velocity) / 100.0f;
-    // velocity += moveToCenter;
+    velocity += perceivedCenter * deltaTime;
+    velocity += keepDistance * deltaTime;
+    velocity += (averageVelocity - velocity) * deltaTime;
+    velocity += moveToCenter * deltaTime;
     transform.TranslateWorldSpace(velocity * deltaTime);
     transform.LookAt(velocity, VectorMath::up);
 }
