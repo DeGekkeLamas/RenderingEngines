@@ -131,7 +131,7 @@ int main() {
     const GLuint colorPostProcessingShader = generateShader("shaders/MSPaintColorPostprocessing.fs", GL_FRAGMENT_SHADER);
     const GLuint outlinePostProcessingShader = generateShader("shaders/outlinePostprocessing.fs", GL_FRAGMENT_SHADER);
     const GLuint defaultPostprocessingShader = generateShader("shaders/defaultPostprocessing.fs", GL_FRAGMENT_SHADER);
-    const GLuint boidComputeShader = generateShader("Scripts/Boids/BoidCompute.compute", GL_COMPUTE_SHADER);
+    const GLuint boidComputeShader = generateShader("../Scripts/Boids/BoidCompute.compute", GL_COMPUTE_SHADER);
 
     int success;
     char infoLog[512];
@@ -278,13 +278,10 @@ int main() {
         std::cout << "Framebuffer is NOT complete!" << std::endl;
     }
 
+    // Color filter PP effect
     std::shared_ptr<core::Texture> colorTex = std::shared_ptr<core::Texture>( new core::Texture("textures/ColorTexture20.png") );
     colorPostProcessingMat->SetUniform("colorTexture", colorTex->getId(), 1);
     colorPostProcessingMat->SetUniform("colorQTY", 20);
-    // std::cout << "this part works too\n";
-
-    printf("GL_VERSION: %s\n", glGetString(GL_VERSION));
-    printf("GLSL_VERSION: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     while (!glfwWindowShouldClose(window)) {
         glDepthMask(GL_TRUE);
