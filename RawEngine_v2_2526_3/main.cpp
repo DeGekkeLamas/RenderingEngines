@@ -86,7 +86,7 @@ GLuint generateShader(const std::string &shaderPath, GLuint shaderType) {
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_SAMPLES, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifdef __APPLE__
@@ -131,6 +131,7 @@ int main() {
     const GLuint colorPostProcessingShader = generateShader("shaders/MSPaintColorPostprocessing.fs", GL_FRAGMENT_SHADER);
     const GLuint outlinePostProcessingShader = generateShader("shaders/outlinePostprocessing.fs", GL_FRAGMENT_SHADER);
     const GLuint defaultPostprocessingShader = generateShader("shaders/defaultPostprocessing.fs", GL_FRAGMENT_SHADER);
+    const GLuint boidComputeProgram = generateShader("Scripts/Boids/BoidCompute.compute", GL_COMPUTE_SHADER);
 
     int success;
     char infoLog[512];
@@ -172,6 +173,7 @@ int main() {
 
     // Horse
     std::shared_ptr<core::Model> horseModel = std::shared_ptr<core::Model>( new core::Model( core::AssimpLoader::loadModel("models/Horse.obj") ) );;
+    std::shared_ptr<core::Model> triangleModel = std::shared_ptr<core::Model>( new core::Model( core::AssimpLoader::loadModel("models/TrianglePointer.obj") ) );;
     std::shared_ptr<Material> horseMaterial = std::shared_ptr<Material>( new Material(
     std::shared_ptr<core::Texture>( new core::Texture("textures/HorseTex.jpg")),
     modelVertexShader, textureShader));
@@ -179,7 +181,7 @@ int main() {
     // Create objects
     for (int i = 0; i < 100; i++) {
         BoidObject* horse = new BoidObject("Boid" + std::to_string(i), glm::vec3(rand()%100,rand()%100,rand()%100), nullptr,
-            horseModel, horseMaterial);
+            triangleModel, normalMat);
         horse->transform.Scale(glm::vec3(.01f, .01f, .01f));
         horse->velocity = glm::normalize(horse->transform.position()) * 1.0f;
         SceneA.push_back(horse);
@@ -272,6 +274,9 @@ int main() {
     colorPostProcessingMat->SetUniform("colorQTY", 20);
     // std::cout << "this part works too\n";
 
+    printf("GL_VERSION: %s\n", glGetString(GL_VERSION));
+    printf("GLSL_VERSION: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+
     while (!glfwWindowShouldClose(window)) {
         glDepthMask(GL_TRUE);
         glEnable(GL_DEPTH_TEST);
@@ -362,15 +367,18 @@ int main() {
 
         processInput(window);
         pointLight.transform.TranslateObjectSpace(pointLight.transform.right() * static_cast<float>(sin(currentTime) * deltaTime * 10));
-        for (int i = 0; i < BoidObject::boids.size(); i++) {
-            BoidObject::boids[i]->Update(deltaTime);
-        }
+        // for (int i = 0; i < BoidObject::boids.size(); i++) {
+            // BoidObject::boids[i]->Update(deltaTime);
+        // }
+        // glUseProgram(boidComputeProgram);
+        // glDispatchCompute(BoidObject::boids.size(), BoidObject::boids.size(), 1);
         cam.transform.LookAt(BoidObject::boids[0]->transform.position() - cam.transform.position(), VectorMath::up);
 
         // PP
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(clearColor.x, clearColor.y, clearColor.z, 1.0f);
+
 
         // Render
         for (int i = 0; i < currentScene->size(); i++) {

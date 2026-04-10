@@ -30,7 +30,7 @@ void BoidObject::Update(const float deltaTime) {
     perceivedCenter /= boids.size()-1;
     perceivedCenter -= this->transform.position();
     averageVelocity /= boids.size()-1;
-    moveToCenter = -transform.position();
+    moveToCenter = -transform.position(); // Steer boid towards origin of scene
 
     velocity += perceivedCenter * deltaTime;
     velocity += keepDistance * deltaTime;
