@@ -131,7 +131,7 @@ int main() {
     const GLuint colorPostProcessingShader = generateShader("shaders/MSPaintColorPostprocessing.fs", GL_FRAGMENT_SHADER);
     const GLuint outlinePostProcessingShader = generateShader("shaders/outlinePostprocessing.fs", GL_FRAGMENT_SHADER);
     const GLuint defaultPostprocessingShader = generateShader("shaders/defaultPostprocessing.fs", GL_FRAGMENT_SHADER);
-    const GLuint boidComputeProgram = generateShader("Scripts/Boids/BoidCompute.compute", GL_COMPUTE_SHADER);
+    const GLuint boidComputeShader = generateShader("Scripts/Boids/BoidCompute.compute", GL_COMPUTE_SHADER);
 
     int success;
     char infoLog[512];
@@ -153,7 +153,16 @@ int main() {
         glGetProgramInfoLog(textureShaderProgram, 512, NULL, infoLog);
         printf("Error! Making Shader Program: %s\n", infoLog);
     }
+    const unsigned int boidComputeProgram = glCreateProgram();
+    glAttachShader(boidComputeProgram, boidComputeShader);
+    glLinkProgram(boidComputeProgram);
+    glGetProgramiv(boidComputeProgram, GL_LINK_STATUS, &success);
+    if (!success) {
+        glGetProgramInfoLog(textureShaderProgram, 512, NULL, infoLog);
+        printf("Error! Making Shader Program: %s\n", infoLog);
+    }
 
+    // Scene quad
     std::shared_ptr<Material> normalMat = std::shared_ptr<Material>(new Material(nullptr, modelVertexShader, fragmentShader));
     // Quad
     core::Mesh quad = core::Mesh::generateQuad();
@@ -370,8 +379,10 @@ int main() {
         // for (int i = 0; i < BoidObject::boids.size(); i++) {
             // BoidObject::boids[i]->Update(deltaTime);
         // }
-        // glUseProgram(boidComputeProgram);
-        // glDispatchCompute(BoidObject::boids.size(), BoidObject::boids.size(), 1);
+        glUseProgram(boidComputeProgram);
+        glDispatchCompute(BoidObject::boids.size(), BoidObject::boids.size(), 1);
+        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
         cam.transform.LookAt(BoidObject::boids[0]->transform.position() - cam.transform.position(), VectorMath::up);
 
         // PP
