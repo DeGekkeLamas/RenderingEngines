@@ -1,0 +1,51 @@
+#version 430
+#define BOID_COUNT 16
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+struct Boid {
+    vec3 position;
+    vec3 velocity;
+};
+layout(std430, binding = 0) buffer BoidBuffer {
+    Boid boids[];
+};
+
+//uniform Boid boids[];
+uniform int boidCount;
+uniform float deltaTime;
+
+void main()
+{
+//    if (gl_GlobalInvocationID.x == gl_GlobalInvocationID.y) return;
+     Boid thisBoid = boids[gl_GlobalInvocationID.x];
+
+     vec3 perceivedCenter = vec3(0);
+     vec3 keepDistance = vec3(0);
+     vec3 averageVelocity = vec3(0);
+     vec3 moveToCenter = vec3(0);
+     for (int i = 0; i < boidCount; i++) {
+         if (gl_GlobalInvocationID.x == i) continue; // Skip if same boid
+
+         Boid currentBoid = boids[i];
+
+         // Center of mass
+         perceivedCenter += currentBoid.position;
+         // Distance from other boids
+         if (length(thisBoid.position - currentBoid.position) < 5) {
+             keepDistance -= currentBoid.position - thisBoid.position;
+         }
+         // Match velocity
+         averageVelocity += currentBoid.velocity;
+     }
+     perceivedCenter /= boidCount-1;
+     perceivedCenter -= thisBoid.position;
+     averageVelocity /= boidCount-1;
+     moveToCenter = -thisBoid.position; // Steer boid towards origin of scene
+
+    thisBoid.velocity += perceivedCenter * deltaTime;
+    thisBoid.velocity += keepDistance * deltaTime;
+    thisBoid.velocity += (averageVelocity - thisBoid.velocity) * deltaTime;
+    thisBoid.velocity += moveToCenter * deltaTime;
+//     transform.TranslateWorldSpace(velocity * deltaTime);
+//     transform.LookAt(velocity, VectorMath::up);
+}

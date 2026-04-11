@@ -131,7 +131,7 @@ int main() {
     const GLuint colorPostProcessingShader = generateShader("shaders/MSPaintColorPostprocessing.fs", GL_FRAGMENT_SHADER);
     const GLuint outlinePostProcessingShader = generateShader("shaders/outlinePostprocessing.fs", GL_FRAGMENT_SHADER);
     const GLuint defaultPostprocessingShader = generateShader("shaders/defaultPostprocessing.fs", GL_FRAGMENT_SHADER);
-    const GLuint boidComputeShader = generateShader("../Scripts/Boids/BoidCompute.compute", GL_COMPUTE_SHADER);
+    const GLuint boidComputeShader = generateShader("../Scripts/Boids/BoidCompute.comp", GL_COMPUTE_SHADER);
 
     int success;
     char infoLog[512];
@@ -196,6 +196,8 @@ int main() {
         SceneA.push_back(horse);
         horse->Awake();
     }
+    const GLint uniformPosBoidCount = glGetUniformLocation(boidComputeProgram, "boidCount"); // boid count
+    glUniform1i(uniformPosBoidCount, BoidObject::boids.size());
 
     currentScene = &SceneA;
 
@@ -372,11 +374,18 @@ int main() {
         ImGui::End();
 
         processInput(window);
-        pointLight.transform.TranslateObjectSpace(pointLight.transform.right() * static_cast<float>(sin(currentTime) * deltaTime * 10));
+        pointLight.transform.TranslateObjectSpace(pointLight.transform.right() *
+            static_cast<float>(sin(currentTime) * deltaTime * 10));
+
+        // boids code
+        // Iterative based
         // for (int i = 0; i < BoidObject::boids.size(); i++) {
             // BoidObject::boids[i]->Update(deltaTime);
         // }
+        // Compute shader based
         glUseProgram(boidComputeProgram);
+        const GLint uniformPosDeltaTime = glGetUniformLocation(boidComputeProgram, "deltaTime"); // deltatime uniform
+        glUniform1i(uniformPosDeltaTime, deltaTime);
         glDispatchCompute(BoidObject::boids.size(), BoidObject::boids.size(), 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
