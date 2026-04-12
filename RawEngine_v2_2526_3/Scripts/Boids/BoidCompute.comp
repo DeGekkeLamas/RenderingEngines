@@ -2,12 +2,12 @@
 #define BOID_COUNT 16
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-struct Boid {
+struct SimpleBoidData {
     vec3 position;
     vec3 velocity;
 };
 layout(std430, binding = 0) buffer BoidBuffer {
-    Boid boids[];
+    SimpleBoidData boids[];
 };
 
 //uniform Boid boids[];
@@ -17,7 +17,7 @@ uniform float deltaTime;
 void main()
 {
 //    if (gl_GlobalInvocationID.x == gl_GlobalInvocationID.y) return;
-     Boid thisBoid = boids[gl_GlobalInvocationID.x];
+     SimpleBoidData thisBoid = boids[gl_GlobalInvocationID.x];
 
      vec3 perceivedCenter = vec3(0);
      vec3 keepDistance = vec3(0);
@@ -26,7 +26,7 @@ void main()
      for (int i = 0; i < boidCount; i++) {
          if (gl_GlobalInvocationID.x == i) continue; // Skip if same boid
 
-         Boid currentBoid = boids[i];
+         SimpleBoidData currentBoid = boids[i];
 
          // Center of mass
          perceivedCenter += currentBoid.position;

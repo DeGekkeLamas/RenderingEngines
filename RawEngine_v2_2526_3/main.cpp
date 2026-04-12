@@ -198,6 +198,11 @@ int main() {
     }
     const GLint uniformPosBoidCount = glGetUniformLocation(boidComputeProgram, "boidCount"); // boid count
     glUniform1i(uniformPosBoidCount, BoidObject::boids.size());
+    // create buffer
+    GLuint boidBuffer;
+    glGenBuffers(1, &boidBuffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBuffer);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, boidBuffer);
 
     currentScene = &SceneA;
 
@@ -385,8 +390,13 @@ int main() {
         // Compute shader based
         glUseProgram(boidComputeProgram);
         const GLint uniformPosDeltaTime = glGetUniformLocation(boidComputeProgram, "deltaTime"); // deltatime uniform
-        glUniform1i(uniformPosDeltaTime, deltaTime);
-        glDispatchCompute(BoidObject::boids.size(), BoidObject::boids.size(), 1);
+        glUniform1f(uniformPosDeltaTime, deltaTime);
+        // Setting data
+        SimpleBoidData* boidDatas = BoidObject::ToSimpleArray();
+        glBufferData(GL_SHADER_STORAGE_BUFFER,
+            BoidObject::boids.size() * sizeof(SimpleBoidData), boidDatas, GL_DYNAMIC_DRAW);
+        delete[] boidDatas;
+        glDispatchCompute(BoidObject::boids.size(), 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
         cam.transform.LookAt(BoidObject::boids[0]->transform.position() - cam.transform.position(), VectorMath::up);

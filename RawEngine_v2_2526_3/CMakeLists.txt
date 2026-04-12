@@ -26,6 +26,8 @@ set(IMGUI_SOURCES
         Scripts/Engine/ListElement.hpp
         Scripts/Boids/BoidObject.cpp
         Scripts/Boids/BoidObject.hpp
+        Scripts/Boids/SimpleBoidData.hpp
+        Scripts/Boids/SimpleBoidData.cpp
 )
 
 add_executable(RawEngine main.cpp

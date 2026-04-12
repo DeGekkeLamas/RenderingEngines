@@ -46,6 +46,19 @@ void BoidObject::RenderToIMGUI() {
     ImGui::DragFloat3("Velocity", glm::value_ptr(velocity));
 }
 
+SimpleBoidData BoidObject::toSimpleData() const {
+    return SimpleBoidData(transform.position(), velocity);
+}
+
+SimpleBoidData* BoidObject::ToSimpleArray() {
+    SimpleBoidData* boidsData = new SimpleBoidData[boids.size()];
+    for (int i = 0; i < boids.size(); i++) {
+        boidsData[i] = boids[i]->toSimpleData();
+    }
+    return  boidsData;
+}
+
+
 
 
 
