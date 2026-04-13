@@ -403,7 +403,7 @@ int main() {
         glBufferData(GL_SHADER_STORAGE_BUFFER,
             BoidObject::boids.size() * sizeof(SimpleBoidData), boidDatas, GL_DYNAMIC_DRAW);
         // Dispatch
-        glDispatchCompute(BoidObject::boids.size(), 1, 1);
+        glDispatchCompute(BoidObject::boids.size()/32, 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         // Reading data back
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBufferOut);
