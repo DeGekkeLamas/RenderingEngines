@@ -199,10 +199,16 @@ int main() {
     const GLint uniformPosBoidCount = glGetUniformLocation(boidComputeProgram, "boidCount"); // boid count
     glUniform1i(uniformPosBoidCount, BoidObject::boids.size());
     // create buffer
-    GLuint boidBuffer;
-    glGenBuffers(1, &boidBuffer);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBuffer);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, boidBuffer);
+    GLuint boidBufferIn;
+    glGenBuffers(1, &boidBufferIn);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBufferIn);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, boidBufferIn);
+    GLuint boidBufferOut;
+    glGenBuffers(1, &boidBufferOut);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBufferOut);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, boidBufferOut);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, BoidObject::boids.size() * sizeof(SimpleBoidData),
+        nullptr, GL_DYNAMIC_DRAW);
 
     currentScene = &SceneA;
 
@@ -393,13 +399,14 @@ int main() {
         glUniform1f(uniformPosDeltaTime, deltaTime);
         // Setting data
         SimpleBoidData* boidDatas = BoidObject::ToSimpleArray();
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBuffer);
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBufferIn);
         glBufferData(GL_SHADER_STORAGE_BUFFER,
             BoidObject::boids.size() * sizeof(SimpleBoidData), boidDatas, GL_DYNAMIC_DRAW);
         // Dispatch
         glDispatchCompute(BoidObject::boids.size(), 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         // Reading data back
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBufferOut);
         glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, BoidObject::boids.size() * sizeof(SimpleBoidData), boidDatas);
         BoidObject::FromSimpleArray(boidDatas);
         delete[] boidDatas;

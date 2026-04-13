@@ -54,6 +54,7 @@ void BoidObject::FromSimpleData(const SimpleBoidData* data) {
     // std::cout << "Changed velocity from " << velocity.x << " to " << data->velocity.x << std::endl;
     transform.SetPosition(data->position);
     velocity = data->velocity;
+    transform.LookAt(velocity, VectorMath::up);
 }
 
 
