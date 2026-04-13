@@ -1,22 +1,20 @@
 #version 430
-#define BOID_COUNT 16
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 struct SimpleBoidData {
     vec3 position;
     vec3 velocity;
 };
+
 layout(std430, binding = 0) buffer BoidBuffer {
     SimpleBoidData boids[];
 };
 
-//uniform Boid boids[];
 uniform int boidCount;
 uniform float deltaTime;
 
 void main()
 {
-//    if (gl_GlobalInvocationID.x == gl_GlobalInvocationID.y) return;
      SimpleBoidData thisBoid = boids[gl_GlobalInvocationID.x];
 
      vec3 perceivedCenter = vec3(0);
@@ -41,11 +39,12 @@ void main()
      perceivedCenter -= thisBoid.position;
      averageVelocity /= boidCount-1;
      moveToCenter = -thisBoid.position; // Steer boid towards origin of scene
-
-    thisBoid.velocity += perceivedCenter * deltaTime;
-    thisBoid.velocity += keepDistance * deltaTime;
-    thisBoid.velocity += (averageVelocity - thisBoid.velocity) * deltaTime;
-    thisBoid.velocity += moveToCenter * deltaTime;
+    // Set velocities
+    boids[gl_GlobalInvocationID.x].velocity += perceivedCenter * deltaTime;
+    boids[gl_GlobalInvocationID.x].velocity += keepDistance * deltaTime;
+    boids[gl_GlobalInvocationID.x].velocity += (averageVelocity - thisBoid.velocity) * deltaTime;
+    boids[gl_GlobalInvocationID.x].velocity += moveToCenter * deltaTime;
+    boids[gl_GlobalInvocationID.x].position += boids[gl_GlobalInvocationID.x].velocity * deltaTime;
 //     transform.TranslateWorldSpace(velocity * deltaTime);
 //     transform.LookAt(velocity, VectorMath::up);
 }

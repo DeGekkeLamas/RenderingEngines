@@ -393,11 +393,16 @@ int main() {
         glUniform1f(uniformPosDeltaTime, deltaTime);
         // Setting data
         SimpleBoidData* boidDatas = BoidObject::ToSimpleArray();
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBuffer);
         glBufferData(GL_SHADER_STORAGE_BUFFER,
             BoidObject::boids.size() * sizeof(SimpleBoidData), boidDatas, GL_DYNAMIC_DRAW);
-        delete[] boidDatas;
+        // Dispatch
         glDispatchCompute(BoidObject::boids.size(), 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+        // Reading data back
+        glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, BoidObject::boids.size() * sizeof(SimpleBoidData), boidDatas);
+        BoidObject::FromSimpleArray(boidDatas);
+        delete[] boidDatas;
 
         cam.transform.LookAt(BoidObject::boids[0]->transform.position() - cam.transform.position(), VectorMath::up);
 
