@@ -1,6 +1,6 @@
 #include "SimpleBoidData.hpp"
 
-SimpleBoidData::SimpleBoidData(glm::vec3 position, glm::vec3 velocity) {
+SimpleBoidData::SimpleBoidData(glm::vec4 position, glm::vec4 velocity) {
     this->position = position;
     this->velocity = velocity;
 }

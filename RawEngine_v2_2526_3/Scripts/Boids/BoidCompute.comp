@@ -2,8 +2,8 @@
 layout(local_size_x = 32, local_size_y = 1, local_size_z = 1) in;
 
 struct SimpleBoidData {
-    vec3 position;
-    vec3 velocity;
+    vec4 position;
+    vec4 velocity;
 };
 
 layout(std430, binding = 0) buffer BoidBufferIn {
@@ -22,10 +22,10 @@ void main()
     if (index >= boidCount) return;
     SimpleBoidData thisBoid = boids[index];
 
-    vec3 perceivedCenter = vec3(0);
-    vec3 keepDistance = vec3(0);
-    vec3 averageVelocity = vec3(0);
-    vec3 moveToCenter = vec3(0);
+    vec4 perceivedCenter = vec4(0);
+    vec4 keepDistance = vec4(0);
+    vec4 averageVelocity = vec4(0);
+    vec4 moveToCenter = vec4(0);
     for (int i = 0; i < boidCount; i++) {
         if (index == i) continue; // Skip if same boid
         SimpleBoidData otherBoid = boids[i];

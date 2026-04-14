@@ -46,7 +46,7 @@ void Transform::TranslateWorldSpace(const glm::vec3 amount) {
     modelMatrix[3] += glm::vec4(amount, 0);
 }
 void Transform::SetPosition(const glm::vec3 position) {
-    modelMatrix[3] = glm::vec4(position, 1);
+    modelMatrix[3] = glm::vec4(position, modelMatrix[3][3]);
 }
 
 void Transform::SetRotationRadians(const glm::vec3 radians) {

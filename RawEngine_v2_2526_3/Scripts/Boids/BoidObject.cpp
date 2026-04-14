@@ -49,7 +49,7 @@ void BoidObject::RenderToIMGUI() {
 }
 
 SimpleBoidData BoidObject::ToSimpleData() const {
-    return SimpleBoidData(transform.position(), velocity);
+    return SimpleBoidData(make_vec4(transform.position()), make_vec4(velocity));
 }
 
 void BoidObject::FromSimpleData(const SimpleBoidData* data) {
