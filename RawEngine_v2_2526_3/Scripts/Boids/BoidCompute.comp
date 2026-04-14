@@ -18,39 +18,39 @@ uniform float deltaTime;
 
 void main()
 {
-     SimpleBoidData thisBoid = boids[gl_GlobalInvocationID.x];
+    uint index = gl_GlobalInvocationID.x;
+    if (index > boidCount) return;
+    SimpleBoidData thisBoid = boids[index];
 
-     vec3 perceivedCenter = vec3(0);
-     vec3 keepDistance = vec3(0);
-     vec3 averageVelocity = vec3(0);
-     vec3 moveToCenter = vec3(0);
-     for (int i = 0; i < boidCount; i++) {
-         if (gl_GlobalInvocationID.x == i) continue; // Skip if same boid
-         SimpleBoidData currentBoid = boids[i];
+    vec3 perceivedCenter = vec3(0);
+    vec3 keepDistance = vec3(0);
+    vec3 averageVelocity = vec3(0);
+    vec3 moveToCenter = vec3(0);
+    for (int i = 0; i < boidCount; i++) {
+        if (index == i) continue; // Skip if same boid
+        SimpleBoidData currentBoid = boids[i];
 
-         // Center of mass
-         perceivedCenter += currentBoid.position;
-         // Distance from other boids
-         if (length(thisBoid.position - currentBoid.position) < 5) {
-             keepDistance -= currentBoid.position - thisBoid.position;
-         }
-         // Match velocity
-         averageVelocity += currentBoid.velocity;
-     }
-     perceivedCenter /= boidCount-1;
-     perceivedCenter -= thisBoid.position;
-     averageVelocity /= boidCount-1;
-     moveToCenter = -thisBoid.position; // Steer boid towards origin of scene
+        // Center of mass
+        perceivedCenter += currentBoid.position;
+        // Distance from other boids
+        if (length(thisBoid.position - currentBoid.position) < 5) {
+            keepDistance -= currentBoid.position - thisBoid.position;
+        }
+        // Match velocity
+        averageVelocity += currentBoid.velocity;
+    }
+    perceivedCenter /= boidCount-1;
+    perceivedCenter -= thisBoid.position;
+    averageVelocity /= boidCount-1;
+    moveToCenter = -thisBoid.position; // Steer boid towards origin of scene
 
-    boidsOut[gl_GlobalInvocationID.x].position = thisBoid.position;
-    boidsOut[gl_GlobalInvocationID.x].velocity = thisBoid.velocity;
+    boidsOut[index].position = thisBoid.position;
+    boidsOut[index].velocity = thisBoid.velocity;
     // Set velocities
-    boidsOut[gl_GlobalInvocationID.x].velocity += perceivedCenter * deltaTime;
-    boidsOut[gl_GlobalInvocationID.x].velocity += keepDistance * deltaTime;
-    boidsOut[gl_GlobalInvocationID.x].velocity += (averageVelocity - thisBoid.velocity) * deltaTime;
-    boidsOut[gl_GlobalInvocationID.x].velocity += moveToCenter * deltaTime;
+    boidsOut[index].velocity += perceivedCenter * deltaTime;
+    boidsOut[index].velocity += keepDistance * deltaTime;
+    boidsOut[index].velocity += (averageVelocity - thisBoid.velocity) * deltaTime;
+    boidsOut[index].velocity += moveToCenter * deltaTime;
     // Update position
-    boidsOut[gl_GlobalInvocationID.x].position += boidsOut[gl_GlobalInvocationID.x].velocity * deltaTime;
-//     transform.TranslateWorldSpace(velocity * deltaTime);
-//     transform.LookAt(velocity, VectorMath::up);
+    boidsOut[index].position += boidsOut[index].velocity * deltaTime;
 }

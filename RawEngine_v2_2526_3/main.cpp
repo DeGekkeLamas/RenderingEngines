@@ -197,7 +197,8 @@ int main() {
         horse->Awake();
     }
     const GLint uniformPosBoidCount = glGetUniformLocation(boidComputeProgram, "boidCount"); // boid count
-    glUniform1i(uniformPosBoidCount, BoidObject::boids.size());
+    glUniform1i(uniformPosBoidCount, BoidObject::boids.size()); // boidCount uniform
+    const GLint uniformPosDeltaTime = glGetUniformLocation(boidComputeProgram, "deltaTime"); // deltatime uniform
     // create buffer
     GLuint boidBufferIn;
     glGenBuffers(1, &boidBufferIn);
@@ -395,15 +396,16 @@ int main() {
         // }
         // Compute shader based
         glUseProgram(boidComputeProgram);
-        const GLint uniformPosDeltaTime = glGetUniformLocation(boidComputeProgram, "deltaTime"); // deltatime uniform
+        // Uniforms
         glUniform1f(uniformPosDeltaTime, deltaTime);
+        glUniform1i(uniformPosBoidCount, BoidObject::boids.size());
         // Setting data
         SimpleBoidData* boidDatas = BoidObject::ToSimpleArray();
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBufferIn);
         glBufferData(GL_SHADER_STORAGE_BUFFER,
             BoidObject::boids.size() * sizeof(SimpleBoidData), boidDatas, GL_DYNAMIC_DRAW);
         // Dispatch
-        glDispatchCompute(BoidObject::boids.size()/32, 1, 1);
+        glDispatchCompute(ceil(BoidObject::boids.size()/32.0f), 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         // Reading data back
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBufferOut);
