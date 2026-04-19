@@ -35,34 +35,21 @@ std::map< std::tuple<Shader*,Shader*> , ShaderProgram*> Material::existingShader
 
 
 void Material::SetUniform(const std::string &uniformName, const float toSet) const {
-    const GLint uniformPos = glGetUniformLocation(shaderProgram->GetProgramID(), uniformName.c_str());
-    glUniform1f(uniformPos, toSet);
+    shaderProgram->SetUniform(uniformName, toSet);
 }
-
 void Material::SetUniform(const std::string &uniformName, const int toSet) const {
-    const GLint uniformPos = glGetUniformLocation(shaderProgram->GetProgramID(), uniformName.c_str());
-    glUniform1i(uniformPos, toSet);
+    shaderProgram->SetUniform(uniformName, toSet);
 }
-
-
 void Material::SetUniform(const std::string &uniformName, const glm::vec3 toSet) const {
-    const GLint uniformPos = glGetUniformLocation(shaderProgram->GetProgramID(), uniformName.c_str());
-    glUniform3f(uniformPos, toSet.x,toSet.y,toSet.z);
+    shaderProgram->SetUniform(uniformName, toSet);
 }
 void Material::SetUniform(const std::string &uniformName, const glm::vec4 toSet) const {
-    const GLint uniformPos = glGetUniformLocation(shaderProgram->GetProgramID(), uniformName.c_str());
-    glUniform4f(uniformPos, toSet.x,toSet.y,toSet.z, toSet.w);
+    shaderProgram->SetUniform(uniformName, toSet);
 }
 
 void Material::SetUniform(const std::string &uniformName, glm::mat4 toSet) const {
-    const GLint uniformPos = glGetUniformLocation(shaderProgram->GetProgramID(), uniformName.c_str());
-    glUniformMatrix4fv(uniformPos, 1, GL_FALSE, glm::value_ptr(toSet));
+    shaderProgram->SetUniform(uniformName, toSet);
 }
-
 void Material::SetUniform(const std::string& uniformName, const GLuint texture, const int index) const {
-    glUseProgram(shaderProgram->GetProgramID());
-    glActiveTexture(GL_TEXTURE0 + index);
-    const GLint uniformPos = glGetUniformLocation(shaderProgram->GetProgramID(), uniformName.c_str());
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glUniform1i(uniformPos, index);
+    shaderProgram->SetUniform(uniformName, texture, index);
 }

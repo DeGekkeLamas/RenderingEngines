@@ -376,8 +376,8 @@ int main() {
         // Compute shader based
         glUseProgram(boidComputeProgram.GetProgramID());
         // Uniforms
-        glUniform1f(uniformPosDeltaTime, deltaTime);
-        glUniform1i(uniformPosBoidCount, BoidObject::boids.size());
+        ShaderProgram::SetUniform(uniformPosDeltaTime, deltaTime);
+        ShaderProgram::SetUniform(uniformPosBoidCount, static_cast<int>(BoidObject::boids.size()));
         // Setting data
         SimpleBoidData* boidDatas = BoidObject::ToSimpleArray();
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBufferIn);
