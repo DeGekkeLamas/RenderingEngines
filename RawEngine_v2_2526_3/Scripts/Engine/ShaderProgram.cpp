@@ -33,6 +33,13 @@ ShaderProgram::ShaderProgram(const Shader* shader, const Shader* shader2) {
         printf("Error! Making Shader Program: %s\n", infoLog);
     }
 }
+GLuint ShaderProgram::GenerateStorageBuffer(const int index, const int n) {
+    GLuint buffer;
+    glGenBuffers(n, &buffer);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, index, buffer);
+    return buffer;
+}
 
 GLint ShaderProgram::GetUniformLocation(const std::string &uniformName) const {
     return glGetUniformLocation(shaderProgram, uniformName.c_str());

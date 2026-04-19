@@ -56,35 +56,6 @@ void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-std::string readFileToString(const std::string &filePath) {
-    std::ifstream fileStream(filePath, std::ios::in);
-    if (!fileStream.is_open()) {
-        printf("Could not open file: %s\n", filePath.c_str());
-        return "";
-    }
-    std::stringstream buffer;
-    buffer << fileStream.rdbuf();
-    return buffer.str();
-}
-
-GLuint generateShader(const std::string &shaderPath, GLuint shaderType) {
-    printf("Loading shader: %s\n", shaderPath.c_str());
-    const std::string shaderText = readFileToString(shaderPath);
-    // TODO: search for "#include", and replace it! (maybe)
-    const GLuint shader = glCreateShader(shaderType);
-    const char *s_str = shaderText.c_str();
-    glShaderSource(shader, 1, &s_str, nullptr);
-    glCompileShader(shader);
-    GLint success = 0;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        char infoLog[512];
-        glGetShaderInfoLog(shader, 512, NULL, infoLog);
-        printf("Error! Shader issue [%s]: %s\n", shaderPath.c_str(), infoLog);
-    }
-    return shader;
-}
-
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_SAMPLES, 4);
@@ -135,21 +106,19 @@ int main() {
     Shader defaultPostprocessingShader = Shader("shaders/defaultPostprocessing.fs", GL_FRAGMENT_SHADER);
     Shader boidComputeShader = Shader("../Scripts/Boids/BoidCompute.comp", GL_COMPUTE_SHADER);
 
-    int success;
-    char infoLog[512];
     ShaderProgram modelShaderProgram = ShaderProgram(&modelVertexShader, &fragmentShader);
     ShaderProgram textureShaderProgram = ShaderProgram(&modelVertexShader, &textureShader);
     ShaderProgram boidComputeProgram = ShaderProgram(&boidComputeShader);
 
     // Scene quad
-    std::shared_ptr<Material> normalMat = std::shared_ptr<Material>(new Material(nullptr, &modelVertexShader, &fragmentShader));
+    std::shared_ptr<Material> normalMat = std::make_shared<Material>(nullptr, &modelVertexShader, &fragmentShader);
     // Quad
     core::Mesh quad = core::Mesh::generateQuad();
     std::shared_ptr<core::Model> quadModel = std::shared_ptr<core::Model>(new core::Model({quad}));
     std::shared_ptr<core::Texture> cmgtGatoTexture =
-        std::shared_ptr<core::Texture>( new core::Texture("textures/CMGaTo_crop.png") );
-    std::shared_ptr<Material> cmGatoMaterial = std::shared_ptr<Material>(new Material(cmgtGatoTexture,
-        &modelVertexShader, &textureShader));
+            std::make_shared<core::Texture>("textures/CMGaTo_crop.png");
+    std::shared_ptr<Material> cmGatoMaterial = std::make_shared<Material>(cmgtGatoTexture,
+        &modelVertexShader, &textureShader);
     RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, quadModel, cmGatoMaterial);
     quadObj.transform.Scale(glm::vec3(5, 5, 1));
 
@@ -179,14 +148,8 @@ int main() {
     glUniform1i(uniformPosBoidCount, BoidObject::boids.size()); // boidCount uniform
     const GLint uniformPosDeltaTime = glGetUniformLocation(boidComputeProgram.GetProgramID(), "deltaTime"); // deltatime uniform
     // create buffer
-    GLuint boidBufferIn;
-    glGenBuffers(1, &boidBufferIn);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBufferIn);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, boidBufferIn);
-    GLuint boidBufferOut;
-    glGenBuffers(1, &boidBufferOut);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBufferOut);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, boidBufferOut);
+    GLuint boidBufferIn = ShaderProgram::GenerateStorageBuffer(0, 1);
+    GLuint boidBufferOut= ShaderProgram::GenerateStorageBuffer(1, 1);
     glBufferData(GL_SHADER_STORAGE_BUFFER, BoidObject::boids.size() * sizeof(SimpleBoidData),
         nullptr, GL_DYNAMIC_DRAW);
 
@@ -215,23 +178,22 @@ int main() {
     glm::mat4 view;
     glm::mat4 projection;
 
-    GLint mvpMatrixUniform = glGetUniformLocation(modelShaderProgram.GetProgramID(), "mvpMatrix");
+    // GLint mvpMatrixUniform = glGetUniformLocation(modelShaderProgram.GetProgramID(), "mvpMatrix");
     GLint textureModelUniform = glGetUniformLocation(textureShaderProgram.GetProgramID(), "mvpMatrix");
-    GLint textureUniform = glGetUniformLocation(textureShaderProgram.GetProgramID(), "text");
+    // GLint textureUniform = glGetUniformLocation(textureShaderProgram.GetProgramID(), "text");
 
     double currentTime = glfwGetTime();
     double finishFrameTime = 0.0;
     float deltaTime = 0.0f;
-    constexpr float rotationStrength = 10;
 
     // PP
     RenderableObject renderQuad = quadObj;
-    std::shared_ptr<Material> noPostProcessingMat = std::shared_ptr<Material>
-    (new Material(nullptr, &vertexShader, &defaultPostprocessingShader));
-    std::shared_ptr<Material> outlinePostProcessingMat = std::shared_ptr<Material>
-    (new Material(nullptr, &vertexShader, &outlinePostProcessingShader));
-    std::shared_ptr<Material> colorPostProcessingMat = std::shared_ptr<Material>
-    (new Material(nullptr, &vertexShader, &colorPostProcessingShader));
+    std::shared_ptr<Material> noPostProcessingMat = std::make_shared<Material>(
+        nullptr, &vertexShader, &defaultPostprocessingShader);
+    std::shared_ptr<Material> outlinePostProcessingMat = std::make_shared<Material>(
+        nullptr, &vertexShader, &outlinePostProcessingShader);
+    std::shared_ptr<Material> colorPostProcessingMat = std::make_shared<Material>(
+        nullptr, &vertexShader, &colorPostProcessingShader);
 
     renderQuad.material = colorPostProcessingMat;
 
@@ -380,15 +342,12 @@ int main() {
         ShaderProgram::SetUniform(uniformPosBoidCount, static_cast<int>(BoidObject::boids.size()));
         // Setting data
         SimpleBoidData* boidDatas = BoidObject::ToSimpleArray();
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBufferIn);
-        glBufferData(GL_SHADER_STORAGE_BUFFER,
-            BoidObject::boids.size() * sizeof(SimpleBoidData), boidDatas, GL_DYNAMIC_DRAW);
+        ShaderProgram::SetStorageBufferData<SimpleBoidData>(boidBufferIn, boidDatas, BoidObject::boids.size());
         // Dispatch
         glDispatchCompute(ceil(BoidObject::boids.size()/32.0f), 1, 1);
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
         // Reading data back
-        glBindBuffer(GL_SHADER_STORAGE_BUFFER, boidBufferOut);
-        glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, BoidObject::boids.size() * sizeof(SimpleBoidData), boidDatas);
+        ShaderProgram::GetStorageBufferData<SimpleBoidData>(boidBufferOut, boidDatas, BoidObject::boids.size());
         BoidObject::FromSimpleArray(boidDatas);
         delete[] boidDatas;
 
