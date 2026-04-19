@@ -2,6 +2,7 @@
 
 #include "imgui.h"
 #include "Scripts/Engine/VectorMath.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 std::vector<BoidObject*> BoidObject::boids;
 

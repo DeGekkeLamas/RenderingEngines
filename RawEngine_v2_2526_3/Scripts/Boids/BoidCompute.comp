@@ -22,6 +22,7 @@ void main()
     if (index >= boidCount) return;
     SimpleBoidData thisBoid = boids[index];
 
+    int boidsSkipped = 0;
     vec4 perceivedCenter = vec4(0);
     vec4 keepDistance = vec4(0);
     vec4 averageVelocity = vec4(0);
@@ -29,6 +30,11 @@ void main()
     for (int i = 0; i < boidCount; i++) {
         if (index == i) continue; // Skip if same boid
         SimpleBoidData otherBoid = boids[i];
+
+        if (length(thisBoid.position - otherBoid.position) > 3) {
+            boidsSkipped++;
+            continue;
+        }
 
         // Center of mass
         perceivedCenter += otherBoid.position;
@@ -39,9 +45,9 @@ void main()
         // Match velocity
         averageVelocity += otherBoid.velocity;
     }
-    perceivedCenter /= boidCount-1;
+    perceivedCenter /= max(boidCount-1-boidsSkipped, 1);
     perceivedCenter -= thisBoid.position;
-    averageVelocity /= boidCount-1;
+    averageVelocity /= max(boidCount-1-boidsSkipped, 1);
     moveToCenter = -thisBoid.position; // Steer boid towards origin of scene
 
     boidsOut[index].position = thisBoid.position;

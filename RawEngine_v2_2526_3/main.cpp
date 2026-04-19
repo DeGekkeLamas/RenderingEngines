@@ -15,6 +15,8 @@
 #include "Scripts/Engine/GameObject.hpp"
 #include "Scripts/Engine/PointLight.hpp"
 #include "Scripts/Engine/RenderableObject.hpp"
+#include "Scripts/Engine/Shader.hpp"
+#include "Scripts/Engine/ShaderProgram.hpp"
 #include "Scripts/Engine/VectorMath.hpp"
 
 //#define MAC_CLION
@@ -124,53 +126,30 @@ int main() {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const GLuint modelVertexShader = generateShader("shaders/modelVertex.vs", GL_VERTEX_SHADER);
-    const GLuint vertexShader = generateShader("shaders/vertex.vs", GL_VERTEX_SHADER);
-    const GLuint fragmentShader = generateShader("shaders/fragment.fs", GL_FRAGMENT_SHADER);
-    const GLuint textureShader = generateShader("shaders/texture.fs", GL_FRAGMENT_SHADER);
-    const GLuint colorPostProcessingShader = generateShader("shaders/MSPaintColorPostprocessing.fs", GL_FRAGMENT_SHADER);
-    const GLuint outlinePostProcessingShader = generateShader("shaders/outlinePostprocessing.fs", GL_FRAGMENT_SHADER);
-    const GLuint defaultPostprocessingShader = generateShader("shaders/defaultPostprocessing.fs", GL_FRAGMENT_SHADER);
-    const GLuint boidComputeShader = generateShader("../Scripts/Boids/BoidCompute.comp", GL_COMPUTE_SHADER);
+    Shader modelVertexShader = Shader("shaders/modelVertex.vs", GL_VERTEX_SHADER);
+    Shader vertexShader = Shader("shaders/vertex.vs", GL_VERTEX_SHADER);
+    Shader fragmentShader = Shader("shaders/fragment.fs", GL_FRAGMENT_SHADER);
+    Shader textureShader = Shader("shaders/texture.fs", GL_FRAGMENT_SHADER);
+    Shader colorPostProcessingShader = Shader("shaders/MSPaintColorPostprocessing.fs", GL_FRAGMENT_SHADER);
+    Shader outlinePostProcessingShader = Shader("shaders/outlinePostprocessing.fs", GL_FRAGMENT_SHADER);
+    Shader defaultPostprocessingShader = Shader("shaders/defaultPostprocessing.fs", GL_FRAGMENT_SHADER);
+    Shader boidComputeShader = Shader("../Scripts/Boids/BoidCompute.comp", GL_COMPUTE_SHADER);
 
     int success;
     char infoLog[512];
-    const unsigned int modelShaderProgram = glCreateProgram();
-    glAttachShader(modelShaderProgram, modelVertexShader);
-    glAttachShader(modelShaderProgram, fragmentShader);
-    glLinkProgram(modelShaderProgram);
-    glGetProgramiv(modelShaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(modelShaderProgram, 512, NULL, infoLog);
-        printf("Error! Making Shader Program: %s\n", infoLog);
-    }
-    const unsigned int textureShaderProgram = glCreateProgram();
-    glAttachShader(textureShaderProgram, modelVertexShader);
-    glAttachShader(textureShaderProgram, textureShader);
-    glLinkProgram(textureShaderProgram);
-    glGetProgramiv(textureShaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(textureShaderProgram, 512, NULL, infoLog);
-        printf("Error! Making Shader Program: %s\n", infoLog);
-    }
-    const unsigned int boidComputeProgram = glCreateProgram();
-    glAttachShader(boidComputeProgram, boidComputeShader);
-    glLinkProgram(boidComputeProgram);
-    glGetProgramiv(boidComputeProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(textureShaderProgram, 512, NULL, infoLog);
-        printf("Error! Making Shader Program: %s\n", infoLog);
-    }
+    ShaderProgram modelShaderProgram = ShaderProgram(&modelVertexShader, &fragmentShader);
+    ShaderProgram textureShaderProgram = ShaderProgram(&modelVertexShader, &textureShader);
+    ShaderProgram boidComputeProgram = ShaderProgram(&boidComputeShader);
 
     // Scene quad
-    std::shared_ptr<Material> normalMat = std::shared_ptr<Material>(new Material(nullptr, modelVertexShader, fragmentShader));
+    std::shared_ptr<Material> normalMat = std::shared_ptr<Material>(new Material(nullptr, &modelVertexShader, &fragmentShader));
     // Quad
     core::Mesh quad = core::Mesh::generateQuad();
     std::shared_ptr<core::Model> quadModel = std::shared_ptr<core::Model>(new core::Model({quad}));
     std::shared_ptr<core::Texture> cmgtGatoTexture =
         std::shared_ptr<core::Texture>( new core::Texture("textures/CMGaTo_crop.png") );
     std::shared_ptr<Material> cmGatoMaterial = std::shared_ptr<Material>(new Material(cmgtGatoTexture,
-        modelVertexShader, textureShader));
+        &modelVertexShader, &textureShader));
     RenderableObject quadObj("Quad", glm::vec3(0,0,-2.5), nullptr, quadModel, cmGatoMaterial);
     quadObj.transform.Scale(glm::vec3(5, 5, 1));
 
@@ -185,7 +164,7 @@ int main() {
     std::shared_ptr<core::Model> triangleModel = std::shared_ptr<core::Model>( new core::Model( core::AssimpLoader::loadModel("models/TrianglePointer.obj") ) );;
     std::shared_ptr<Material> horseMaterial = std::shared_ptr<Material>( new Material(
     std::shared_ptr<core::Texture>( new core::Texture("textures/HorseTex.jpg")),
-    modelVertexShader, textureShader));
+    &modelVertexShader, &textureShader));
 
     // Create objects
     for (int i = 0; i < 100; i++) {
@@ -196,9 +175,9 @@ int main() {
         SceneA.push_back(horse);
         horse->Awake();
     }
-    const GLint uniformPosBoidCount = glGetUniformLocation(boidComputeProgram, "boidCount"); // boid count
+    const GLint uniformPosBoidCount = glGetUniformLocation(boidComputeProgram.GetProgramID(), "boidCount"); // boid count
     glUniform1i(uniformPosBoidCount, BoidObject::boids.size()); // boidCount uniform
-    const GLint uniformPosDeltaTime = glGetUniformLocation(boidComputeProgram, "deltaTime"); // deltatime uniform
+    const GLint uniformPosDeltaTime = glGetUniformLocation(boidComputeProgram.GetProgramID(), "deltaTime"); // deltatime uniform
     // create buffer
     GLuint boidBufferIn;
     glGenBuffers(1, &boidBufferIn);
@@ -236,9 +215,9 @@ int main() {
     glm::mat4 view;
     glm::mat4 projection;
 
-    GLint mvpMatrixUniform = glGetUniformLocation(modelShaderProgram, "mvpMatrix");
-    GLint textureModelUniform = glGetUniformLocation(textureShaderProgram, "mvpMatrix");
-    GLint textureUniform = glGetUniformLocation(textureShaderProgram, "text");
+    GLint mvpMatrixUniform = glGetUniformLocation(modelShaderProgram.GetProgramID(), "mvpMatrix");
+    GLint textureModelUniform = glGetUniformLocation(textureShaderProgram.GetProgramID(), "mvpMatrix");
+    GLint textureUniform = glGetUniformLocation(textureShaderProgram.GetProgramID(), "text");
 
     double currentTime = glfwGetTime();
     double finishFrameTime = 0.0;
@@ -248,11 +227,11 @@ int main() {
     // PP
     RenderableObject renderQuad = quadObj;
     std::shared_ptr<Material> noPostProcessingMat = std::shared_ptr<Material>
-    (new Material(nullptr, vertexShader, defaultPostprocessingShader));
+    (new Material(nullptr, &vertexShader, &defaultPostprocessingShader));
     std::shared_ptr<Material> outlinePostProcessingMat = std::shared_ptr<Material>
-    (new Material(nullptr, vertexShader, outlinePostProcessingShader));
+    (new Material(nullptr, &vertexShader, &outlinePostProcessingShader));
     std::shared_ptr<Material> colorPostProcessingMat = std::shared_ptr<Material>
-    (new Material(nullptr, vertexShader, colorPostProcessingShader));
+    (new Material(nullptr, &vertexShader, &colorPostProcessingShader));
 
     renderQuad.material = colorPostProcessingMat;
 
@@ -395,7 +374,7 @@ int main() {
             // BoidObject::boids[i]->Update(deltaTime);
         // }
         // Compute shader based
-        glUseProgram(boidComputeProgram);
+        glUseProgram(boidComputeProgram.GetProgramID());
         // Uniforms
         glUniform1f(uniformPosDeltaTime, deltaTime);
         glUniform1i(uniformPosBoidCount, BoidObject::boids.size());
@@ -444,8 +423,8 @@ int main() {
         currentTime = finishFrameTime;
     }
 
-    glDeleteProgram(modelShaderProgram);
-    glDeleteProgram(textureShaderProgram);
+    glDeleteProgram(modelShaderProgram.GetProgramID());
+    glDeleteProgram(textureShaderProgram.GetProgramID());
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

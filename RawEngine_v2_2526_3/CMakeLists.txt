@@ -28,6 +28,10 @@ set(IMGUI_SOURCES
         Scripts/Boids/BoidObject.hpp
         Scripts/Boids/SimpleBoidData.hpp
         Scripts/Boids/SimpleBoidData.cpp
+        Scripts/Engine/Shader.cpp
+        Scripts/Engine/Shader.hpp
+        Scripts/Engine/ShaderProgram.cpp
+        Scripts/Engine/ShaderProgram.hpp
 )
 
 add_executable(RawEngine main.cpp

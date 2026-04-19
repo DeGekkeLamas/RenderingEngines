@@ -25,7 +25,7 @@ void RenderableObject::Render(const glm::mat4 &view, const glm::mat4 &projection
 void RenderableObject::Render(const glm::mat4 &view, const glm::mat4 &projection,
     const GLint textureModelUniform, const PointLight &light, const Camera &camera, const GLuint texture) const
 {
-    glUseProgram(*material->shaderProgram);
+    glUseProgram(material->shaderProgram->GetProgramID());
     glUniformMatrix4fv(textureModelUniform, 1, GL_FALSE, glm::value_ptr(projection *
         view * transform.getModelMatrix()));
     glActiveTexture(GL_TEXTURE0);
@@ -44,7 +44,7 @@ void RenderableObject::Render(const glm::mat4 &view, const glm::mat4 &projection
 }
 
 void RenderableObject::Render(const GLuint texture) const {
-    glUseProgram(*material->shaderProgram);
+    glUseProgram(material->shaderProgram->GetProgramID());
     glActiveTexture(GL_TEXTURE0);
 
     glBindTexture(GL_TEXTURE_2D, texture);
@@ -70,11 +70,11 @@ RenderableObject RenderableObject::Create(const std::string &name, const glm::ve
 }
 
 RenderableObject RenderableObject::Create(const std::string &name, const glm::vec3 position, const glm::vec3 scale, Transform *parent,
-    const std::string &modelPath, const std::string &texturePath, const GLuint modelVertexShader, const GLuint textureShader)
+    const std::string &modelPath, const std::string &texturePath, Shader modelVertexShader, Shader textureShader)
 {
     std::shared_ptr<core::Model> model = std::shared_ptr<core::Model>( new core::Model( core::AssimpLoader::loadModel(modelPath) ) );
     std::shared_ptr<core::Texture> texture = std::shared_ptr<core::Texture>( new core::Texture(texturePath));
-    std::shared_ptr<Material> material = std::shared_ptr<Material>(new Material(texture, modelVertexShader, textureShader));
+    std::shared_ptr<Material> material = std::shared_ptr<Material>(new Material(texture, &modelVertexShader, &textureShader));
     RenderableObject obj(name, position, parent, model, material);
     obj.transform.Scale(scale);
     return obj;
