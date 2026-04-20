@@ -16,6 +16,7 @@ public:
         static std::vector<BoidObject*> boids;
         static SimpleBoidData* ToSimpleArray();
         static void FromSimpleArray(const SimpleBoidData* data);
+        static void ResetAllBoids();
 };
 
 

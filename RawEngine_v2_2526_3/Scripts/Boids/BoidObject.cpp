@@ -75,6 +75,14 @@ void BoidObject::FromSimpleArray(const SimpleBoidData* data) {
     }
 }
 
+void BoidObject::ResetAllBoids() {
+    for (int i = 0; i < boids.size(); i++) {
+        boids[i]->transform.SetPosition(glm::vec3(rand()%100,rand()%100,rand()%100));
+        boids[i]->velocity = glm::normalize(boids[i]->transform.position()) * 1.0f;
+    }
+}
+
+
 
 
 

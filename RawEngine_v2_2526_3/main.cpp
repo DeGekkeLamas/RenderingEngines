@@ -129,11 +129,13 @@ int main() {
     std::vector<GameObject*> persistentObjects;
 
     // Horse
-    std::shared_ptr<core::Model> horseModel = std::shared_ptr<core::Model>( new core::Model( core::AssimpLoader::loadModel("models/Horse.obj") ) );;
-    std::shared_ptr<core::Model> triangleModel = std::shared_ptr<core::Model>( new core::Model( core::AssimpLoader::loadModel("models/TrianglePointer.obj") ) );;
-    std::shared_ptr<Material> horseMaterial = std::shared_ptr<Material>( new Material(
-    std::shared_ptr<core::Texture>( new core::Texture("textures/HorseTex.jpg")),
-    &modelVertexShader, &textureShader));
+    std::shared_ptr<core::Model> horseModel = std::make_shared<core::Model>(
+        core::AssimpLoader::loadModel("models/Horse.obj"));;
+    std::shared_ptr<core::Model> triangleModel = std::make_shared<core::Model>(
+        core::AssimpLoader::loadModel("models/TrianglePointer.obj"));;
+    std::shared_ptr<Material> horseMaterial = std::make_shared<Material>(
+        std::make_shared<core::Texture>("textures/HorseTex.jpg"),
+        &modelVertexShader, &textureShader);
 
     // Boid params
     float speed = 1;
@@ -333,6 +335,9 @@ int main() {
         ImGui::DragFloat("AverageVelocity Strength", &averageVelocityStrength);
         ImGui::DragFloat("Move To Center Strength", &moveToCenterStrength);
         ImGui::DragFloat("Repelling Distance", &repellingDistance);
+        if (ImGui::Button("Reset boids")) {
+            BoidObject::ResetAllBoids();
+        }
 
         ImGui::End();
         pointLight.intensity = lightStrength;
