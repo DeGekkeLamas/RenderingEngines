@@ -135,6 +135,13 @@ int main() {
     std::shared_ptr<core::Texture>( new core::Texture("textures/HorseTex.jpg")),
     &modelVertexShader, &textureShader));
 
+    // Boid params
+    float speed = 1;
+    float perceivedCenterStrength = 1;
+    float keepDistanceStrength = 1;
+    float averageVelocityStrength = 1;
+    float moveToCenterStrength = 1;
+    float repellingDistance = 5;
     // Create objects
     for (int i = 0; i < 100; i++) {
         BoidObject* horse = new BoidObject("Boid" + std::to_string(i), glm::vec3(rand()%100,rand()%100,rand()%100), nullptr,
@@ -144,9 +151,15 @@ int main() {
         SceneA.push_back(horse);
         horse->Awake();
     }
+    // Uniform locations
     const GLint uniformPosBoidCount = glGetUniformLocation(boidComputeProgram.GetProgramID(), "boidCount"); // boid count
-    glUniform1i(uniformPosBoidCount, BoidObject::boids.size()); // boidCount uniform
     const GLint uniformPosDeltaTime = glGetUniformLocation(boidComputeProgram.GetProgramID(), "deltaTime"); // deltatime uniform
+    const GLint uniformPosspeed = glGetUniformLocation(boidComputeProgram.GetProgramID(), "speed"); // speed deltatime uniform
+    const GLint uniformPosperceivedCenterStrength = glGetUniformLocation(boidComputeProgram.GetProgramID(), "perceivedCenterStrength"); // perceivedCenterStrength deltatime uniform
+    const GLint uniformPoskeepDistanceStrength = glGetUniformLocation(boidComputeProgram.GetProgramID(), "keepDistanceStrength"); // keepDistanceStrength deltatime uniform
+    const GLint uniformPosaverageVelocityStrength = glGetUniformLocation(boidComputeProgram.GetProgramID(), "averageVelocityStrength"); // averageVelocityStrength deltatime uniform
+    const GLint uniformPosmoveToCenterStrength = glGetUniformLocation(boidComputeProgram.GetProgramID(), "moveToCenterStrength"); // moveToCenterStrength deltatime uniform
+    const GLint uniformPosrepellingDistance = glGetUniformLocation(boidComputeProgram.GetProgramID(), "repellingDistance"); // repellingDistance deltatime uniform
     // create buffer
     GLuint boidBufferIn = ShaderProgram::GenerateStorageBuffer(0, 1);
     GLuint boidBufferOut= ShaderProgram::GenerateStorageBuffer(1, 1);
@@ -305,6 +318,22 @@ int main() {
             renderQuad.material = colorPostProcessingMat;
         }
         ImGui::ColorEdit3("Outline color", glm::value_ptr(outlineColor));
+        ImGui::Text("Boid parameters");
+        if (ImGui::Button("Restore defaults")) {
+            speed = 1;
+            perceivedCenterStrength = 1;
+            keepDistanceStrength = 1;
+            averageVelocityStrength = 1;
+            moveToCenterStrength = 1;
+            repellingDistance = 5;
+        }
+        ImGui::DragFloat("Speed", &speed);
+        ImGui::DragFloat("Perceived Center Strength", &perceivedCenterStrength);
+        ImGui::DragFloat("Keep Distance Strength", &keepDistanceStrength);
+        ImGui::DragFloat("AverageVelocity Strength", &averageVelocityStrength);
+        ImGui::DragFloat("Move To Center Strength", &moveToCenterStrength);
+        ImGui::DragFloat("Repelling Distance", &repellingDistance);
+
         ImGui::End();
         pointLight.intensity = lightStrength;
         // Hierarchy
@@ -340,6 +369,12 @@ int main() {
         // Uniforms
         ShaderProgram::SetUniform(uniformPosDeltaTime, deltaTime);
         ShaderProgram::SetUniform(uniformPosBoidCount, static_cast<int>(BoidObject::boids.size()));
+        ShaderProgram::SetUniform(uniformPosspeed, speed);
+        ShaderProgram::SetUniform(uniformPosperceivedCenterStrength, perceivedCenterStrength);
+        ShaderProgram::SetUniform(uniformPoskeepDistanceStrength, keepDistanceStrength);
+        ShaderProgram::SetUniform(uniformPosaverageVelocityStrength, averageVelocityStrength);
+        ShaderProgram::SetUniform(uniformPosmoveToCenterStrength, moveToCenterStrength);
+        ShaderProgram::SetUniform(uniformPosrepellingDistance, repellingDistance);
         // Setting data
         SimpleBoidData* boidDatas = BoidObject::ToSimpleArray();
         ShaderProgram::SetStorageBufferData<SimpleBoidData>(boidBufferIn, boidDatas, BoidObject::boids.size());

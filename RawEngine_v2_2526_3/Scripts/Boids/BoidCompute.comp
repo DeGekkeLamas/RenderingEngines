@@ -15,6 +15,14 @@ layout(std430, binding = 1) buffer BoidBufferOut {
 
 uniform int boidCount;
 uniform float deltaTime;
+// Parameters
+uniform float speed = 1;
+uniform float perceivedCenterStrength = 1;
+uniform float keepDistanceStrength = 1;
+uniform float averageVelocityStrength = 1;
+uniform float moveToCenterStrength = 1;
+uniform float repellingDistance = 5;
+
 
 void main()
 {
@@ -31,15 +39,15 @@ void main()
         if (index == i) continue; // Skip if same boid
         SimpleBoidData otherBoid = boids[i];
 
-        if (length(thisBoid.position - otherBoid.position) > 3) {
-            boidsSkipped++;
-            continue;
-        }
+//        if (length(thisBoid.position - otherBoid.position) > 3) {
+//            boidsSkipped++;
+//            continue;
+//        }
 
         // Center of mass
         perceivedCenter += otherBoid.position;
         // Distance from other boids
-        if (length(thisBoid.position - otherBoid.position) < 5) {
+        if (length(thisBoid.position - otherBoid.position) < repellingDistance) {
             keepDistance -= otherBoid.position - thisBoid.position;
         }
         // Match velocity
@@ -53,10 +61,10 @@ void main()
     boidsOut[index].position = thisBoid.position;
     boidsOut[index].velocity = thisBoid.velocity;
     // Set velocities
-    boidsOut[index].velocity += perceivedCenter * deltaTime;
-    boidsOut[index].velocity += keepDistance * deltaTime;
-    boidsOut[index].velocity += (averageVelocity - boidsOut[index].velocity) * deltaTime;
-    boidsOut[index].velocity += moveToCenter * deltaTime;
+    boidsOut[index].velocity += deltaTime * perceivedCenterStrength * perceivedCenter;
+    boidsOut[index].velocity += deltaTime * keepDistanceStrength * keepDistance;
+    boidsOut[index].velocity += deltaTime * averageVelocityStrength * (averageVelocity - boidsOut[index].velocity);
+    boidsOut[index].velocity += deltaTime * moveToCenterStrength * moveToCenter;
     // Update position
-    boidsOut[index].position += boidsOut[index].velocity * deltaTime;
+    boidsOut[index].position += deltaTime * speed * boidsOut[index].velocity;
 }
