@@ -32,6 +32,8 @@ set(IMGUI_SOURCES
         Scripts/Engine/Shader.hpp
         Scripts/Engine/ShaderProgram.cpp
         Scripts/Engine/ShaderProgram.hpp
+        Scripts/CSVTools.cpp
+        Scripts/CSVTools.hpp
 )
 
 add_executable(RawEngine main.cpp

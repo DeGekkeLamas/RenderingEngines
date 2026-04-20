@@ -11,6 +11,7 @@
 #include "core/texture.h"
 #include "Scripts/Engine/Camera.hpp"
 #include "iostream"
+#include "Scripts/CSVTools.hpp"
 #include "Scripts/Boids/BoidObject.hpp"
 #include "Scripts/Engine/GameObject.hpp"
 #include "Scripts/Engine/PointLight.hpp"
@@ -145,7 +146,7 @@ int main() {
     float moveToCenterStrength = 1;
     float repellingDistance = 5;
     // Create objects
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 1000; i++) {
         BoidObject* horse = new BoidObject("Boid" + std::to_string(i), glm::vec3(rand()%100,rand()%100,rand()%100), nullptr,
             triangleModel, normalMat);
         horse->transform.Scale(glm::vec3(.01f, .01f, .01f));
@@ -200,6 +201,7 @@ int main() {
     double currentTime = glfwGetTime();
     double finishFrameTime = 0.0;
     float deltaTime = 0.0f;
+    std::vector<float> deltaTimes;
 
     // PP
     RenderableObject renderQuad = quadObj;
@@ -249,7 +251,7 @@ int main() {
     }
 
     // Color filter PP effect
-    std::shared_ptr<core::Texture> colorTex = std::shared_ptr<core::Texture>( new core::Texture("textures/ColorTexture20.png") );
+    std::shared_ptr<core::Texture> colorTex = std::make_shared<core::Texture>("textures/ColorTexture20.png");
     colorPostProcessingMat->SetUniform("colorTexture", colorTex->getId(), 1);
     colorPostProcessingMat->SetUniform("colorQTY", 20);
 
@@ -293,7 +295,7 @@ int main() {
         // Inspector
         ImGui::NewFrame();
         ImGui::Begin("Cooked Engine v2");
-        ImGui::Text("%d FPS", static_cast<int>(1 / deltaTime));
+        ImGui::Text("%d FPS, (%f ms)", static_cast<int>(1 / deltaTime), deltaTime);
         ImGui::Text("Hello :)");
         ImGui::DragFloat("Light Strength", &lightStrength);
         ImGui::ColorEdit3("Light Color", glm::value_ptr(pointLight.color));
@@ -329,12 +331,12 @@ int main() {
             moveToCenterStrength = 1;
             repellingDistance = 5;
         }
-        ImGui::DragFloat("Speed", &speed);
-        ImGui::DragFloat("Perceived Center Strength", &perceivedCenterStrength);
-        ImGui::DragFloat("Keep Distance Strength", &keepDistanceStrength);
-        ImGui::DragFloat("AverageVelocity Strength", &averageVelocityStrength);
-        ImGui::DragFloat("Move To Center Strength", &moveToCenterStrength);
-        ImGui::DragFloat("Repelling Distance", &repellingDistance);
+        ImGui::InputFloat("Speed", &speed);
+        ImGui::InputFloat("Perceived Center Strength", &perceivedCenterStrength);
+        ImGui::InputFloat("Keep Distance Strength", &keepDistanceStrength);
+        ImGui::InputFloat("AverageVelocity Strength", &averageVelocityStrength);
+        ImGui::InputFloat("Move To Center Strength", &moveToCenterStrength);
+        ImGui::InputFloat("Repelling Distance", &repellingDistance);
         if (ImGui::Button("Reset boids")) {
             BoidObject::ResetAllBoids();
         }
@@ -419,9 +421,11 @@ int main() {
         glfwPollEvents();
         finishFrameTime = glfwGetTime();
         deltaTime = static_cast<float>(finishFrameTime - currentTime);
+        deltaTimes.push_back(deltaTime);
         currentTime = finishFrameTime;
     }
 
+    CSVTools::writeCSV(deltaTimes);
     glDeleteProgram(modelShaderProgram.GetProgramID());
     glDeleteProgram(textureShaderProgram.GetProgramID());
     ImGui_ImplOpenGL3_Shutdown();
