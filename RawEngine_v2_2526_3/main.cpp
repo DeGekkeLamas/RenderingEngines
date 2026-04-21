@@ -146,6 +146,7 @@ int main() {
     float moveToCenterStrength = 1;
     float repellingDistance = 5;
     // Create objects
+    constexpr bool useComputeShader = true;
     for (int i = 0; i < 1000; i++) {
         BoidObject* horse = new BoidObject("Boid" + std::to_string(i), glm::vec3(rand()%100,rand()%100,rand()%100), nullptr,
             triangleModel, normalMat);
@@ -367,31 +368,35 @@ int main() {
             static_cast<float>(sin(currentTime) * deltaTime * 10));
 
         // boids code
-        // Iterative based
-        // for (int i = 0; i < BoidObject::boids.size(); i++) {
-            // BoidObject::boids[i]->Update(deltaTime);
-        // }
         // Compute shader based
-        glUseProgram(boidComputeProgram.GetProgramID());
-        // Uniforms
-        ShaderProgram::SetUniform(uniformPosDeltaTime, deltaTime);
-        ShaderProgram::SetUniform(uniformPosBoidCount, static_cast<int>(BoidObject::boids.size()));
-        ShaderProgram::SetUniform(uniformPosspeed, speed);
-        ShaderProgram::SetUniform(uniformPosperceivedCenterStrength, perceivedCenterStrength);
-        ShaderProgram::SetUniform(uniformPoskeepDistanceStrength, keepDistanceStrength);
-        ShaderProgram::SetUniform(uniformPosaverageVelocityStrength, averageVelocityStrength);
-        ShaderProgram::SetUniform(uniformPosmoveToCenterStrength, moveToCenterStrength);
-        ShaderProgram::SetUniform(uniformPosrepellingDistance, repellingDistance);
-        // Setting data
-        SimpleBoidData* boidDatas = BoidObject::ToSimpleArray();
-        ShaderProgram::SetStorageBufferData<SimpleBoidData>(boidBufferIn, boidDatas, BoidObject::boids.size());
-        // Dispatch
-        glDispatchCompute(ceil(BoidObject::boids.size()/32.0f), 1, 1);
-        glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-        // Reading data back
-        ShaderProgram::GetStorageBufferData<SimpleBoidData>(boidBufferOut, boidDatas, BoidObject::boids.size());
-        BoidObject::FromSimpleArray(boidDatas);
-        delete[] boidDatas;
+        if (useComputeShader) {
+            glUseProgram(boidComputeProgram.GetProgramID());
+            // Uniforms
+            ShaderProgram::SetUniform(uniformPosDeltaTime, deltaTime);
+            ShaderProgram::SetUniform(uniformPosBoidCount, static_cast<int>(BoidObject::boids.size()));
+            ShaderProgram::SetUniform(uniformPosspeed, speed);
+            ShaderProgram::SetUniform(uniformPosperceivedCenterStrength, perceivedCenterStrength);
+            ShaderProgram::SetUniform(uniformPoskeepDistanceStrength, keepDistanceStrength);
+            ShaderProgram::SetUniform(uniformPosaverageVelocityStrength, averageVelocityStrength);
+            ShaderProgram::SetUniform(uniformPosmoveToCenterStrength, moveToCenterStrength);
+            ShaderProgram::SetUniform(uniformPosrepellingDistance, repellingDistance);
+            // Setting data
+            SimpleBoidData* boidDatas = BoidObject::ToSimpleArray();
+            ShaderProgram::SetStorageBufferData<SimpleBoidData>(boidBufferIn, boidDatas, BoidObject::boids.size());
+            // Dispatch
+            glDispatchCompute(ceil(BoidObject::boids.size()/32.0f), 1, 1);
+            glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+            // Reading data back
+            ShaderProgram::GetStorageBufferData<SimpleBoidData>(boidBufferOut, boidDatas, BoidObject::boids.size());
+            BoidObject::FromSimpleArray(boidDatas);
+            delete[] boidDatas;
+        }
+        // Iterative based
+        else {
+            for (int i = 0; i < BoidObject::boids.size(); i++) {
+                BoidObject::boids[i]->Update(deltaTime);
+            }
+        }
 
         cam.transform.LookAt(BoidObject::boids[0]->transform.position() - cam.transform.position(), VectorMath::up);
 
@@ -425,7 +430,8 @@ int main() {
         currentTime = finishFrameTime;
     }
 
-    CSVTools::writeCSV(deltaTimes);
+    CSVTools::writeCSV(deltaTimes,
+        (useComputeShader ? "ComputeShader" : "Iterative") + std::string("_") + std::to_string(BoidObject::boids.size()));
     glDeleteProgram(modelShaderProgram.GetProgramID());
     glDeleteProgram(textureShaderProgram.GetProgramID());
     ImGui_ImplOpenGL3_Shutdown();

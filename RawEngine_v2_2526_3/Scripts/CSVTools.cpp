@@ -4,10 +4,10 @@
 #include <string>
 #include "Boids/BoidObject.hpp"
 
-void CSVTools::writeCSV(const std::vector<float>& frameTimes)
+void CSVTools::writeCSV(const std::vector<float>& frameTimes, const std::string& name)
 {
     std::string filename = "../frameTimes_boids_";
-    filename += std::to_string(BoidObject::boids.size());
+    filename += name;
     filename += ".csv";
 
     std::ofstream file(filename);

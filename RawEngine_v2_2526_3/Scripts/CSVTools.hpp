@@ -5,5 +5,5 @@
 
 static class CSVTools {
     public:
-    static void writeCSV(const std::vector<float>& frameTimes);
+    static void writeCSV(const std::vector<float>& frameTimes, const std::string& name);
 };
