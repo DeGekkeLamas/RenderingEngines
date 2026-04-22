@@ -6,7 +6,7 @@
 
 void CSVTools::writeCSV(const std::vector<float>& frameTimes, const std::string& name)
 {
-    std::string filename = "../frameTimes_boids_";
+    std::string filename = "../DataExports/frameTimes_boids_";
     filename += name;
     filename += ".csv";
 

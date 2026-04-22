@@ -146,7 +146,10 @@ int main() {
     float moveToCenterStrength = 1;
     float repellingDistance = 5;
     // Create objects
-    constexpr bool useComputeShader = true;
+    enum BoidType {None, Iterative, ComputeShader};
+    constexpr BoidType boidType = ComputeShader;
+    constexpr bool exportData = true;
+    constexpr int maxExportSize = 500;
     for (int i = 0; i < 1000; i++) {
         BoidObject* horse = new BoidObject("Boid" + std::to_string(i), glm::vec3(rand()%100,rand()%100,rand()%100), nullptr,
             triangleModel, normalMat);
@@ -296,7 +299,7 @@ int main() {
         // Inspector
         ImGui::NewFrame();
         ImGui::Begin("Cooked Engine v2");
-        ImGui::Text("%d FPS, (%f ms)", static_cast<int>(1 / deltaTime), deltaTime);
+        ImGui::Text("%d FPS, (%f ms), %d", static_cast<int>(1 / deltaTime), deltaTime, deltaTimes.size());
         ImGui::Text("Hello :)");
         ImGui::DragFloat("Light Strength", &lightStrength);
         ImGui::ColorEdit3("Light Color", glm::value_ptr(pointLight.color));
@@ -369,7 +372,7 @@ int main() {
 
         // boids code
         // Compute shader based
-        if (useComputeShader) {
+        if (boidType == ComputeShader) {
             glUseProgram(boidComputeProgram.GetProgramID());
             // Uniforms
             ShaderProgram::SetUniform(uniformPosDeltaTime, deltaTime);
@@ -392,7 +395,7 @@ int main() {
             delete[] boidDatas;
         }
         // Iterative based
-        else {
+        else if (boidType == Iterative) {
             for (int i = 0; i < BoidObject::boids.size(); i++) {
                 BoidObject::boids[i]->Update(deltaTime);
             }
@@ -426,13 +429,28 @@ int main() {
         glfwPollEvents();
         finishFrameTime = glfwGetTime();
         deltaTime = static_cast<float>(finishFrameTime - currentTime);
-        deltaTimes.push_back(deltaTime);
+        if (deltaTimes.size() < maxExportSize) deltaTimes.push_back(deltaTime);
         currentTime = finishFrameTime;
     }
 
-    CSVTools::writeCSV(deltaTimes,
-        (useComputeShader ? "ComputeShader" : "Iterative") + std::string("_") + std::to_string(BoidObject::boids.size()));
-    glDeleteProgram(modelShaderProgram.GetProgramID());
+    if (exportData) {
+        std::string boidTypeName;
+        switch (boidType) {
+            case ComputeShader:
+                boidTypeName = "ComputeShader";
+                break;
+            case Iterative:
+                boidTypeName = "Iterative";
+                break;
+            case None:
+                boidTypeName = "None";
+                break;
+        }
+        CSVTools::writeCSV(deltaTimes,
+            boidTypeName + std::string("_BoidCount") + std::to_string(BoidObject::boids.size())
+            + "_FrameCount" + std::to_string(deltaTimes.size()));
+        glDeleteProgram(modelShaderProgram.GetProgramID());
+    }
     glDeleteProgram(textureShaderProgram.GetProgramID());
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
