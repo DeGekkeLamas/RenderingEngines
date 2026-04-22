@@ -1,0 +1,39 @@
+#pragma once
+#include <vector>
+#include <glm/glm.hpp>
+
+class Transform {
+    public:
+        Transform() : modelMatrix(1) {};
+        ~Transform();
+        glm::mat4 getModelMatrix() const;
+        glm::vec3 scale = glm::vec3(1,1,1);
+        Transform* parent = nullptr;
+        std::vector<Transform*> children;
+        void AddChild(Transform* child);
+        // void RemoveChild(Transform* child);
+        // Directions
+        glm::vec3 right() const;
+        glm::vec3 up() const;
+        glm::vec3 forward() const;
+
+        glm::vec3 position() const;
+
+        void SetPosition(glm::vec3 position);
+        void TranslateObjectSpace(const glm::vec3 amount);
+        void TranslateWorldSpace(const glm::vec3 amount);
+        void SetRotationRadians(const glm::vec3 radians);
+        void SetRotationEuler(const glm::vec3 euler);
+        void Rotate(const glm::vec3 amount);
+        void RotateWorld(const glm::vec3 amount);
+        void LookAt(glm::vec3 forward, glm::vec3 up);
+        void Scale(const glm::vec3 amount);
+    private:
+        glm::mat4 modelMatrix;
+        void RotateOneDir(const float amount, const glm::vec3 axis);
+        void RotateOneDirWorld(const float amount, const glm::vec3 axis);
+};
+
+
+
+

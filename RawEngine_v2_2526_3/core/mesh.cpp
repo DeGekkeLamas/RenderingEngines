@@ -9,7 +9,7 @@ namespace core {
     }
     Mesh::Mesh(const Mesh& original) {
         *this = original;
-        printf("Created another mesh\n");
+        // printf("Created another mesh\n");
     }
 
     void Mesh::setupBuffers() {
