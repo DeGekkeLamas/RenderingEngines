@@ -20,6 +20,16 @@ void CSVTools::writeCSV(const std::vector<float>& frameTimes, const std::string&
     // Write header
     file << "Frame;DeltaTime;FPS\n";
 
+    // Write average values
+    float averageDeltaTime = 0;
+    for (int i = 0; i < frameTimes.size(); i++) {
+        averageDeltaTime += frameTimes[i];
+    }
+    averageDeltaTime /= frameTimes.size();
+    file << "Average" << ";"
+         << averageDeltaTime << ";"
+         << static_cast<int>(std::round(1.0f / averageDeltaTime)) << "\n";
+
     // Write frametimes
     for (int i = 0; i < frameTimes.size(); i++)
     {

@@ -147,10 +147,10 @@ int main() {
     float repellingDistance = 5;
     // Create objects
     enum BoidType {None, Iterative, ComputeShader};
-    constexpr BoidType boidType = ComputeShader;
+    constexpr BoidType boidType = None;
     constexpr bool exportData = true;
     constexpr int maxExportSize = 500;
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 100; i++) {
         BoidObject* horse = new BoidObject("Boid" + std::to_string(i), glm::vec3(rand()%100,rand()%100,rand()%100), nullptr,
             triangleModel, normalMat);
         horse->transform.Scale(glm::vec3(.01f, .01f, .01f));
@@ -401,7 +401,9 @@ int main() {
             }
         }
 
-        cam.transform.LookAt(BoidObject::boids[0]->transform.position() - cam.transform.position(), VectorMath::up);
+        if (BoidObject::boids.size() > 0) {
+            cam.transform.LookAt(BoidObject::boids[0]->transform.position() - cam.transform.position(), VectorMath::up);
+        }
 
         // PP
         glBindFramebuffer(GL_FRAMEBUFFER, fbo);
