@@ -5,18 +5,22 @@
 #include <glm/gtc/type_ptr.hpp>
 
 std::vector<BoidObject*> BoidObject::boids;
+KDTree<BoidObject*> BoidObject::boidsTree;
 
 void BoidObject::Awake() {
     boids.push_back(this);
 }
 
-void BoidObject::Update(const float deltaTime) {
+void BoidObject::Update(const float deltaTime, bool useSectioning) {
     glm::vec3 perceivedCenter = glm::vec3();
     glm::vec3 keepDistance = glm::vec3();
     glm::vec3 averageVelocity = glm::vec3();
-    glm::vec3 moveToCenter = glm::vec3();
-    for (int i = 0; i < boids.size(); i++) {
-        BoidObject* otherBoid = boids[i];
+    glm::vec3 moveToCenter;
+
+    int boidNum = boids.size();
+    BoidObject** boidsUsed = useSectioning ? boids.data() : boids.data(); //boidsTree.FindNeighbours(this, boidNum);
+    for (int i = 0; i < boidNum; i++) {
+        BoidObject* otherBoid = boidsUsed[i];
         if (otherBoid == this) continue;
 
         // Center of mass
@@ -28,9 +32,9 @@ void BoidObject::Update(const float deltaTime) {
         // Match velocity
         averageVelocity += otherBoid->velocity;
     }
-    perceivedCenter /= boids.size()-1;
+    perceivedCenter /= boidNum-1;
     perceivedCenter -= this->transform.position();
-    averageVelocity /= boids.size()-1;
+    averageVelocity /= boidNum-1;
     moveToCenter = -transform.position(); // Steer boid towards origin of scene
 
     // Set velocities

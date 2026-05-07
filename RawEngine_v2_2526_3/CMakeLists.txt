@@ -34,6 +34,8 @@ set(IMGUI_SOURCES
         Scripts/Engine/ShaderProgram.hpp
         Scripts/CSVTools.cpp
         Scripts/CSVTools.hpp
+        Scripts/Boids/KDTree.cpp
+        Scripts/Boids/KDTree.hpp
 )
 
 add_executable(RawEngine main.cpp

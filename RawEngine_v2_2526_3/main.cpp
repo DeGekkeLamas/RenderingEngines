@@ -146,9 +146,9 @@ int main() {
     float moveToCenterStrength = 1;
     float repellingDistance = 5;
     // Create objects
-    enum BoidType {None, Iterative, ComputeShader};
-    constexpr BoidType boidType = None;
-    constexpr bool exportData = true;
+    enum BoidType {None, Iterative, IterativeSectioning, ComputeShader};
+    constexpr BoidType boidType = Iterative;
+    constexpr bool exportData = false;
     constexpr int maxExportSize = 500;
     for (int i = 0; i < 100; i++) {
         BoidObject* horse = new BoidObject("Boid" + std::to_string(i), glm::vec3(rand()%100,rand()%100,rand()%100), nullptr,
@@ -216,7 +216,7 @@ int main() {
     std::shared_ptr<Material> colorPostProcessingMat = std::make_shared<Material>(
         nullptr, &vertexShader, &colorPostProcessingShader);
 
-    renderQuad.material = colorPostProcessingMat;
+    renderQuad.material = noPostProcessingMat;
 
     unsigned int fbo;
     glGenFramebuffers(1, &fbo);
@@ -395,9 +395,13 @@ int main() {
             delete[] boidDatas;
         }
         // Iterative based
-        else if (boidType == Iterative) {
+        else if (boidType == Iterative || boidType == IterativeSectioning) {
+                // std::sort(BoidObject::boids.begin(), BoidObject::boids.end(),
+                    // [](BoidObject* a, BoidObject* b) {return a->transform.position().x < b->transform.position().x;});
+
+
             for (int i = 0; i < BoidObject::boids.size(); i++) {
-                BoidObject::boids[i]->Update(deltaTime);
+                BoidObject::boids[i]->Update(deltaTime, boidType == IterativeSectioning);
             }
         }
 
@@ -446,6 +450,9 @@ int main() {
                 break;
             case None:
                 boidTypeName = "None";
+                break;
+            case IterativeSectioning:
+                boidTypeName = "IterativeSectioning";
                 break;
         }
         CSVTools::writeCSV(deltaTimes,
