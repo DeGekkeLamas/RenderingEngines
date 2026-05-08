@@ -18,7 +18,7 @@ struct KDTReeElement {
     void SplitAt(int splitIndex, const int depth) {
         std::cout << numBoids << " " << splitIndex << std::endl;
         elements = new KDTReeElement[2];
-        // numElements = 2;
+        numElements = 2;
         elements[0] = KDTReeElement(boids, splitIndex);
         elements[1] = KDTReeElement(boids + splitIndex, numBoids - splitIndex);
 
