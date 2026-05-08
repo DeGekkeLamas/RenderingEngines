@@ -31,6 +31,8 @@ class KDTree {
     void Create(T* data, int length) {
         // Create root
         root = new KDTReeElement(data, length / 2);
+        root->numBoids = length;
+        root->boids = data;
         // Create tree
         for (int i = 0; i < depth; i++) {
             SortArray(data, length);
@@ -42,13 +44,14 @@ class KDTree {
         }
     }
 
-    T FindNeighbours(T target, int& size) {
-        return target;
+    T* FindNeighbours(T target, int& size) {
+        size = root->numBoids;
+        return root->boids;
     }
     template<typename T>
-    static void SortArray(T* data, size_t length) {
+    static void SortArray(T* data, const size_t length) {
         std::sort(data, data + length * sizeof(T),
-            [](T* a, T* b) {return a->transform.position().x < b->transform.position().x;});
+            [](T a, T b) {return a->transform.position().x < b->transform.position().x;});
     };
 
     private:

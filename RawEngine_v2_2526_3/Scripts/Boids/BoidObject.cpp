@@ -18,9 +18,9 @@ void BoidObject::Update(const float deltaTime, bool useSectioning) {
     glm::vec3 moveToCenter;
 
     int boidNum = boids.size();
-    BoidObject** boidsUsed = useSectioning ? boids.data() : boids.data(); //boidsTree.FindNeighbours(this, boidNum);
+    BoidObject** boidsUsed = useSectioning ? boids.data() : boidsTree.FindNeighbours(this, boidNum);
     for (int i = 0; i < boidNum; i++) {
-        BoidObject* otherBoid = boidsUsed[i];
+        const BoidObject* otherBoid = boidsUsed[i];
         if (otherBoid == this) continue;
 
         // Center of mass

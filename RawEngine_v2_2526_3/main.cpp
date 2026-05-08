@@ -158,6 +158,9 @@ int main() {
         SceneA.push_back(horse);
         horse->Awake();
     }
+    // Tree
+    BoidObject::boidsTree = KDTree<BoidObject*>();
+    BoidObject::boidsTree.Create(BoidObject::boids.data(), BoidObject::boids.size());
     // Uniform locations
     const GLint uniformPosBoidCount = glGetUniformLocation(boidComputeProgram.GetProgramID(), "boidCount"); // boid count
     const GLint uniformPosDeltaTime = glGetUniformLocation(boidComputeProgram.GetProgramID(), "deltaTime"); // deltatime uniform
