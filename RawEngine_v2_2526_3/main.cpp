@@ -150,7 +150,8 @@ int main() {
     constexpr BoidType boidType = IterativeSectioning;
     constexpr bool exportData = false;
     constexpr int maxExportSize = 500;
-    for (int i = 0; i < 100; i++) {
+    constexpr int sectioningDepth = 7;
+    for (int i = 0; i < 1000; i++) {
         BoidObject* horse = new BoidObject("Boid" + std::to_string(i), glm::vec3(rand()%100,rand()%100,rand()%100), nullptr,
             triangleModel, normalMat);
         horse->transform.Scale(glm::vec3(.01f, .01f, .01f));
@@ -159,8 +160,6 @@ int main() {
         horse->Awake();
     }
     // Tree
-    BoidObject::boidsTree = KDTree<BoidObject*>();
-    BoidObject::boidsTree.Create(BoidObject::boids.data(), BoidObject::boids.size());
     // Uniform locations
     const GLint uniformPosBoidCount = glGetUniformLocation(boidComputeProgram.GetProgramID(), "boidCount"); // boid count
     const GLint uniformPosDeltaTime = glGetUniformLocation(boidComputeProgram.GetProgramID(), "deltaTime"); // deltatime uniform
@@ -399,8 +398,11 @@ int main() {
         }
         // Iterative based
         else if (boidType == Iterative || boidType == IterativeSectioning) {
-                // std::sort(BoidObject::boids.begin(), BoidObject::boids.end(),
-                    // [](BoidObject* a, BoidObject* b) {return a->transform.position().x < b->transform.position().x;});
+            if (boidType == IterativeSectioning) {
+                // Tree
+                BoidObject::boidsTree = KDTree<BoidObject*>();
+                BoidObject::boidsTree.Create(BoidObject::boids.data(), BoidObject::boids.size(), sectioningDepth);
+            }
 
 
             for (int i = 0; i < BoidObject::boids.size(); i++) {

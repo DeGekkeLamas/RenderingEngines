@@ -37,10 +37,9 @@ struct KDTReeElement {
 template<typename T>
 class KDTree {
     public:
-    int depth = 1;
 
     // Create the tree
-    void Create(T* data, int length) {
+    void Create(T* data, int length, int depth) {
         // Create root
         root = new KDTReeElement(data, length);
         // SortArray<T>(data, length);
