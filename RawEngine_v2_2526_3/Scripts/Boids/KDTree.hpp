@@ -16,7 +16,7 @@ struct KDTReeElement {
     }
     // Splits the node into 2 nodes that are added as its elements. Depth determines when to stop splitting
     void SplitAt(int splitIndex, const int depth) {
-        std::cout << numBoids << " " << splitIndex << std::endl;
+        splitValue = boids[splitIndex]->transform.position().x;
         elements = new KDTReeElement[2];
         numElements = 2;
         elements[0] = KDTReeElement(boids, splitIndex);
@@ -31,6 +31,7 @@ struct KDTReeElement {
     int numElements = 0;
     T* boids;
     int numBoids = 0;
+    float splitValue = 0;
 };
 
 template<typename T>
@@ -51,7 +52,7 @@ class KDTree {
     T* FindNeighbours(T target, int& size) {
         KDTReeElement<T>* current = root;
         while (current->numElements != 0) {
-            current = &(current->elements[0]);
+            current = &(current->elements[current->splitValue < target->transform.position().x ? 0 : 1]);
         }
         size = current->numBoids;
         return current->boids;
