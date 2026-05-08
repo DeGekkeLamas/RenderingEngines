@@ -19,6 +19,7 @@ void BoidObject::Update(const float deltaTime, bool useSectioning) {
 
     int boidNum = boids.size();
     BoidObject** boidsUsed = useSectioning ? boids.data() : boidsTree.FindNeighbours(this, boidNum);
+        std::cout << boidNum;
     for (int i = 0; i < boidNum; i++) {
         const BoidObject* otherBoid = boidsUsed[i];
         if (otherBoid == this) continue;

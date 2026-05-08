@@ -1,57 +1,68 @@
 #pragma once
 
-// #include "BoidObject.hpp" // TODO: circular dependency to fix
 #include <algorithm>
-
 #include "iostream"
 
 
 template<typename T>
 struct KDTReeElement {
     KDTReeElement() = default;
-
     ~KDTReeElement() {
-        delete[] elements;
+        // delete[] elements;
     }
     KDTReeElement(T *boids, int numBoids) {
         this->numBoids = numBoids;
         this->boids = boids;
-        elements = new KDTReeElement[2];
     }
+    // Splits the node into 2 nodes that are added as its elements. Depth determines when to stop splitting
+    void SplitAt(int splitIndex, const int depth) {
+        std::cout << numBoids << " " << splitIndex << std::endl;
+        elements = new KDTReeElement[2];
+        // numElements = 2;
+        elements[0] = KDTReeElement(boids, splitIndex);
+        elements[1] = KDTReeElement(boids + splitIndex, numBoids - splitIndex);
+
+        if (depth <= 0) return; // Stop when threshold met
+        elements[0].SplitAt(elements[0].numBoids/2, depth-1);
+        elements[1].SplitAt(elements[1].numBoids/2, depth-1);
+    }
+
     KDTReeElement* elements;
+    int numElements = 0;
     T* boids;
-    int numBoids;
+    int numBoids = 0;
 };
 
 template<typename T>
 class KDTree {
     public:
-    int depth = 0;
+    int depth = 1;
 
+    // Create the tree
     void Create(T* data, int length) {
         // Create root
-        root = new KDTReeElement(data, length / 2);
-        root->numBoids = length;
-        root->boids = data;
+        root = new KDTReeElement(data, length);
+        // SortArray<T>(data, length);
         // Create tree
-        for (int i = 0; i < depth; i++) {
-            SortArray(data, length);
-            int median = length / 2;
-
-            root->elements[0].numBoids = median;
-            root->elements[1].numBoids = median%2==0 ? median : median-1;
-            root->elements[1].boids += root->elements[1].numBoids * sizeof(T);
-        }
+        int median = length / 2;
+        root->SplitAt(median, depth);
     }
-
+    // Returns array of all objects in the group target is in, sets size to be the length of that group
     T* FindNeighbours(T target, int& size) {
-        size = root->numBoids;
-        return root->boids;
+        KDTReeElement<T>* current = root;
+        while (current->numElements != 0) {
+            current = &(current->elements[0]);
+        }
+        size = current->numBoids;
+        return current->boids;
     }
+    // Sorts the array by position
     template<typename T>
     static void SortArray(T* data, const size_t length) {
-        std::sort(data, data + length * sizeof(T),
-            [](T a, T b) {return a->transform.position().x < b->transform.position().x;});
+        std::sort(data, data + length,
+            [](const T& a, const T& b) {
+                return a->transform.position().x < b->transform.position().x;
+            });
     };
 
     private:

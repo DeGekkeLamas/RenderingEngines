@@ -147,7 +147,7 @@ int main() {
     float repellingDistance = 5;
     // Create objects
     enum BoidType {None, Iterative, IterativeSectioning, ComputeShader};
-    constexpr BoidType boidType = Iterative;
+    constexpr BoidType boidType = IterativeSectioning;
     constexpr bool exportData = false;
     constexpr int maxExportSize = 500;
     for (int i = 0; i < 100; i++) {
