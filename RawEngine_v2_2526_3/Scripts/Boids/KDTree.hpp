@@ -58,7 +58,7 @@ struct KDTReeElement {
         elements[1] = KDTReeElement(boids + splitIndex, numBoids - splitIndex);
 
         // Stop when threshold met
-        if (depth <= 0) return;
+        if (depth <= 1) return;
         elements[0].SplitAt(elements[0].numBoids/2, depth-1);
         elements[1].SplitAt(elements[1].numBoids/2, depth-1);
     }
@@ -90,6 +90,7 @@ class KDTree {
         // KDTreeHelper::SortArray<T>(data, length);
         // Create tree
         int median = length / 2;
+        if (depth <= 0) return; // no split if set to 0
         root->SplitAt(median, depth);
     }
 
