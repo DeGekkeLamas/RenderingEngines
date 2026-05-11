@@ -4,6 +4,8 @@
 #include "Scripts/Engine/VectorMath.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
+#include "imgui_impl_opengl3_loader.h"
+
 std::vector<BoidObject*> BoidObject::boids;
 KDTree<BoidObject*> BoidObject::boidsTree;
 
@@ -19,7 +21,7 @@ void BoidObject::Update(const float deltaTime, bool useSectioning) {
 
     int boidNum = boids.size();
     BoidObject** boidsUsed = !useSectioning ? boids.data() : boidsTree.FindNeighbours(this, boidNum);
-        // std::cout << boidNum;
+        // std::cout << boidNum << std::endl;
     for (int i = 0; i < boidNum; i++) {
         const BoidObject* otherBoid = boidsUsed[i];
         if (otherBoid == this) continue;
@@ -33,9 +35,9 @@ void BoidObject::Update(const float deltaTime, bool useSectioning) {
         // Match velocity
         averageVelocity += otherBoid->velocity;
     }
-    perceivedCenter /= boidNum-1;
+    perceivedCenter /= glm::max(boidNum-1, 1);
     perceivedCenter -= this->transform.position();
-    averageVelocity /= boidNum-1;
+    averageVelocity /= glm::max(boidNum-1, 1);
     moveToCenter = -transform.position(); // Steer boid towards origin of scene
 
     // Set velocities

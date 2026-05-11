@@ -3,6 +3,26 @@
 #include <algorithm>
 #include "iostream"
 
+static struct KDTreeHelper {
+    // Sorts the array by position
+    template<typename T>
+    static void SortArray(T* data, const size_t length, int axis = 0) {
+        std::sort(data, data + length,
+            [axis](const T& a, const T& b) {
+                switch (axis) {
+                    case 0:
+                        return a->transform.position().x < b->transform.position().x;
+                        break;
+                    case 1:
+                        return a->transform.position().y < b->transform.position().y;
+                        break;
+                    case 2:
+                        return a->transform.position().z < b->transform.position().z;
+                        break;
+                }
+            });
+    };
+};
 
 template<typename T>
 struct KDTReeElement {
@@ -16,6 +36,8 @@ struct KDTReeElement {
     }
     // Splits the node into 2 nodes that are added as its elements. Depth determines when to stop splitting
     void SplitAt(int splitIndex, const int depth) {
+        int axis = depth % 3;
+        KDTreeHelper::SortArray<T>(boids, numBoids, axis);
         splitValue = boids[splitIndex]->transform.position().x;
         elements = new KDTReeElement[2];
         numElements = 2;
@@ -52,11 +74,12 @@ class KDTree {
         Reset();
         // Create root
         root = new KDTReeElement(data, length);
-        // SortArray<T>(data, length);
+        // KDTreeHelper::SortArray<T>(data, length);
         // Create tree
         int median = length / 2;
         root->SplitAt(median, depth);
     }
+
     // Returns array of all objects in the group target is in, sets size to be the length of that group
     T* FindNeighbours(T target, int& size) {
         KDTReeElement<T>* current = root;
@@ -66,14 +89,6 @@ class KDTree {
         size = current->numBoids;
         return current->boids;
     }
-    // Sorts the array by position
-    template<typename T>
-    static void SortArray(T* data, const size_t length) {
-        std::sort(data, data + length,
-            [](const T& a, const T& b) {
-                return a->transform.position().x < b->transform.position().x;
-            });
-    };
 
     private:
     KDTReeElement<T>* root = nullptr;
