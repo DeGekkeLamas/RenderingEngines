@@ -8,7 +8,7 @@ template<typename T>
 struct KDTReeElement {
     KDTReeElement() = default;
     ~KDTReeElement() {
-        // delete[] elements;
+        delete[] elements;
     }
     KDTReeElement(T *boids, int numBoids) {
         this->numBoids = numBoids;
@@ -19,15 +19,17 @@ struct KDTReeElement {
         splitValue = boids[splitIndex]->transform.position().x;
         elements = new KDTReeElement[2];
         numElements = 2;
+        // Creating subnodes
         elements[0] = KDTReeElement(boids, splitIndex);
         elements[1] = KDTReeElement(boids + splitIndex, numBoids - splitIndex);
 
-        if (depth <= 0) return; // Stop when threshold met
+        // Stop when threshold met
+        if (depth <= 0) return;
         elements[0].SplitAt(elements[0].numBoids/2, depth-1);
         elements[1].SplitAt(elements[1].numBoids/2, depth-1);
     }
 
-    KDTReeElement* elements;
+    KDTReeElement* elements = nullptr;
     int numElements = 0;
     T* boids;
     int numBoids = 0;
@@ -37,9 +39,17 @@ struct KDTReeElement {
 template<typename T>
 class KDTree {
     public:
+    ~KDTree() {
+        Reset();
+    }
+    // Reset the KD Tree
+    void Reset() const {
+        delete root;
+    }
 
     // Create the tree
     void Create(T* data, int length, int depth) {
+        Reset();
         // Create root
         root = new KDTReeElement(data, length);
         // SortArray<T>(data, length);

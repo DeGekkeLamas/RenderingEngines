@@ -400,7 +400,6 @@ int main() {
         else if (boidType == Iterative || boidType == IterativeSectioning) {
             if (boidType == IterativeSectioning) {
                 // Tree
-                BoidObject::boidsTree = KDTree<BoidObject*>();
                 BoidObject::boidsTree.Create(BoidObject::boids.data(), BoidObject::boids.size(), sectioningDepth);
             }
 
