@@ -9,7 +9,8 @@ static struct KDTreeHelper {
     static void SortArray(T* data, const size_t length, int axis = 0) {
         std::sort(data, data + length,
             [axis](const T& a, const T& b) {
-                switch (axis) {
+                float bValue;
+                switch (axis) { // Switch axis used
                     case 0:
                         return a->transform.position().x < b->transform.position().x;
                         break;
@@ -36,9 +37,20 @@ struct KDTReeElement {
     }
     // Splits the node into 2 nodes that are added as its elements. Depth determines when to stop splitting
     void SplitAt(int splitIndex, const int depth) {
-        int axis = depth % 3;
+        axis = depth % 3;
         KDTreeHelper::SortArray<T>(boids, numBoids, axis);
-        splitValue = boids[splitIndex]->transform.position().x;
+        // Change split value based on axis used
+        switch (axis) {
+            case 0:
+                splitValue = boids[splitIndex]->transform.position().x;
+                break;
+            case 1:
+                splitValue = boids[splitIndex]->transform.position().y;
+                break;
+            case 2:
+                splitValue = boids[splitIndex]->transform.position().z;
+                break;
+        }
         elements = new KDTReeElement[2];
         numElements = 2;
         // Creating subnodes
@@ -53,6 +65,7 @@ struct KDTReeElement {
 
     KDTReeElement* elements = nullptr;
     int numElements = 0;
+    int axis = 0;
     T* boids;
     int numBoids = 0;
     float splitValue = 0;
@@ -84,7 +97,20 @@ class KDTree {
     T* FindNeighbours(T target, int& size) {
         KDTReeElement<T>* current = root;
         while (current->numElements != 0) {
-            current = &(current->elements[current->splitValue < target->transform.position().x ? 0 : 1]);
+            // Change split value based on axis used
+            float targetValue;
+            switch (current->axis) {
+                case 0:
+                    targetValue = target->transform.position().x;
+                    break;
+                case 1:
+                    targetValue = target->transform.position().y;
+                    break;
+                case 2:
+                    targetValue = target->transform.position().z;
+                    break;
+            }
+            current = &(current->elements[current->splitValue < targetValue ? 0 : 1]);
         }
         size = current->numBoids;
         return current->boids;
