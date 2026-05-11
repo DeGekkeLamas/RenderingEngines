@@ -148,7 +148,7 @@ int main() {
     // Create objects
     enum BoidType {None, Iterative, IterativeSectioning, ComputeShader};
     constexpr BoidType boidType = IterativeSectioning;
-    constexpr bool exportData = false;
+    constexpr bool exportData = true;
     constexpr int maxExportSize = 500;
     constexpr int sectioningDepth = 0;
     for (int i = 0; i < 1000; i++) {
@@ -460,11 +460,15 @@ int main() {
                 boidTypeName = "IterativeSectioning";
                 break;
         }
+        // Name
+        std::string filename = std::to_string(BoidObject::boids.size())
+            + "_FrameCount" + std::to_string(deltaTimes.size());
+        if (boidType == IterativeSectioning) filename += "_SectioningDepth" + std::to_string(sectioningDepth);
+        // Write file
         CSVTools::writeCSV(deltaTimes,
-            boidTypeName + std::string("_BoidCount") + std::to_string(BoidObject::boids.size())
-            + "_FrameCount" + std::to_string(deltaTimes.size()));
-        glDeleteProgram(modelShaderProgram.GetProgramID());
+            boidTypeName + std::string("_BoidCount") + filename);
     }
+    glDeleteProgram(modelShaderProgram.GetProgramID());
     glDeleteProgram(textureShaderProgram.GetProgramID());
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
