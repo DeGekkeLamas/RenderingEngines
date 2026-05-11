@@ -1,19 +1,26 @@
 #include "CSVTools.hpp"
 #include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include "Boids/BoidObject.hpp"
 
 void CSVTools::writeCSV(const std::vector<float>& frameTimes, const std::string& name)
 {
-    std::string filename = "../DataExports/frameTimes_boids_";
-    filename += name;
-    filename += ".csv";
+    // Timestamp
+    std::time_t now = std::time(nullptr);
+    std::tm* localTime = std::localtime(&now);
+    // Filename
+    std::stringstream filename;
+    filename << "../DataExports/frameTimes_boids_" << name
+        << "_" << std::put_time(localTime, "%Y%m%d_%H%M%S") << ".csv";
+    const std::string filenameString =  std::string{filename.str()};
 
-    std::ofstream file(filename);
+    std::ofstream file(filenameString);
 
     if (!file) {
-        std::cerr << "Error: Could not open " << filename << " for writing.\n";
+        std::cerr << "Error: Could not open " << filenameString << " for writing.\n";
         return;
     }
 
@@ -41,5 +48,5 @@ void CSVTools::writeCSV(const std::vector<float>& frameTimes, const std::string&
              << fps << "\n";
     }
 
-    std::cout << "Saved " << frameTimes.size() << " frames to " << filename << "\n";
+    std::cout << "Saved " << frameTimes.size() << " frames to " << filenameString << "\n";
 }
