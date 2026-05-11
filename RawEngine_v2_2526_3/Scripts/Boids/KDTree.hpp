@@ -110,7 +110,7 @@ class KDTree {
                     targetValue = target->transform.position().z;
                     break;
             }
-            current = &(current->elements[current->splitValue < targetValue ? 0 : 1]);
+            current = &(current->elements[current->splitValue > targetValue ? 0 : 1]);
         }
         size = current->numBoids;
         return current->boids;
