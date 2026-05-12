@@ -150,7 +150,7 @@ int main() {
     constexpr BoidType boidType = IterativeSectioning;
     constexpr bool exportData = true;
     constexpr int maxExportSize = 500;
-    constexpr int sectioningDepth = 0;
+    constexpr int sectioningDepth = 3;
     for (int i = 0; i < 1000; i++) {
         BoidObject* horse = new BoidObject("Boid" + std::to_string(i), glm::vec3(rand()%100,rand()%100,rand()%100), nullptr,
             triangleModel, normalMat);
@@ -159,7 +159,8 @@ int main() {
         SceneA.push_back(horse);
         horse->Awake();
     }
-    BoidObject* firstBoid = BoidObject::boids[0];
+    BoidObject* firstBoid = nullptr;
+    if (BoidObject::boids.size() > 0) firstBoid = BoidObject::boids[0];
     // Tree
     // Uniform locations
     const GLint uniformPosBoidCount = glGetUniformLocation(boidComputeProgram.GetProgramID(), "boidCount"); // boid count
@@ -410,7 +411,7 @@ int main() {
             }
         }
 
-        if (BoidObject::boids.size() > 0) {
+        if (BoidObject::boids.size() > 0 && firstBoid != nullptr) {
             cam.transform.LookAt(firstBoid->transform.position() - cam.transform.position(), VectorMath::up);
         }
 

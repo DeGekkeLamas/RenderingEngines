@@ -87,6 +87,7 @@ class KDTree {
         Reset();
         // Create root
         root = new KDTReeElement(data, length);
+        if (length <= 0) return;
         // KDTreeHelper::SortArray<T>(data, length);
         // Create tree
         int median = length / 2;
