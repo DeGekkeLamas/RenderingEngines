@@ -471,6 +471,7 @@ int main() {
     }
     glDeleteProgram(modelShaderProgram.GetProgramID());
     glDeleteProgram(textureShaderProgram.GetProgramID());
+    BoidObject::boids.clear();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
