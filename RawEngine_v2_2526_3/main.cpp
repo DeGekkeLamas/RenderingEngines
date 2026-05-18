@@ -471,6 +471,7 @@ int mainFunc(BoidType boidType, int numBoids, int maxExportSize, int sectioningD
     }
     glDeleteProgram(modelShaderProgram.GetProgramID());
     glDeleteProgram(textureShaderProgram.GetProgramID());
+    BoidObject::boids.clear();
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
