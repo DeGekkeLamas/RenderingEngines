@@ -317,7 +317,7 @@ int mainFunc(BoidType boidType, int numBoids, int maxExportSize, int sectioningD
         // Inspector
         ImGui::NewFrame();
         ImGui::Begin(("Current test:" + boidTypeName + ", " +
-                      "_BoidCount" + std::to_string(BoidObject::boids.size())).c_str());
+                      "BoidCount" + std::to_string(BoidObject::boids.size())).c_str());
         ImGui::Text("%d FPS, (%f ms), %d", static_cast<int>(1 / deltaTime), deltaTime, deltaTimes.size());
         ImGui::Text("Hello :)");
         ImGui::DragFloat("Light Strength", &lightStrength);
@@ -481,10 +481,8 @@ int mainFunc(BoidType boidType, int numBoids, int maxExportSize, int sectioningD
 }
 
 int main() {
-    constexpr BoidType boidType = IterativeSectioning;
     constexpr int maxExportSize = 500;
     constexpr int sectioningDepth = 3;
-    constexpr int numBoids = 3;
 
     for (int i = 110; i < 200; i+=10) {
         for (int j = 0; j < 4; j++) {
