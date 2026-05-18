@@ -57,7 +57,9 @@ void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-int main() {
+enum BoidType {None, Iterative, IterativeSectioning, ComputeShader};
+
+int mainFunc(BoidType boidType, int numBoids, int maxExportSize, int sectioningDepth, bool exportData = true) {
     glfwInit();
     glfwWindowHint(GLFW_SAMPLES, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -138,6 +140,23 @@ int main() {
         std::make_shared<core::Texture>("textures/HorseTex.jpg"),
         &modelVertexShader, &textureShader);
 
+    // Type name
+    std::string boidTypeName;
+    switch (boidType) {
+        case ComputeShader:
+            boidTypeName = "ComputeShader";
+            break;
+        case Iterative:
+            boidTypeName = "Iterative";
+            break;
+        case None:
+            boidTypeName = "None";
+            break;
+        case IterativeSectioning:
+            boidTypeName = "IterativeSectioning";
+            break;
+    }
+
     // Boid params
     float speed = 1;
     float perceivedCenterStrength = 1;
@@ -146,12 +165,7 @@ int main() {
     float moveToCenterStrength = 1;
     float repellingDistance = 5;
     // Create objects
-    enum BoidType {None, Iterative, IterativeSectioning, ComputeShader};
-    constexpr BoidType boidType = IterativeSectioning;
-    constexpr bool exportData = true;
-    constexpr int maxExportSize = 500;
-    constexpr int sectioningDepth = 3;
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < numBoids; i++) {
         BoidObject* horse = new BoidObject("Boid" + std::to_string(i), glm::vec3(rand()%100,rand()%100,rand()%100), nullptr,
             triangleModel, normalMat);
         horse->transform.Scale(glm::vec3(.01f, .01f, .01f));
@@ -263,7 +277,7 @@ int main() {
     colorPostProcessingMat->SetUniform("colorTexture", colorTex->getId(), 1);
     colorPostProcessingMat->SetUniform("colorQTY", 20);
 
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window) && (deltaTimes.size() < maxExportSize)) {
         glDepthMask(GL_TRUE);
         glEnable(GL_DEPTH_TEST);
 
@@ -302,7 +316,8 @@ int main() {
         ImGui_ImplGlfw_NewFrame();
         // Inspector
         ImGui::NewFrame();
-        ImGui::Begin("Cooked Engine v2");
+        ImGui::Begin(("Current test:" + boidTypeName + ", " +
+                      "_BoidCount" + std::to_string(BoidObject::boids.size())).c_str());
         ImGui::Text("%d FPS, (%f ms), %d", static_cast<int>(1 / deltaTime), deltaTime, deltaTimes.size());
         ImGui::Text("Hello :)");
         ImGui::DragFloat("Light Strength", &lightStrength);
@@ -446,21 +461,6 @@ int main() {
     }
 
     if (exportData) {
-        std::string boidTypeName;
-        switch (boidType) {
-            case ComputeShader:
-                boidTypeName = "ComputeShader";
-                break;
-            case Iterative:
-                boidTypeName = "Iterative";
-                break;
-            case None:
-                boidTypeName = "None";
-                break;
-            case IterativeSectioning:
-                boidTypeName = "IterativeSectioning";
-                break;
-        }
         // Name
         std::string filename = std::to_string(BoidObject::boids.size())
             + "_FrameCount" + std::to_string(deltaTimes.size());
@@ -476,5 +476,20 @@ int main() {
     ImGui::DestroyContext();
 
     glfwTerminate();
+    return 0;
+}
+
+int main() {
+    constexpr BoidType boidType = IterativeSectioning;
+    constexpr int maxExportSize = 500;
+    constexpr int sectioningDepth = 3;
+    constexpr int numBoids = 3;
+
+    for (int i = 110; i < 200; i+=10) {
+        for (int j = 0; j < 4; j++) {
+            mainFunc(static_cast<BoidType>(j), i, maxExportSize, sectioningDepth);
+        }
+    }
+
     return 0;
 }
