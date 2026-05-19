@@ -138,6 +138,7 @@ int main() {
         std::make_shared<core::Texture>("textures/HorseTex.jpg"),
         &modelVertexShader, &textureShader);
 
+    srand(0);
     // Boid params
     float speed = 1;
     float perceivedCenterStrength = 1;
