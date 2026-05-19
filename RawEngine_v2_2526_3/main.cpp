@@ -69,7 +69,24 @@ int mainFunc(BoidType boidType, int numBoids, int maxExportSize, int sectioningD
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    GLFWwindow *window = glfwCreateWindow(g_width, g_height, "LearnOpenGL", NULL, NULL);
+    // Type name
+    std::string boidTypeName;
+    switch (boidType) {
+        case ComputeShader:
+            boidTypeName = "ComputeShader";
+            break;
+        case Iterative:
+            boidTypeName = "Iterative";
+            break;
+        case None:
+            boidTypeName = "None";
+            break;
+        case IterativeSectioning:
+            boidTypeName = "IterativeSectioning";
+            break;
+    }
+    GLFWwindow *window = glfwCreateWindow(g_width, g_height, ("Current test: " + boidTypeName + ", BoidCount" +
+        std::to_string(numBoids) + ", SectioningDepth" + std::to_string(sectioningDepth)).c_str(), NULL, NULL);
     if (window == NULL) {
         printf("Failed to create GLFW window\n");
         glfwTerminate();
@@ -139,23 +156,6 @@ int mainFunc(BoidType boidType, int numBoids, int maxExportSize, int sectioningD
     std::shared_ptr<Material> horseMaterial = std::make_shared<Material>(
         std::make_shared<core::Texture>("textures/HorseTex.jpg"),
         &modelVertexShader, &textureShader);
-
-    // Type name
-    std::string boidTypeName;
-    switch (boidType) {
-        case ComputeShader:
-            boidTypeName = "ComputeShader";
-            break;
-        case Iterative:
-            boidTypeName = "Iterative";
-            break;
-        case None:
-            boidTypeName = "None";
-            break;
-        case IterativeSectioning:
-            boidTypeName = "IterativeSectioning";
-            break;
-    }
 
     // Boid params
     float speed = 1;
@@ -484,8 +484,9 @@ int main() {
     constexpr int maxExportSize = 500;
     constexpr int sectioningDepth = 3;
 
-    for (int i = 110; i < 200; i+=10) {
-        for (int j = 0; j < 4; j++) {
+    // Alter this with code or replace it for your specific test sequences
+    for (int i = 210; i < 260; i+=10) { // Different boid quantities
+        for (int j = 0; j < 4; j++) { // Different implementations
             mainFunc(static_cast<BoidType>(j), i, maxExportSize, sectioningDepth);
         }
     }
