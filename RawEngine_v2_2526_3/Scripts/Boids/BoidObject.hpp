@@ -19,6 +19,13 @@ public:
         static SimpleBoidData* ToSimpleArray();
         static void FromSimpleArray(const SimpleBoidData* data);
         static void ResetAllBoids();
+
+        static float speed;
+        static float perceivedCenterStrength;
+        static float keepDistanceStrength;
+        static float averageVelocityStrength;
+        static float moveToCenterStrength;
+        static float repellingDistance;
 };
 
 

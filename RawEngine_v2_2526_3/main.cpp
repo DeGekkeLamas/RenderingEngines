@@ -147,7 +147,7 @@ int main() {
     float repellingDistance = 5;
     // Create objects
     enum BoidType {None, Iterative, IterativeSectioning, ComputeShader};
-    constexpr BoidType boidType = ComputeShader;
+    constexpr BoidType boidType = IterativeSectioning;
     constexpr bool exportData = true;
     constexpr int maxExportSize = 500;
     constexpr int sectioningDepth = 3;
@@ -400,11 +400,19 @@ int main() {
         }
         // Iterative based
         else if (boidType == Iterative || boidType == IterativeSectioning) {
+            // Set values
+            BoidObject::speed = speed;
+            BoidObject::perceivedCenterStrength = perceivedCenterStrength;
+            BoidObject::keepDistanceStrength = keepDistanceStrength;
+            BoidObject::averageVelocityStrength = averageVelocityStrength;
+            BoidObject::moveToCenterStrength = moveToCenterStrength;
+            BoidObject::repellingDistance = repellingDistance;
+
+            // Create tree
             if (boidType == IterativeSectioning) {
                 // Tree
                 BoidObject::boidsTree.Create(BoidObject::boids.data(), BoidObject::boids.size(), sectioningDepth);
             }
-
 
             for (int i = 0; i < BoidObject::boids.size(); i++) {
                 BoidObject::boids[i]->Update(deltaTime, boidType == IterativeSectioning);
