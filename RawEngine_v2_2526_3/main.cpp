@@ -40,6 +40,13 @@
 int g_width = 800;
 int g_height = 600;
 
+enum BoidType {None, Iterative, IterativeSectioning, ComputeShader};
+constexpr BoidType boidType = IterativeSectioning;
+constexpr bool exportData = false;
+constexpr int numBoids = 1000;
+constexpr int maxExportSize = 500;
+constexpr int sectioningDepth = 3;
+
 bool windowSizeChanged=false;
 
 void processInput(GLFWwindow *window) {
@@ -147,12 +154,7 @@ int main() {
     float moveToCenterStrength = 1;
     float repellingDistance = 5;
     // Create objects
-    enum BoidType {None, Iterative, IterativeSectioning, ComputeShader};
-    constexpr BoidType boidType = IterativeSectioning;
-    constexpr bool exportData = true;
-    constexpr int maxExportSize = 500;
-    constexpr int sectioningDepth = 3;
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < numBoids; i++) {
         BoidObject* horse = new BoidObject("Boid" + std::to_string(i), glm::vec3(rand()%100,rand()%100,rand()%100), nullptr,
             triangleModel, normalMat);
         horse->transform.Scale(glm::vec3(.01f, .01f, .01f));
