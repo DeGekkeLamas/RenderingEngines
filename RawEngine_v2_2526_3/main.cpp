@@ -2,7 +2,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
-#include <sstream>
 #include <algorithm>
 #include <__msvc_ranges_to.hpp>
 
@@ -39,13 +38,6 @@
 
 int g_width = 800;
 int g_height = 600;
-
-enum BoidType {None, Iterative, IterativeSectioning, ComputeShader};
-constexpr BoidType boidType = IterativeSectioning;
-constexpr bool exportData = false;
-constexpr int numBoids = 1000;
-constexpr int maxExportSize = 500;
-constexpr int sectioningDepth = 3;
 
 bool windowSizeChanged=false;
 
@@ -92,8 +84,8 @@ int mainFunc(BoidType boidType, int numBoids, int maxExportSize, int sectioningD
             boidTypeName = "IterativeSectioning";
             break;
     }
-    GLFWwindow *window = glfwCreateWindow(g_width, g_height, ("Current test: " + boidTypeName + ", BoidCount" +
-        std::to_string(numBoids) + ", SectioningDepth" + std::to_string(sectioningDepth)).c_str(), NULL, NULL);
+    std::string windowName = "Current test: " + boidTypeName + ", BoidCount" + std::to_string(numBoids) + ", SectioningDepth" + std::to_string(sectioningDepth);
+    GLFWwindow *window = glfwCreateWindow(g_width, g_height, windowName.c_str(), NULL, NULL);
     if (window == NULL) {
         printf("Failed to create GLFW window\n");
         glfwTerminate();
@@ -324,9 +316,8 @@ int mainFunc(BoidType boidType, int numBoids, int maxExportSize, int sectioningD
         ImGui_ImplGlfw_NewFrame();
         // Inspector
         ImGui::NewFrame();
-        ImGui::Begin(("Current test:" + boidTypeName + ", " +
-                      "BoidCount" + std::to_string(BoidObject::boids.size())).c_str());
-        ImGui::Text("%d FPS, (%f ms), %d", static_cast<int>(1 / deltaTime), deltaTime, deltaTimes.size());
+        ImGui::Begin(windowName.c_str());
+        ImGui::Text("%d FPS, (%f ms), %d", static_cast<int>(1 / deltaTime), deltaTime, numBoids);
         ImGui::Text("Hello :)");
         ImGui::DragFloat("Light Strength", &lightStrength);
         ImGui::ColorEdit3("Light Color", glm::value_ptr(pointLight.color));
