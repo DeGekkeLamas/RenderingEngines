@@ -87,8 +87,8 @@ void Transform::RotateWorld(const glm::vec3 amount) {
 
 void Transform::LookAt(glm::vec3 forward, glm::vec3 up) {
     forward = glm::normalize(forward);
-    glm::vec3 right = glm::normalize(cross(forward, up));
-    up = cross(right, forward);
+    glm::vec3 right = glm::normalize(cross(up, forward));
+    up = cross(forward, right);
     // Set directions
     modelMatrix[0] = glm::vec4(right * scale.x, modelMatrix[0][3]);
     modelMatrix[1] = glm::vec4(up * scale.y, modelMatrix[1][3]);

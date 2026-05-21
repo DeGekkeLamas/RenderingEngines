@@ -4,7 +4,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include "Boids/BoidObject.hpp"
 
 void CSVTools::writeCSV(const std::vector<float>& frameTimes, const std::string& name)
 {

@@ -8,6 +8,12 @@
 
 std::vector<BoidObject*> BoidObject::boids;
 KDTree<BoidObject*> BoidObject::boidsTree;
+float BoidObject::speed;
+float BoidObject::perceivedCenterStrength;
+float BoidObject::keepDistanceStrength;
+float BoidObject::averageVelocityStrength;
+float BoidObject::moveToCenterStrength;
+float BoidObject::repellingDistance;
 
 void BoidObject::Awake() {
     boids.push_back(this);
@@ -29,7 +35,7 @@ void BoidObject::Update(const float deltaTime, bool useSectioning) {
         // Center of mass
         perceivedCenter += otherBoid->transform.position();
         // Distance from other boids
-        if (glm::length(transform.position() - otherBoid->transform.position()) < 5) {
+        if (glm::length(transform.position() - otherBoid->transform.position()) < repellingDistance) {
             keepDistance -= otherBoid->transform.position() - transform.position();
         }
         // Match velocity
@@ -41,12 +47,12 @@ void BoidObject::Update(const float deltaTime, bool useSectioning) {
     moveToCenter = -transform.position(); // Steer boid towards origin of scene
 
     // Set velocities
-    velocity += perceivedCenter * deltaTime;
-    velocity += keepDistance * deltaTime;
-    velocity += (averageVelocity - velocity) * deltaTime;
-    velocity += moveToCenter * deltaTime;
+    velocity += deltaTime * perceivedCenterStrength * perceivedCenter;
+    velocity += deltaTime * keepDistanceStrength * keepDistance;
+    velocity += deltaTime * averageVelocityStrength * (averageVelocity - velocity);
+    velocity += deltaTime * moveToCenterStrength * moveToCenter;
     // Update position
-    transform.TranslateWorldSpace(velocity * deltaTime);
+    transform.TranslateWorldSpace(deltaTime * speed * velocity);
     transform.LookAt(velocity, VectorMath::up);
 }
 

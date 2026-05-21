@@ -40,6 +40,13 @@
 int g_width = 800;
 int g_height = 600;
 
+enum BoidType {None, Iterative, IterativeSectioning, ComputeShader};
+constexpr BoidType boidType = IterativeSectioning;
+constexpr bool exportData = false;
+constexpr int numBoids = 1000;
+constexpr int maxExportSize = 500;
+constexpr int sectioningDepth = 3;
+
 bool windowSizeChanged=false;
 
 void processInput(GLFWwindow *window) {
@@ -157,6 +164,7 @@ int mainFunc(BoidType boidType, int numBoids, int maxExportSize, int sectioningD
         std::make_shared<core::Texture>("textures/HorseTex.jpg"),
         &modelVertexShader, &textureShader);
 
+    srand(0);
     // Boid params
     float speed = 1;
     float perceivedCenterStrength = 1;
@@ -415,11 +423,19 @@ int mainFunc(BoidType boidType, int numBoids, int maxExportSize, int sectioningD
         }
         // Iterative based
         else if (boidType == Iterative || boidType == IterativeSectioning) {
+            // Set values
+            BoidObject::speed = speed;
+            BoidObject::perceivedCenterStrength = perceivedCenterStrength;
+            BoidObject::keepDistanceStrength = keepDistanceStrength;
+            BoidObject::averageVelocityStrength = averageVelocityStrength;
+            BoidObject::moveToCenterStrength = moveToCenterStrength;
+            BoidObject::repellingDistance = repellingDistance;
+
+            // Create tree
             if (boidType == IterativeSectioning) {
                 // Tree
                 BoidObject::boidsTree.Create(BoidObject::boids.data(), BoidObject::boids.size(), sectioningDepth);
             }
-
 
             for (int i = 0; i < BoidObject::boids.size(); i++) {
                 BoidObject::boids[i]->Update(deltaTime, boidType == IterativeSectioning);
