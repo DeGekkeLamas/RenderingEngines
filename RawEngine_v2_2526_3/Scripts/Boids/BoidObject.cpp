@@ -4,8 +4,6 @@
 #include "Scripts/Engine/VectorMath.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
-#include "imgui_impl_opengl3_loader.h"
-
 std::vector<BoidObject*> BoidObject::boids;
 KDTree<BoidObject*> BoidObject::boidsTree;
 float BoidObject::speed;

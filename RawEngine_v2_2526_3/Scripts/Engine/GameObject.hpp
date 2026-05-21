@@ -2,7 +2,6 @@
 
 #include "iostream"
 #include "Transform.hpp"
-#include "../../core/model.h"
 #include "../../core/texture.h"
 
 class GameObject {

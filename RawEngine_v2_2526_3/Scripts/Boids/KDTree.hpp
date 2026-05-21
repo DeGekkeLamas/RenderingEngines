@@ -9,17 +9,13 @@ static struct KDTreeHelper {
     static void SortArray(T* data, const size_t length, int axis = 0) {
         std::sort(data, data + length,
             [axis](const T& a, const T& b) {
-                float bValue;
                 switch (axis) { // Switch axis used
                     case 0:
                         return a->transform.position().x < b->transform.position().x;
-                        break;
                     case 1:
                         return a->transform.position().y < b->transform.position().y;
-                        break;
                     case 2:
                         return a->transform.position().z < b->transform.position().z;
-                        break;
                 }
             });
     };

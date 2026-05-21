@@ -2,7 +2,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
-#include <sstream>
 #include <algorithm>
 #include <__msvc_ranges_to.hpp>
 
@@ -41,7 +40,7 @@ int g_width = 800;
 int g_height = 600;
 
 enum BoidType {None, Iterative, IterativeSectioning, ComputeShader};
-constexpr BoidType boidType = IterativeSectioning;
+constexpr BoidType boidType = ComputeShader;
 constexpr bool exportData = false;
 constexpr int numBoids = 1000;
 constexpr int maxExportSize = 500;
@@ -306,7 +305,7 @@ int main() {
         // Inspector
         ImGui::NewFrame();
         ImGui::Begin("Cooked Engine v2");
-        ImGui::Text("%d FPS, (%f ms), %d", static_cast<int>(1 / deltaTime), deltaTime, deltaTimes.size());
+        ImGui::Text("%d FPS, (%f ms), %d", static_cast<int>(1 / deltaTime), deltaTime, numBoids);
         ImGui::Text("Hello :)");
         ImGui::DragFloat("Light Strength", &lightStrength);
         ImGui::ColorEdit3("Light Color", glm::value_ptr(pointLight.color));

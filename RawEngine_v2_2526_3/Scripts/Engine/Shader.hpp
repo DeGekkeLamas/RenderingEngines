@@ -1,6 +1,5 @@
 #pragma once
 
-#include <map>
 #include "assimpLoader.h"
 
 class Shader {

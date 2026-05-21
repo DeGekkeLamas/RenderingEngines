@@ -1,5 +1,4 @@
 #include <iostream>
-#include "VectorMath.hpp"
 #include "Camera.hpp"
 
 #include <glm/ext/matrix_transform.hpp>
