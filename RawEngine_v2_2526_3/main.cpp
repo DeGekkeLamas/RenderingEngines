@@ -180,7 +180,7 @@ int main() {
     glBufferData(GL_SHADER_STORAGE_BUFFER, BoidObject::boids.size() * sizeof(SimpleBoidData),
         nullptr, GL_DYNAMIC_DRAW);
     // Tree setup
-
+    // Compare functions for sorting the tree
     std::function compareX = [](BoidObject* const& a, BoidObject* const& b) {
         return a->transform.position().x < b->transform.position().x;
     };
@@ -194,6 +194,7 @@ int main() {
 
     currentScene = &SceneA;
 
+    // Pointlight
     PointLight pointLight = PointLight("Light", glm::vec3(1,1,0),
         nullptr, glm::vec4(1,1,1,1), 1);
     float lightStrength = 1;
@@ -288,7 +289,7 @@ int main() {
         projection = glm::perspective(glm::radians(45.0f), static_cast<float>(g_width) /
         static_cast<float>(g_height), 0.1f, 100.0f);
 
-        if (windowSizeChanged) {
+        if (windowSizeChanged) { // Resize PP buffers
             // Color texture
             glBindTexture(GL_TEXTURE_2D, tcb);
             glTexImage2D(
@@ -423,9 +424,8 @@ int main() {
             BoidObject::moveToCenterStrength = moveToCenterStrength;
             BoidObject::repellingDistance = repellingDistance;
 
-            // Create tree
+            // Update tree
             if (boidType == IterativeSectioning) {
-                // Tree
                 BoidObject::boidsTree.Create(BoidObject::boids.data(), BoidObject::boids.size(), sectioningDepth);
             }
 
@@ -468,6 +468,7 @@ int main() {
         currentTime = finishFrameTime;
     }
 
+    // Export frame times
     if (exportData) {
         std::string boidTypeName;
         switch (boidType) {

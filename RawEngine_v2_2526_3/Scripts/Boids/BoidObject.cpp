@@ -60,10 +60,12 @@ void BoidObject::RenderToIMGUI() {
     ImGui::DragFloat3("Velocity", glm::value_ptr(velocity));
 }
 
+// Convert an instance to simple data
 SimpleBoidData BoidObject::ToSimpleData() const {
     return SimpleBoidData(make_vec4(transform.position()), make_vec4(velocity));
 }
 
+// Set values from simple data values
 void BoidObject::FromSimpleData(const SimpleBoidData* data) {
     // std::cout << "Changed velocity from " << velocity.x << " to " << data->velocity.x << std::endl;
     transform.SetPosition(data->position);
@@ -71,7 +73,7 @@ void BoidObject::FromSimpleData(const SimpleBoidData* data) {
     transform.LookAt(velocity, VectorMath::up);
 }
 
-
+// Create simpledata array from all boids in static vector
 SimpleBoidData* BoidObject::ToSimpleArray() {
     SimpleBoidData* boidsData = new SimpleBoidData[boids.size()];
     for (int i = 0; i < boids.size(); i++) {
@@ -80,12 +82,14 @@ SimpleBoidData* BoidObject::ToSimpleArray() {
     return  boidsData;
 }
 
+// Update values array of all boids in static vector from simpledata array
 void BoidObject::FromSimpleArray(const SimpleBoidData* data) {
     for (int i = 0; i < boids.size(); i++) {
         boids[i]->FromSimpleData(&data[i]);
     }
 }
 
+// Reset all boids to initial position and velocity
 void BoidObject::ResetAllBoids() {
     for (int i = 0; i < boids.size(); i++) {
         boids[i]->transform.SetPosition(glm::vec3(rand()%100,rand()%100,rand()%100));

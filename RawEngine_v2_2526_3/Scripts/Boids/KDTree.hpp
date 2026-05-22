@@ -29,6 +29,7 @@ static struct KDTreeHelper {
 
 template<typename T>
 struct KDTReeElement {
+    // Compare functions for sorting the array
     static comparer<T> compareX;
     static comparer<T> compareY;
     static comparer<T> compareZ;
@@ -104,6 +105,7 @@ class KDTree {
         root->SplitAt(median, depth);
     }
 
+    // Used to set compares used to sort the tree
     void SetComparisons(comparer<T> X, comparer<T> Y, comparer<T> Z) {
         KDTReeElement<T>::compareX = X;
         KDTReeElement<T>::compareY = Y;
