@@ -1,21 +1,27 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
+
 #include "iostream"
+
+template<typename T>
+using comparer = std::function<bool(const T&,const T&)>;
 
 static struct KDTreeHelper {
     // Sorts the array by position
     template<typename T>
-    static void SortArray(T* data, const size_t length, int axis = 0) {
+    static void SortArray(T* data, const size_t length, int axis,
+        comparer<T> compareX, comparer<T> compareY, comparer<T> compareZ) {
         std::sort(data, data + length,
-            [axis](const T& a, const T& b) {
+            [axis, compareX, compareY, compareZ](const T& a, const T& b) {
                 switch (axis) { // Switch axis used
                     case 0:
-                        return a->transform.position().x < b->transform.position().x;
+                        return compareX(a,b);
                     case 1:
-                        return a->transform.position().y < b->transform.position().y;
+                        return compareY(a,b);
                     case 2:
-                        return a->transform.position().z < b->transform.position().z;
+                        return compareZ(a,b);
                 }
             });
     };
@@ -23,6 +29,10 @@ static struct KDTreeHelper {
 
 template<typename T>
 struct KDTReeElement {
+    static comparer<T> compareX;
+    static comparer<T> compareY;
+    static comparer<T> compareZ;
+
     KDTReeElement() = default;
     ~KDTReeElement() {
         delete[] elements;
@@ -34,7 +44,7 @@ struct KDTReeElement {
     // Splits the node into 2 nodes that are added as its elements. Depth determines when to stop splitting
     void SplitAt(int splitIndex, const int depth) {
         axis = depth % 3;
-        KDTreeHelper::SortArray<T>(boids, numBoids, axis);
+        KDTreeHelper::SortArray<T>(boids, numBoids, axis, compareX, compareY, compareZ); // TODO: compares
         // Change split value based on axis used
         switch (axis) {
             case 0:
@@ -67,6 +77,10 @@ struct KDTReeElement {
     float splitValue = 0;
 };
 
+template<typename T> comparer<T> KDTReeElement<T>::compareX;
+template<typename T> comparer<T> KDTReeElement<T>::compareY;
+template<typename T> comparer<T> KDTReeElement<T>::compareZ;
+
 template<typename T>
 class KDTree {
     public:
@@ -74,7 +88,7 @@ class KDTree {
         Reset();
     }
     // Reset the KD Tree
-    void Reset() const {
+    void Reset() {
         delete root;
     }
 
@@ -82,12 +96,18 @@ class KDTree {
     void Create(T* data, int length, int depth) {
         Reset();
         // Create root
-        root = new KDTReeElement(data, length);
+        root = new KDTReeElement<T>(data, length);
         if (length <= 0) return;
         // Create tree
         int median = length / 2;
         if (depth <= 0) return; // no split if set to 0
         root->SplitAt(median, depth);
+    }
+
+    void SetComparisons(comparer<T> X, comparer<T> Y, comparer<T> Z) {
+        KDTReeElement<T>::compareX = X;
+        KDTReeElement<T>::compareY = Y;
+        KDTReeElement<T>::compareZ = Z;
     }
 
     // Returns array of all objects in the group target is in, sets size to be the length of that group

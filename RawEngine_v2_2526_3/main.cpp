@@ -4,6 +4,7 @@
 #include <fstream>
 #include <algorithm>
 #include <__msvc_ranges_to.hpp>
+#include <functional>
 
 #include "core/mesh.h"
 #include "core/assimpLoader.h"
@@ -40,7 +41,7 @@ int g_width = 800;
 int g_height = 600;
 
 enum BoidType {None, Iterative, IterativeSectioning, ComputeShader};
-constexpr BoidType boidType = ComputeShader;
+constexpr BoidType boidType = IterativeSectioning;
 constexpr bool exportData = false;
 constexpr int numBoids = 1000;
 constexpr int maxExportSize = 500;
@@ -178,6 +179,18 @@ int main() {
     GLuint boidBufferOut= ShaderProgram::GenerateStorageBuffer(1, 1);
     glBufferData(GL_SHADER_STORAGE_BUFFER, BoidObject::boids.size() * sizeof(SimpleBoidData),
         nullptr, GL_DYNAMIC_DRAW);
+    // Tree setup
+
+    std::function compareX = [](BoidObject* const& a, BoidObject* const& b) {
+        return a->transform.position().x < b->transform.position().x;
+    };
+    std::function compareY = [](BoidObject* const& a, BoidObject* const& b) {
+        return a->transform.position().y < b->transform.position().y;
+    };
+    std::function compareZ = [](BoidObject* const& a, BoidObject* const& b) {
+        return a->transform.position().z < b->transform.position().z;
+    };
+    BoidObject::boidsTree.SetComparisons(compareX, compareY, compareZ);
 
     currentScene = &SceneA;
 
